@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - KeyaTech</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0f1e;
+            color: #fff;
+        }
+
+        .tech-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 15s linear infinite;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #8f9bb3;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+        }
+
+        .nav-link i {
+            width: 24px;
+            color: #667eea;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* قسم التقارير */
+        .reports-section {
+            padding: 20px;
+        }
+
+        .filters-card {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #a0a0ff;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            color: #8f9bb3;
+            font-size: 14px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .stat-label {
+            color: #8f9bb3;
+            font-size: 14px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            color: #fff;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #f5576c;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-background">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <span>KeyaTech</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin-dashboard.html" class="nav-link">
+                        <i class="fas fa-chart-pie"></i>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="users.html" class="nav-link">
+                        <i class="fas fa-users-cog"></i>
+                        المستخدمين
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tickets.html" class="nav-link">
+                        <i class="fas fa-tickets"></i>
+                        التذاكر
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link active">
+                        <i class="fas fa-chart-line"></i>
+                        التقارير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="online-users.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        المتصلين
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="current-user">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري التحميل...</div>
+                    <div class="user-role">مدير النظام</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>التقارير والتحليلات</h1>
+                </div>
+                <span id="currentDateTime"></span>
+            </header>
+
+            <div class="reports-section">
+                <!-- فلترة التقارير -->
+                <div class="filters-card">
+                    <div class="filters-title">
+                        <i class="fas fa-sliders-h"></i>
+                        فلترة البيانات
+                    </div>
+                    
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>الفترة</label>
+                            <select id="periodSelect">
+                                <option value="today">اليوم</option>
+                                <option value="week" selected>هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                                <option value="year">هذا العام</option>
+                                <option value="custom">مخصص</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>من تاريخ</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>إلى تاريخ</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>نوع التقرير</label>
+                            <select id="reportType">
+                                <option value="all" selected>تذاكر الدعم</option>
+                                <option value="engineers">أداء المهندسين</option>
+                                <option value="clients">العملاء</option>
+                                <option value="satisfaction">رضا العملاء</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="generateReport()">
+                            <i class="fas fa-chart-bar"></i>
+                            عرض التقرير
+                        </button>
+                        <button class="btn btn-success" onclick="exportReport()">
+                            <i class="fas fa-file-excel"></i>
+                            تصدير Excel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tickets"></i>
+                        </div>
+                        <div class="stat-value" id="totalTickets">0</div>
+                        <div class="stat-label">إجمالي التذاكر</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value" id="avgResponse">0</div>
+                        <div class="stat-label">متوسط وقت الاستجابة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-value" id="completionRate">0%</div>
+                        <div class="stat-label">نسبة الإنجاز</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-value" id="satisfactionRate">0</div>
+                        <div class="stat-label">تقييم العملاء</div>
+                    </div>
+                </div>
+
+                <!-- المخططات -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>تحليل التذاكر اليومية</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="dailyChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>توزيع التذاكر حسب المهندسين</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="engineersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>حالات التذاكر</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>أولويات التذاكر</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="priorityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار التصدير -->
+                <div class="export-section">
+                    <button class="btn btn-success" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf"></i>
+                        تصدير PDF
+                    </button>
+                    <button class="btn btn-success" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        تصدير Excel
+                    </button>
+                    <button class="btn btn-primary" onclick="printReport()">
+                        <i class="fas fa-print"></i>
+                        طباعة
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let dailyChart, engineersChart, statusChart, priorityChart;
+        let ticketsData = [];
+        let engineersData = [];
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData(user.uid);
+                loadReportData();
+            } else {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(userId) {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const userData = doc.data();
+                document.getElementById('userName').textContent = userData.displayName || userData.name;
+                document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+            }
+        }
+
+        // تحميل بيانات التقرير
+        async function loadReportData() {
+            try {
+                // تحميل جميع التذاكر
+                const ticketsSnapshot = await db.collection('tickets').get();
+                ticketsData = [];
+                
+                ticketsSnapshot.forEach(doc => {
+                    ticketsData.push({ id: doc.id, ...doc.data() });
+                });
+
+                // تحميل بيانات المهندسين
+                const engineersSnapshot = await db.collection('users')
+                    .where('role', '==', 'engineer')
+                    .get();
+                
+                engineersData = [];
+                engineersSnapshot.forEach(doc => {
+                    engineersData.push({ id: doc.id, ...doc.data() });
+                });
+
+                // تحديث الإحصائيات
+                updateStatistics();
+                
+                // إنشاء المخططات
+                createCharts();
+
+            } catch (error) {
+                console.error('Error loading report data:', error);
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStatistics() {
+            const total = ticketsData.length;
+            
+            let openCount = 0;
+            let closedCount = 0;
+            
+            ticketsData.forEach(ticket => {
+                if (ticket.status === 'closed') closedCount++;
+                else openCount++;
+            });
+
+            document.getElementById('totalTickets').textContent = total;
+            document.getElementById('completionRate').textContent = 
+                total > 0 ? Math.round((closedCount / total) * 100) + '%' : '0%';
+            
+            // حساب متوسط وقت الاستجابة (وهمي)
+            document.getElementById('avgResponse').textContent = '2.5 ساعة';
+            
+            // تقييم العملاء (وهمي)
+            document.getElementById('satisfactionRate').textContent = '4.5';
+        }
+
+        // إنشاء المخططات
+        function createCharts() {
+            // مخطط التذاكر اليومية
+            const ctx1 = document.getElementById('dailyChart').getContext('2d');
+            if (dailyChart) dailyChart.destroy();
+            
+            dailyChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+                    datasets: [{
+                        label: 'التذاكر المفتوحة',
+                        data: [12, 19, 15, 17, 14, 8, 5],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'التذاكر المغلقة',
+                        data: [8, 15, 12, 14, 11, 6, 4],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#8f9bb3' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#8f9bb3' }
+                        }
+                    }
+                }
+            });
+
+            // مخطط المهندسين
+            const ctx2 = document.getElementById('engineersChart').getContext('2d');
+            
+            const engineerNames = engineersData.map(e => e.displayName || e.name);
+            const engineerTickets = engineersData.map(e => 
+                ticketsData.filter(t => t.assignedTo === e.id).length
+            );
+
+            engineersChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: engineerNames,
+                    datasets: [{
+                        label: 'عدد التذاكر',
+                        data: engineerTickets,
+                        backgroundColor: '#667eea',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#8f9bb3' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#8f9bb3' }
+                        }
+                    }
+                }
+            });
+
+            // مخطط حالات التذاكر
+            const ctx3 = document.getElementById('statusChart').getContext('2d');
+            
+            const openTickets = ticketsData.filter(t => t.status === 'open').length;
+            const progressTickets = ticketsData.filter(t => t.status === 'in-progress').length;
+            const closedTickets = ticketsData.filter(t => t.status === 'closed').length;
+
+            statusChart = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مفتوحة', 'قيد المعالجة', 'مغلقة'],
+                    datasets: [{
+                        data: [openTickets, progressTickets, closedTickets],
+                        backgroundColor: ['#ff9800', '#2196f3', '#4caf50'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#fff' },
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // مخطط الأولويات
+            const ctx4 = document.getElementById('priorityChart').getContext('2d');
+            
+            const highPriority = ticketsData.filter(t => t.priority === 'high' || t.priority === 'urgent').length;
+            const mediumPriority = ticketsData.filter(t => t.priority === 'medium').length;
+            const lowPriority = ticketsData.filter(t => t.priority === 'low').length;
+
+            priorityChart = new Chart(ctx4, {
+                type: 'pie',
+                data: {
+                    labels: ['عالية', 'متوسطة', 'منخفضة'],
+                    datasets: [{
+                        data: [highPriority, mediumPriority, lowPriority],
+                        backgroundColor: ['#f44336', '#ff9800', '#4caf50'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#fff' },
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // توليد تقرير جديد
+        function generateReport() {
+            const period = document.getElementById('periodSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const reportType = document.getElementById('reportType').value;
+
+            // هنا يمكن إضافة منطق فلترة البيانات حسب الفترة
+            alert(`جاري توليد تقرير ${reportType} للفترة المحددة`);
+            
+            // تحديث المخططات
+            createCharts();
+        }
+
+        // تصدير التقرير
+        function exportReport() {
+            // تجميع بيانات التقرير
+            const reportData = {
+                totalTickets: document.getElementById('totalTickets').textContent,
+                avgResponse: document.getElementById('avgResponse').textContent,
+                completionRate: document.getElementById('completionRate').textContent,
+                satisfactionRate: document.getElementById('satisfactionRate').textContent,
+                generatedAt: new Date().toLocaleString('ar-EG')
+            };
+
+            // تحويل إلى CSV
+            const csv = convertToCSV(reportData);
+            
+            // تحميل الملف
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `report-${Date.now()}.csv`;
+            a.click();
+        }
+
+        // تصدير إلى PDF
+        function exportToPDF() {
+            alert('جاري تحضير ملف PDF...');
+            // يمكن إضافة مكتبة jsPDF هنا
+        }
+
+        // تصدير إلى Excel
+        function exportToExcel() {
+            alert('جاري تحضير ملف Excel...');
+            // يمكن إضافة منطق تصدير Excel
+        }
+
+        // طباعة التقرير
+        function printReport() {
+            window.print();
+        }
+
+        // تحويل إلى CSV
+        function convertToCSV(data) {
+            const headers = Object.keys(data).join(',');
+            const values = Object.values(data).join(',');
+            return headers + '\n' + values;
+        }
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('ar-EG', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            await auth.signOut();
+            window.location.href = '/login.html';
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
