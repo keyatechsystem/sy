@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyaTech - تهيئة قاعدة البيانات</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .setup-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-right: 4px solid #667eea;
+        }
+
+        .setup-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setup-info h3 i {
+            color: #667eea;
+        }
+
+        .setup-info ul {
+            list-style: none;
+            padding-right: 25px;
+        }
+
+        .setup-info ul li {
+            margin: 10px 0;
+            color: #555;
+            position: relative;
+        }
+
+        .setup-info ul li:before {
+            content: "✓";
+            color: #28a745;
+            position: absolute;
+            right: -20px;
+            font-weight: bold;
+        }
+
+        .user-details {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .user-details h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .user-details .detail-item {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .progress-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: white;
+            margin: 8px 0;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.completed {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .step-item .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-item.completed .step-icon {
+            background: #28a745;
+            color: white;
+        }
+
+        .step-item:not(.completed) .step-icon {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .step-item .step-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .step-item .step-status {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .step-item.completed .step-status {
+            color: #28a745;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log-container {
+            background: #1e1e2f;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            direction: ltr;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .log-time {
+            color: #ffaa00;
+            margin-left: 10px;
+        }
+
+        .log-success {
+            color: #00ff00;
+        }
+
+        .log-error {
+            color: #ff4444;
+        }
+
+        .log-info {
+            color: #44aaff;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .structure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .structure-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .structure-item .icon {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🚀 KeyaTech - تهيئة قاعدة البيانات</h1>
+                <p>نظام إدارة الدعم الفني و CRM المتكامل</p>
+            </div>
+            
+            <div class="content">
+                <div class="setup-info">
+                    <h3>
+                        <span>📋</span>
+                        معلومات التهيئة
+                    </h3>
+                    <ul>
+                        <li>سيتم إنشاء جميع مجموعات Firestore الأساسية</li>
+                        <li>سيتم إنشاء حساب المدير الرئيسي</li>
+                        <li>سيتم تجهيز هيكل قاعدة البيانات بالكامل</li>
+                        <li>سيتم إضافة عينات للتصنيفات والأقسام</li>
+                    </ul>
+                </div>
+
+                <div class="user-details">
+                    <h4>👤 حساب المدير الرئيسي</h4>
+                    <div class="detail-item">
+                        <div style="margin-bottom: 10px;">📧 En.Mahmoud Gamil</div>
+                        <div style="font-size: 0.9em; opacity: 0.9;">🔑 keyatech@2026@</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <h4>📊 تقدم التهيئة</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill">0%</div>
+                    </div>
+                    
+                    <div id="stepsContainer">
+                        <div class="step-item" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">الاتصال بـ Firebase</div>
+                            <div class="step-status" id="step1Status">⏳ في الانتظار</div>
+                        </div>
+                        <div class="step-item" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">إنشاء حساب المدير (En.Mahmoud Gamil)</div>
+                            <div class="step-status" id="step2Status">⏳ في الانتظار</div>
+                        </div>
+                        <div class="step-item" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">إنشاء مجموعات Firestore</div>
+                            <div class="step-status" id="step3Status">⏳ في الانتظار</div>
+                        </div>
+                        <div class="step-item" id="step4">
+                            <div class="step-icon">4</div>
+                            <div class="step-text">إضافة البيانات الأساسية</div>
+                            <div class="step-status" id="step4Status">⏳ في الانتظار</div>
+                        </div>
+                        <div class="step-item" id="step5">
+                            <div class="step-icon">5</div>
+                            <div class="step-text">تجهيز هيكل التذاكر والإعدادات</div>
+                            <div class="step-status" id="step5Status">⏳ في الانتظار</div>
+                        </div>
+                    </div>
+
+                    <button class="button" id="setupBtn" onclick="setupDatabase()">
+                        ▶️ بدء تهيئة قاعدة البيانات
+                    </button>
+                </div>
+
+                <div id="collectionsStructure" style="margin-top: 25px; display: none;">
+                    <h4 style="margin-bottom: 15px;">🏗️ هيكل قاعدة البيانات المنشأ</h4>
+                    <div class="structure-grid" id="structureGrid">
+                        <div class="structure-item"><span class="icon">👥</span> users</div>
+                        <div class="structure-item"><span class="icon">👤</span> clients</div>
+                        <div class="structure-item"><span class="icon">🎫</span> tickets</div>
+                        <div class="structure-item"><span class="icon">📝</span> ticketStatusLog</div>
+                        <div class="structure-item"><span class="icon">💬</span> comments</div>
+                        <div class="structure-item"><span class="icon">🔔</span> notifications</div>
+                        <div class="structure-item"><span class="icon">🕒</span> onlineSessions</div>
+                        <div class="structure-item"><span class="icon">⚙️</span> settings</div>
+                        <div class="structure-item"><span class="icon">📂</span> categories</div>
+                        <div class="structure-item"><span class="icon">🏢</span> departments</div>
+                    </div>
+                </div>
+
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry">
+                        <span class="log-time">[⏰]</span>
+                        <span class="log-info">بانتظار بدء عملية التهيئة...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 KeyaTech - جميع الحقوق محفوظة | <a href="#" onclick="checkStatus()">فحص حالة الاتصال</a></p>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50",
+            measurementId: "G-0TWKLHF6BJ"
+        };
+
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // متغيرات لتتبع التقدم
+        let currentStep = 0;
+        const totalSteps = 5;
+        
+        // دالة لإضافة سجل
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString('ar-EG');
+            
+            let colorClass = 'log-info';
+            if (type === 'success') colorClass = 'log-success';
+            if (type === 'error') colorClass = 'log-error';
+            
+            logEntry.innerHTML = `<span class="log-time">[${time}]</span> <span class="${colorClass}">${message}</span>`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // دالة تحديث التقدم
+        function updateProgress(step, status, message) {
+            const stepElement = document.getElementById(`step${step}`);
+            const statusElement = document.getElementById(`step${step}Status`);
+            
+            if (status === 'completed') {
+                stepElement.classList.add('completed');
+                statusElement.innerHTML = '✅ تم بنجاح';
+                currentStep = Math.max(currentStep, step);
+            } else if (status === 'working') {
+                statusElement.innerHTML = '⚙️ جاري العمل...';
+            } else if (status === 'error') {
+                statusElement.innerHTML = '❌ خطأ';
+            }
+            
+            const progressPercent = (currentStep / totalSteps) * 100;
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${progressPercent}%`;
+            progressFill.textContent = `${Math.round(progressPercent)}%`;
+            
+            if (message) {
+                addLog(message, status === 'completed' ? 'success' : (status === 'error' ? 'error' : 'info'));
+            }
+        }
+        
+        // دالة إنشاء حساب المدير
+        async function createAdminUser() {
+            try {
+                updateProgress(2, 'working', 'جاري إنشاء حساب المدير...');
+                
+                // إنشاء المستخدم في Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    'En.Mahmoud Gamil',
+                    'keyatech@2026@'
+                );
+                
+                // إضافة بيانات المستخدم في Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    email: 'En.Mahmoud Gamil',
+                    name: 'محمود جميل',
+                    role: 'admin',
+                    department: 'الإدارة العليا',
+                    isOnline: false,
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdBy: 'system',
+                    permissions: {
+                        manageUsers: true,
+                        manageTickets: true,
+                        viewReports: true,
+                        manageSettings: true,
+                        viewOnlineUsers: true
+                    },
+                    avatar: null,
+                    phone: '0123456789',
+                    employeeId: 'ADMIN-001'
+                });
+                
+                updateProgress(2, 'completed', '✅ تم إنشاء حساب المدير بنجاح');
+                return true;
+            } catch (error) {
+                console.error('خطأ في إنشاء المدير:', error);
+                
+                // إذا كان المستخدم موجود مسبقاً
+                if (error.code === 'auth/email-already-in-use') {
+                    updateProgress(2, 'completed', '⚠️ حساب المدير موجود مسبقاً');
+                    return true;
+                }
+                
+                updateProgress(2, 'error', `❌ خطأ في إنشاء المدير: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // دالة إنشاء مجموعات Firestore
+        async function createCollections() {
+            try {
+                updateProgress(3, 'working', 'جاري إنشاء مجموعات Firestore...');
+                
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                
+                // 1. إنشاء مجموعة users (إذا لم توجد)
+                await db.collection('users').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 2. إنشاء مجموعة clients
+                await db.collection('clients').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 3. إنشاء مجموعة tickets
+                await db.collection('tickets').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 4. إنشاء مجموعة ticketStatusLog
+                await db.collection('ticketStatusLog').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 5. إنشاء مجموعة comments
+                await db.collection('comments').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 6. إنشاء مجموعة notifications
+                await db.collection('notifications').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 7. إنشاء مجموعة onlineSessions
+                await db.collection('onlineSessions').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 8. إنشاء مجموعة settings
+                await db.collection('settings').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 9. إنشاء مجموعة categories
+                await db.collection('categories').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                // 10. إنشاء مجموعة departments
+                await db.collection('departments').doc('_initialized').set({
+                    initialized: true,
+                    timestamp: timestamp
+                });
+                
+                updateProgress(3, 'completed', '✅ تم إنشاء جميع المجموعات بنجاح');
+                
+                // عرض هيكل قاعدة البيانات
+                document.getElementById('collectionsStructure').style.display = 'block';
+                
+                return true;
+            } catch (error) {
+                console.error('خطأ في إنشاء المجموعات:', error);
+                updateProgress(3, 'error', `❌ خطأ في إنشاء المجموعات: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // دالة إضافة البيانات الأساسية
+        async function addBaseData() {
+            try {
+                updateProgress(4, 'working', 'جاري إضافة البيانات الأساسية...');
+                
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                
+                // إضافة التصنيفات الأساسية للتذاكر
+                const categories = [
+                    { name: 'مشكلة تقنية', nameEn: 'Technical Issue', icon: '🔧', color: '#ff6b6b' },
+                    { name: 'استفسار', nameEn: 'Inquiry', icon: '❓', color: '#4ecdc4' },
+                    { name: 'طلب ميزة جديدة', nameEn: 'Feature Request', icon: '✨', color: '#45b7d1' },
+                    { name: 'مشكلة في الفواتير', nameEn: 'Billing Issue', icon: '💰', color: '#96ceb4' },
+                    { name: 'شكوى', nameEn: 'Complaint', icon: '⚠️', color: '#ffeaa7' },
+                    { name: 'صيانة', nameEn: 'Maintenance', icon: '🔨', color: '#dfe6e9' }
+                ];
+                
+                for (const cat of categories) {
+                    await db.collection('categories').add({
+                        ...cat,
+                        createdAt: timestamp,
+                        isActive: true
+                    });
+                }
+                
+                // إضافة الأقسام الأساسية
+                const departments = [
+                    { name: 'الدعم الفني', nameEn: 'Technical Support', headCount: 5 },
+                    { name: 'خدمة العملاء', nameEn: 'Customer Service', headCount: 3 },
+                    { name: 'المبيعات', nameEn: 'Sales', headCount: 2 },
+                    { name: 'الإدارة', nameEn: 'Management', headCount: 1 }
+                ];
+                
+                for (const dept of departments) {
+                    await db.collection('departments').add({
+                        ...dept,
+                        createdAt: timestamp,
+                        isActive: true
+                    });
+                }
+                
+                // إضافة إعدادات النظام
+                await db.collection('settings').doc('system').set({
+                    companyName: 'KeyaTech',
+                    companyNameEn: 'KeyaTech Solutions',
+                    logo: null,
+                    primaryColor: '#667eea',
+                    secondaryColor: '#764ba2',
+                    timezone: 'Africa/Cairo',
+                    dateFormat: 'DD/MM/YYYY',
+                    ticketPrefix: 'TCK',
+                    autoAssignment: true,
+                    slaEnabled: true,
+                    feedbackEnabled: true,
+                    updatedAt: timestamp
+                });
+                
+                updateProgress(4, 'completed', '✅ تم إضافة البيانات الأساسية بنجاح');
+                return true;
+            } catch (error) {
+                console.error('خطأ في إضافة البيانات:', error);
+                updateProgress(4, 'error', `❌ خطأ في إضافة البيانات: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // دالة تجهيز هيكل التذاكر
+        async function setupTicketsStructure() {
+            try {
+                updateProgress(5, 'working', 'جاري تجهيز هيكل التذاكر...');
+                
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                
+                // إنشاء عينة تذكرة تجريبية
+                const sampleTicket = {
+                    ticketNumber: 'TCK-2026-0001',
+                    subject: 'تذكرة تجريبية - مرحباً بك في KeyaTech',
+                    description: 'هذه تذكرة تجريبية للتأكد من عمل النظام بشكل صحيح',
+                    status: 'open',
+                    priority: 'medium',
+                    category: 'مشكلة تقنية',
+                    createdAt: timestamp,
+                    updatedAt: timestamp,
+                    isInternal: false,
+                    attachments: []
+                };
+                
+                await db.collection('tickets').add(sampleTicket);
+                
+                // إنشاء مراحل تتبع تجريبية
+                const stages = [
+                    { name: 'تم استلام التذكرة', status: 'completed', order: 1 },
+                    { name: 'قيد المراجعة', status: 'completed', order: 2 },
+                    { name: 'بإنتظار المهندس', status: 'in-progress', order: 3 },
+                    { name: 'تم الحل', status: 'pending', order: 4 }
+                ];
+                
+                for (const stage of stages) {
+                    await db.collection('ticketStatusLog').add({
+                        ticketId: 'sample',
+                        stageName: stage.name,
+                        status: stage.status,
+                        order: stage.order,
+                        comment: 'مرحلة تجريبية',
+                        timestamp: timestamp
+                    });
+                }
+                
+                updateProgress(5, 'completed', '✅ تم تجهيز هيكل التذاكر بنجاح');
+                return true;
+            } catch (error) {
+                console.error('خطأ في تجهيز التذاكر:', error);
+                updateProgress(5, 'error', `❌ خطأ في تجهيز التذاكر: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // الدالة الرئيسية للتهيئة
+        async function setupDatabase() {
+            const setupBtn = document.getElementById('setupBtn');
+            setupBtn.disabled = true;
+            setupBtn.textContent = '⏳ جاري التهيئة...';
+            
+            try {
+                addLog('بدء عملية تهيئة قاعدة البيانات...', 'info');
+                
+                // الخطوة 1: الاتصال بـ Firebase
+                updateProgress(1, 'working', 'جاري الاتصال بـ Firebase...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                updateProgress(1, 'completed', '✅ تم الاتصال بـ Firebase بنجاح');
+                
+                // الخطوة 2: إنشاء حساب المدير
+                await createAdminUser();
+                
+                // الخطوة 3: إنشاء المجموعات
+                await createCollections();
+                
+                // الخطوة 4: إضافة البيانات الأساسية
+                await addBaseData();
+                
+                // الخطوة 5: تجهيز هيكل التذاكر
+                await setupTicketsStructure();
+                
+                addLog('🎉 تهانينا! تم تهيئة قاعدة البيانات بنجاح', 'success');
+                addLog('يمكنك الآن تسجيل الدخول بحساب المدير: En.Mahmoud Gamil', 'success');
+                
+                setupBtn.textContent = '✅ تمت التهيئة بنجاح';
+                
+            } catch (error) {
+                console.error('خطأ في التهيئة:', error);
+                addLog(`❌ فشلت عملية التهيئة: ${error.message}`, 'error');
+                setupBtn.disabled = false;
+                setupBtn.textContent = '🔄 إعادة المحاولة';
+            }
+        }
+        
+        // دالة فحص الحالة
+        function checkStatus() {
+            addLog('جاري فحص حالة الاتصال...', 'info');
+            
+            if (firebase.apps.length) {
+                addLog('✅ Firebase متصل بنجاح', 'success');
+                addLog(`📧 مشروع: keyatech-db`, 'info');
+            } else {
+                addLog('❌ Firebase غير متصل', 'error');
+            }
+        }
+        
+        // تسجيل الخروج التلقائي عند تحميل الصفحة
+        auth.signOut().catch(() => {});
+        
+        // إضافة رسالة ترحيب
+        window.onload = function() {
+            addLog('🌐 مرحباً بك في KeyaTech Setup', 'info');
+            addLog('📌 اضغط على زر "بدء تهيئة قاعدة البيانات" للبدء', 'info');
+        };
+    </script>
+</body>
+</html>
