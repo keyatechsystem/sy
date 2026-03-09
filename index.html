@@ -55,12 +55,19 @@
             margin: 0 auto 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             animation: pulse 2s infinite;
+            overflow: hidden;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo span {
@@ -100,10 +107,10 @@
 </head>
 <body>
     <div class="splash-container">
-        <div class="logo">
+        <div class="logo" id="logo">
             <span>K</span>
         </div>
-        <h1>KeyaTech</h1>
+        <h1 id="companyName">KeyaTech</h1>
         <p>نظام إدارة الدعم الفني المتكامل</p>
         <div class="loading"></div>
         <p>جاري تحميل النظام...</p>
@@ -120,51 +127,65 @@
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('companyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        const logoDiv = document.getElementById('logo');
+                        logoDiv.innerHTML = `<img src="${settings.logoUrl}" alt="شعار الشركة">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
+
         // التحقق من حالة تسجيل الدخول
         auth.onAuthStateChanged((user) => {
-            setTimeout(() => {
-                if (user) {
-                    console.log('مستخدم مسجل:', user.email);
-                    
-                    // جلب بيانات المستخدم من Firestore
-                    db.collection('users').doc(user.uid).get()
-                        .then((doc) => {
-                            if (doc.exists) {
-                                const userData = doc.data();
-                                console.log('بيانات المستخدم:', userData);
-                                
-                                // التوجيه حسب الدور - استخدام مسارات نسبية
-                                if (userData.role === 'admin') {
-                                    window.location.href = 'admin/admin-dashboard.html';
-                                } else if (userData.role === 'engineer') {
-                                    window.location.href = 'engineer/engineer-tickets.html';
-                                } else if (userData.role === 'assistant') {
-                                    window.location.href = 'assistant/assistant-clients.html';
+            // تحميل إعدادات الشركة أولاً
+            loadCompanySettings().then(() => {
+                setTimeout(() => {
+                    if (user) {
+                        console.log('مستخدم مسجل:', user.email);
+                        
+                        db.collection('users').doc(user.uid).get()
+                            .then((doc) => {
+                                if (doc.exists) {
+                                    const userData = doc.data();
+                                    console.log('بيانات المستخدم:', userData);
+                                    
+                                    if (userData.role === 'admin') {
+                                        window.location.href = 'admin/admin-dashboard.html';
+                                    } else if (userData.role === 'engineer') {
+                                        window.location.href = 'engineer/engineer-tickets.html';
+                                    } else if (userData.role === 'assistant') {
+                                        window.location.href = 'assistant/assistant-clients.html';
+                                    } else {
+                                        window.location.href = 'client/client-dashboard.html';
+                                    }
                                 } else {
-                                    // إذا كان عميل عادي
-                                    window.location.href = 'client/client-dashboard.html';
+                                    window.location.href = 'login.html';
                                 }
-                            } else {
-                                // المستخدم موجود في Authentication لكن مش في Firestore
-                                console.log('المستخدم غير موجود في Firestore');
+                            })
+                            .catch((error) => {
+                                console.error('خطأ في جلب بيانات المستخدم:', error);
                                 window.location.href = 'login.html';
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('خطأ في جلب بيانات المستخدم:', error);
-                            window.location.href = 'login.html';
-                        });
-                } else {
-                    // لا يوجد مستخدم مسجل - اذهب لصفحة تسجيل الدخول
-                    console.log('لا يوجد مستخدم مسجل');
-                    window.location.href = 'login.html';
-                }
-            }, 2000); // تأخير 2 ثانية لعرض شاشة البداية
+                            });
+                    } else {
+                        console.log('لا يوجد مستخدم مسجل');
+                        window.location.href = 'login.html';
+                    }
+                }, 2000);
+            });
         });
     </script>
 </body>
