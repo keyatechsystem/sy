@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شكوى جديدة - KeyaTech</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0f1e;
+            color: #fff;
+        }
+
+        .tech-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #8f9bb3;
+            text-decoration: none;
+            border-radius: 12px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+        }
+
+        .nav-link i {
+            width: 24px;
+            color: #667eea;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* نموذج الشكوى */
+        .ticket-form {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a0a0ff;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* وصل الاستلام */
+        .receipt-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .receipt-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            color: #333;
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #667eea;
+        }
+
+        .receipt-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .receipt-logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+        }
+
+        .receipt-logo-text h2 {
+            color: #667eea;
+        }
+
+        .receipt-logo-text p {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .receipt-qr {
+            text-align: center;
+        }
+
+        .receipt-qr canvas {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #667eea;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .receipt-body {
+            margin-bottom: 30px;
+        }
+
+        .receipt-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .receipt-title h3 {
+            color: #667eea;
+            font-size: 22px;
+        }
+
+        .receipt-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px dashed #667eea;
+            color: #666;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-download {
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: #ff9800;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #f5576c;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .receipt-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .receipt-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-background"></div>
+
+    <div class="app-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <span>KeyaTech</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="client-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        الرئيسية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="client-new-ticket.html" class="nav-link active">
+                        <i class="fas fa-plus-circle"></i>
+                        شكوى جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="client-tickets.html" class="nav-link">
+                        <i class="fas fa-tickets"></i>
+                        شكاويي
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="current-user">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري التحميل...</div>
+                    <div class="user-role">عميل</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>تقديم شكوى جديدة</h1>
+                </div>
+                <div class="company-info" id="companyInfo">
+                    <span id="companyName">KeyaTech</span>
+                </div>
+            </header>
+
+            <!-- نموذج الشكوى -->
+            <div class="ticket-form" id="ticketForm">
+                <form onsubmit="submitTicket(event)">
+                    <div class="form-group">
+                        <label>الاسم بالكامل</label>
+                        <input type="text" id="clientName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="clientPhone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="clientEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>نوع المشكلة</label>
+                        <select id="problemType" required>
+                            <option value="">اختر نوع المشكلة</option>
+                            <option value="technical">مشكلة تقنية</option>
+                            <option value="billing">مشكلة في الفواتير</option>
+                            <option value="account">مشكلة في الحساب</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>عنوان المشكلة</label>
+                        <input type="text" id="problemTitle" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>وصف المشكلة بالتفصيل</label>
+                        <textarea id="problemDescription" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        إرسال الشكوى
+                    </button>
+                </form>
+            </div>
+
+            <!-- وصل الاستلام -->
+            <div class="receipt-section" id="receiptSection">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>تم استلام شكوتك بنجاح</h2>
+                    <div class="receipt-actions">
+                        <button class="btn-download" onclick="downloadReceipt()">
+                            <i class="fas fa-download"></i>
+                            تحميل
+                        </button>
+                        <button class="btn-print" onclick="printReceipt()">
+                            <i class="fas fa-print"></i>
+                            طباعة
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="receipt-card" id="receiptContent">
+                    <!-- يتم تعبئتها ديناميكياً -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let currentTicket = null;
+        let companySettings = null;
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData(user.uid);
+                loadCompanySettings();
+            } else {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(userId) {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const userData = doc.data();
+                document.getElementById('userName').textContent = userData.displayName || userData.name;
+                document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+            }
+        }
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            const doc = await db.collection('settings').doc('company').get();
+            if (doc.exists) {
+                companySettings = doc.data();
+                document.getElementById('companyName').textContent = companySettings.name || 'KeyaTech';
+            }
+        }
+
+        // إنشاء رقم تذكرة فريد
+        function generateTicketNumber() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `TCK-${year}${month}${day}-${random}`;
+        }
+
+        // تقديم الشكوى
+        async function submitTicket(event) {
+            event.preventDefault();
+
+            const ticketNumber = generateTicketNumber();
+            const ticketData = {
+                ticketNumber: ticketNumber,
+                clientName: document.getElementById('clientName').value,
+                clientPhone: document.getElementById('clientPhone').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                problemType: document.getElementById('problemType').value,
+                problemTitle: document.getElementById('problemTitle').value,
+                problemDescription: document.getElementById('problemDescription').value,
+                status: 'open',
+                priority: 'medium',
+                createdBy: currentUser ? currentUser.uid : 'guest',
+                createdByName: document.getElementById('clientName').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                // حفظ التذكرة في Firestore
+                const docRef = await db.collection('tickets').add(ticketData);
+
+                // إنشاء مسار التتبع
+                await db.collection('ticketStatusLog').add({
+                    ticketId: docRef.id,
+                    ticketNumber: ticketNumber,
+                    stageName: 'تم استلام الشكوى',
+                    status: 'completed',
+                    order: 1,
+                    comment: 'تم استلام الشكوى بنجاح',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // حفظ بيانات التذكرة الحالية
+                currentTicket = {
+                    ...ticketData,
+                    id: docRef.id,
+                    createdAt: new Date()
+                };
+
+                // عرض وصل الاستلام
+                displayReceipt(currentTicket);
+
+                // إخفاء النموذج وإظهار الوصل
+                document.getElementById('ticketForm').style.display = 'none';
+                document.getElementById('receiptSection').style.display = 'block';
+
+            } catch (error) {
+                alert('خطأ في إرسال الشكوى: ' + error.message);
+            }
+        }
+
+        // عرض وصل الاستلام
+        function displayReceipt(ticket) {
+            const receiptDiv = document.getElementById('receiptContent');
+            
+            // إنشاء QR Code
+            QRCode.toCanvas(document.createElement('canvas'), ticket.ticketNumber, { width: 100 }, (err, canvas) => {
+                if (err) console.error(err);
+
+                const date = ticket.createdAt.toLocaleDateString('ar-EG');
+                const time = ticket.createdAt.toLocaleTimeString('ar-EG');
+
+                receiptDiv.innerHTML = `
+                    <div class="receipt-header">
+                        <div class="receipt-logo">
+                            <div class="receipt-logo-icon">K</div>
+                            <div class="receipt-logo-text">
+                                <h2>${companySettings?.name || 'KeyaTech'}</h2>
+                                <p>نظام إدارة الدعم الفني</p>
+                            </div>
+                        </div>
+                        <div class="receipt-qr" id="qrCodeContainer"></div>
+                    </div>
+                    
+                    <div class="receipt-body">
+                        <div class="receipt-title">
+                            <h3>وصل استلام شكوى</h3>
+                            <p>رقم البلاغ: ${ticket.ticketNumber}</p>
+                        </div>
+                        
+                        <div class="receipt-info">
+                            <div class="info-row">
+                                <span class="info-label">اسم العميل:</span>
+                                <span class="info-value">${ticket.clientName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">رقم الهاتف:</span>
+                                <span class="info-value">${ticket.clientPhone}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">البريد الإلكتروني:</span>
+                                <span class="info-value">${ticket.clientEmail}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">نوع المشكلة:</span>
+                                <span class="info-value">${getProblemTypeText(ticket.problemType)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">عنوان المشكلة:</span>
+                                <span class="info-value">${ticket.problemTitle}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">تاريخ الاستلام:</span>
+                                <span class="info-value">${date}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">وقت الاستلام:</span>
+                                <span class="info-value">${time}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 10px;">
+                            <p><strong>وصف المشكلة:</strong></p>
+                            <p>${ticket.problemDescription}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="receipt-footer">
+                        <p>هذا الوصل إلكتروني ومعتمد من نظام KeyaTech</p>
+                        <p>يمكنك متابعة حالة البلاغ باستخدام رقم البلاغ: ${ticket.ticketNumber}</p>
+                    </div>
+                `;
+
+                document.getElementById('qrCodeContainer').appendChild(canvas);
+            });
+        }
+
+        // تحميل وصل الاستلام كصورة
+        async function downloadReceipt() {
+            const receipt = document.getElementById('receiptContent');
+            
+            try {
+                const canvas = await html2canvas(receipt, {
+                    scale: 2,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const link = document.createElement('a');
+                link.download = `ticket-${currentTicket.ticketNumber}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Error downloading receipt:', error);
+            }
+        }
+
+        // طباعة وصل الاستلام
+        function printReceipt() {
+            const receipt = document.getElementById('receiptContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html dir="rtl">
+                <head>
+                    <title>وصل استلام شكوى</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Cairo', sans-serif; padding: 20px; }
+                        ${document.querySelector('style').innerHTML}
+                    </style>
+                </head>
+                <body>${receipt}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // دوال مساعدة
+        function getProblemTypeText(type) {
+            const types = {
+                'technical': 'مشكلة تقنية',
+                'billing': 'مشكلة في الفواتير',
+                'account': 'مشكلة في الحساب',
+                'other': 'أخرى'
+            };
+            return types[type] || type;
+        }
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('ar-EG', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            await auth.signOut();
+            window.location.href = '/login.html';
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
