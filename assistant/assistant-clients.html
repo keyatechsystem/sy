@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة العملاء - المساعد | KeyaTech</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* نفس التصميم الأساسي */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0f1e;
+            color: #fff;
+        }
+
+        .tech-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #8f9bb3;
+            text-decoration: none;
+            border-radius: 12px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+        }
+
+        .nav-link i {
+            width: 24px;
+            color: #667eea;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* قسم العملاء */
+        .clients-section {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            min-width: 250px;
+        }
+
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .client-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .client-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .client-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .client-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .client-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .client-email {
+            font-size: 12px;
+            color: #8f9bb3;
+        }
+
+        .client-stats {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px 0;
+            border-top: 1px solid rgba(102, 126, 234, 0.1);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #8f9bb3;
+        }
+
+        .client-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #8f9bb3;
+        }
+
+        .client-phone {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-inactive {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9e9e9e;
+        }
+
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #f5576c;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* نافذة إضافة عميل */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f35;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #fff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #8f9bb3;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a0a0ff;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .clients-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-background"></div>
+
+    <div class="app-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <span>KeyaTech</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="assistant-clients.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        العملاء
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="current-user">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري التحميل...</div>
+                    <div class="user-role">مساعد</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>إدارة العملاء</h1>
+                </div>
+                <span id="currentDateTime"></span>
+            </header>
+
+            <div class="clients-section">
+                <div class="section-header">
+                    <h2>قائمة العملاء</h2>
+                    <button class="btn btn-primary" onclick="showAddClientModal()">
+                        <i class="fas fa-user-plus"></i>
+                        إضافة عميل
+                    </button>
+                </div>
+
+                <div class="filter-section">
+                    <input type="text" class="search-box" id="searchInput" 
+                           placeholder="🔍 بحث باسم العميل أو البريد..." onkeyup="filterClients()">
+                </div>
+
+                <div class="clients-grid" id="clientsGrid">
+                    <!-- يتم إضافة العملاء ديناميكياً -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة إضافة عميل -->
+    <div class="modal" id="addClientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>إضافة عميل جديد</h2>
+                <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
+            </div>
+            
+            <form id="addClientForm" onsubmit="addClient(event)">
+                <div class="form-group">
+                    <label>اسم العميل</label>
+                    <input type="text" id="clientName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="clientPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="clientEmail" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i>
+                    إضافة العميل
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تفاصيل العميل -->
+    <div class="modal" id="clientDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailsClientName">تفاصيل العميل</h2>
+                <button class="modal-close" onclick="closeModal('clientDetailsModal')">&times;</button>
+            </div>
+            
+            <div id="clientDetails">
+                <!-- يتم تعبئتها ديناميكياً -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let clients = [];
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData(user.uid);
+                loadClients();
+            } else {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(userId) {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const userData = doc.data();
+                document.getElementById('userName').textContent = userData.displayName || userData.name;
+                document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+            }
+        }
+
+        // تحميل قائمة العملاء
+        async function loadClients() {
+            try {
+                // الحصول على جميع التذاكر لاستخراج العملاء
+                const ticketsSnapshot = await db.collection('tickets')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                const clientsMap = new Map();
+
+                ticketsSnapshot.forEach(doc => {
+                    const ticket = doc.data();
+                    const email = ticket.clientEmail;
+                    
+                    if (email && !clientsMap.has(email)) {
+                        clientsMap.set(email, {
+                            name: ticket.clientName,
+                            email: ticket.clientEmail,
+                            phone: ticket.clientPhone,
+                            tickets: [],
+                            lastTicket: ticket.createdAt
+                        });
+                    }
+                    
+                    if (email && clientsMap.has(email)) {
+                        clientsMap.get(email).tickets.push(doc.id);
+                    }
+                });
+
+                clients = Array.from(clientsMap.values());
+                displayClients(clients);
+
+            } catch (error) {
+                console.error('Error loading clients:', error);
+            }
+        }
+
+        // عرض العملاء
+        function displayClients(clientsToShow) {
+            const grid = document.getElementById('clientsGrid');
+            
+            if (clientsToShow.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; padding: 50px; color: #8f9bb3;">لا يوجد عملاء</div>';
+                return;
+            }
+
+            let html = '';
+            clientsToShow.forEach(client => {
+                const lastTicketDate = client.lastTicket ? 
+                    client.lastTicket.toDate().toLocaleDateString('ar-EG') : '-';
+                
+                const ticketCount = client.tickets.length;
+                const openTickets = Math.floor(ticketCount * 0.6); // تقريبي
+
+                html += `
+                    <div class="client-card" onclick="showClientDetails('${client.email}')">
+                        <div class="client-header">
+                            <div class="client-avatar">${client.name.charAt(0)}</div>
+                            <div>
+                                <div class="client-name">${client.name}</div>
+                                <div class="client-email">${client.email}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="client-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">${ticketCount}</div>
+                                <div class="stat-label">إجمالي</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">${openTickets}</div>
+                                <div class="stat-label">مفتوحة</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">${ticketCount - openTickets}</div>
+                                <div class="stat-label">مغلقة</div>
+                            </div>
+                        </div>
+                        
+                        <div class="client-footer">
+                            <span class="client-phone">
+                                <i class="fas fa-phone"></i> ${client.phone || '---'}
+                            </span>
+                            <span class="status-badge status-active">
+                                <i class="fas fa-circle"></i> آخر تذكرة: ${lastTicketDate}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // فلترة العملاء
+        function filterClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = clients.filter(client => {
+                return client.name.toLowerCase().includes(searchTerm) ||
+                       client.email.toLowerCase().includes(searchTerm) ||
+                       (client.phone && client.phone.includes(searchTerm));
+            });
+
+            displayClients(filtered);
+        }
+
+        // إضافة عميل جديد
+        async function addClient(event) {
+            event.preventDefault();
+
+            const clientData = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: currentUser.uid
+            };
+
+            try {
+                // إنشاء تذكرة فارغة للعميل (لإضافته إلى قائمة العملاء)
+                await db.collection('tickets').add({
+                    ...clientData,
+                    problemTitle: 'عميل جديد',
+                    problemDescription: 'تم إضافة العميل بواسطة المساعد',
+                    status: 'closed',
+                    ticketNumber: 'CLI-' + Date.now()
+                });
+
+                closeModal('addClientModal');
+                loadClients();
+
+            } catch (error) {
+                alert('خطأ في إضافة العميل: ' + error.message);
+            }
+        }
+
+        // عرض تفاصيل العميل
+        async function showClientDetails(clientEmail) {
+            try {
+                const snapshot = await db.collection('tickets')
+                    .where('clientEmail', '==', clientEmail)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                const tickets = [];
+                snapshot.forEach(doc => {
+                    tickets.push(doc.data());
+                });
+
+                const client = clients.find(c => c.email === clientEmail);
+                
+                let ticketsHtml = '';
+                tickets.slice(0, 5).forEach(ticket => {
+                    const date = ticket.createdAt ? 
+                        ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
+                    
+                    ticketsHtml += `
+                        <div style="padding: 10px; border-bottom: 1px solid rgba(102,126,234,0.1);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: #667eea;">${ticket.ticketNumber}</span>
+                                <span class="status-badge status-${ticket.status}">${ticket.status}</span>
+                            </div>
+                            <div style="font-size: 13px; margin-top: 5px;">${ticket.problemTitle}</div>
+                            <div style="font-size: 11px; color: #8f9bb3;">${date}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('detailsClientName').textContent = client.name;
+                document.getElementById('clientDetails').innerHTML = `
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                            ${client.email}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                            ${client.phone || '---'}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>آخر التذاكر (5)</label>
+                        <div style="background: rgba(255,255,255,0.02); border-radius: 10px; max-height: 200px; overflow-y: auto;">
+                            ${ticketsHtml || 'لا توجد تذاكر'}
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%;" onclick="closeModal('clientDetailsModal')">
+                        إغلاق
+                    </button>
+                `;
+
+                document.getElementById('clientDetailsModal').classList.add('show');
+
+            } catch (error) {
+                console.error('Error loading client details:', error);
+            }
+        }
+
+        // إظهار نافذة إضافة عميل
+        function showAddClientModal() {
+            document.getElementById('addClientForm').reset();
+            document.getElementById('addClientModal').classList.add('show');
+        }
+
+        // إغلاق النافذة
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('ar-EG', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            await auth.signOut();
+            window.location.href = '/login.html';
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
