@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المتصلين - KeyaTech</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* نفس التصميم الأساسي مع إضافات */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0f1e;
+            color: #fff;
+        }
+
+        .tech-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #8f9bb3;
+            text-decoration: none;
+            border-radius: 12px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+        }
+
+        .nav-link i {
+            width: 24px;
+            color: #667eea;
+        }
+
+        .badge {
+            background: #f5576c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* قسم المتصلين */
+        .online-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .online-card {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .online-count {
+            background: #4caf50;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .offline-count {
+            background: #9e9e9e;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(-5px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .user-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #1a1f35;
+        }
+
+        .status-online {
+            background: #4caf50;
+            box-shadow: 0 0 10px #4caf50;
+        }
+
+        .status-offline {
+            background: #9e9e9e;
+        }
+
+        .status-away {
+            background: #ff9800;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #8f9bb3;
+        }
+
+        .user-time {
+            font-size: 11px;
+            color: #667eea;
+        }
+
+        .session-info {
+            text-align: left;
+            font-size: 11px;
+            color: #8f9bb3;
+        }
+
+        .session-info div {
+            margin-bottom: 3px;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8f9bb3;
+        }
+
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .user-avatar-small {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #f5576c;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1200px) {
+            .online-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-background"></div>
+
+    <div class="app-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <span>KeyaTech</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin-dashboard.html" class="nav-link">
+                        <i class="fas fa-chart-pie"></i>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="users.html" class="nav-link">
+                        <i class="fas fa-users-cog"></i>
+                        المستخدمين
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tickets.html" class="nav-link">
+                        <i class="fas fa-tickets"></i>
+                        التذاكر
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        التقارير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="online-users.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        المتصلين
+                        <span class="badge" id="onlineBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="current-user">
+                <div class="user-avatar-small" id="userAvatar">م</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري التحميل...</div>
+                    <div class="user-role">مدير النظام</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>المتصلين والنشاط</h1>
+                </div>
+                <span id="currentDateTime"></span>
+            </header>
+
+            <div class="online-section">
+                <!-- المتصلين حالياً -->
+                <div class="online-card">
+                    <div class="card-header">
+                        <h2>
+                            <i class="fas fa-circle" style="color: #4caf50;"></i>
+                            المتصلين الآن
+                        </h2>
+                        <span class="online-count" id="onlineCount">0</span>
+                    </div>
+                    
+                    <div class="user-list" id="onlineUsers">
+                        <!-- يتم إضافة المستخدمين ديناميكياً -->
+                    </div>
+                </div>
+
+                <!-- آخر النشاط -->
+                <div class="online-card">
+                    <div class="card-header">
+                        <h2>
+                            <i class="fas fa-history"></i>
+                            آخر النشاط
+                        </h2>
+                        <span class="offline-count" id="recentCount">0</span>
+                    </div>
+                    
+                    <div class="user-list" id="recentUsers">
+                        <!-- يتم إضافة المستخدمين ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات الجلسات -->
+            <div style="margin-top: 25px; background: rgba(10, 15, 30, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 20px; padding: 25px;">
+                <h2 style="margin-bottom: 20px;">📊 إحصائيات الجلسات</h2>
+                
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalSessions">0</div>
+                        <div class="stat-label">إجمالي الجلسات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="avgSessionTime">0</div>
+                        <div class="stat-label">متوسط وقت الجلسة</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="peakTime">-</div>
+                        <div class="stat-label">أوقات الذروة</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="sessionsChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let sessionsChart = null;
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData(user.uid);
+                loadOnlineUsers();
+                loadSessionStats();
+                // تحديث كل 30 ثانية
+                setInterval(loadOnlineUsers, 30000);
+            } else {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(userId) {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const userData = doc.data();
+                document.getElementById('userName').textContent = userData.displayName || userData.name;
+                document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+            }
+        }
+
+        // تحميل المتصلين
+        async function loadOnlineUsers() {
+            try {
+                const snapshot = await db.collection('users')
+                    .where('isOnline', '==', true)
+                    .get();
+
+                const onlineUsers = [];
+                snapshot.forEach(doc => {
+                    onlineUsers.push({ id: doc.id, ...doc.data() });
+                });
+
+                document.getElementById('onlineCount').textContent = onlineUsers.length;
+                document.getElementById('onlineBadge').textContent = onlineUsers.length;
+
+                displayOnlineUsers(onlineUsers);
+
+                // تحميل آخر النشاط
+                loadRecentActivity();
+
+            } catch (error) {
+                console.error('Error loading online users:', error);
+            }
+        }
+
+        // عرض المتصلين
+        function displayOnlineUsers(users) {
+            const container = document.getElementById('onlineUsers');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #8f9bb3;">
+                        <i class="fas fa-user-slash" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>لا يوجد متصلين حالياً</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            users.forEach(user => {
+                const lastSeen = user.lastSeen ? 
+                    user.lastSeen.toDate().toLocaleTimeString('ar-EG') : 'الآن';
+                
+                html += `
+                    <div class="user-item">
+                        <div class="user-avatar">
+                            ${(user.displayName || user.name || 'م').charAt(0)}
+                            <span class="user-status status-online"></span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">${user.displayName || user.name}</div>
+                            <div class="user-role">${getRoleName(user.role)}</div>
+                        </div>
+                        <div class="session-info">
+                            <div><i class="fas fa-clock"></i> ${lastSeen}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // تحميل آخر النشاط
+        async function loadRecentActivity() {
+            try {
+                const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                
+                const snapshot = await db.collection('users')
+                    .where('lastSeen', '>=', fiveMinutesAgo)
+                    .orderBy('lastSeen', 'desc')
+                    .limit(10)
+                    .get();
+
+                const recentUsers = [];
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    if (!user.isOnline) {
+                        recentUsers.push({ id: doc.id, ...user });
+                    }
+                });
+
+                document.getElementById('recentCount').textContent = recentUsers.length;
+                displayRecentUsers(recentUsers);
+
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+            }
+        }
+
+        // عرض آخر النشاط
+        function displayRecentUsers(users) {
+            const container = document.getElementById('recentUsers');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #8f9bb3;">
+                        <i class="fas fa-history" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>لا يوجد نشاط حديث</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            users.forEach(user => {
+                const lastSeen = user.lastSeen ? 
+                    user.lastSeen.toDate().toLocaleString('ar-EG') : '-';
+                
+                html += `
+                    <div class="user-item">
+                        <div class="user-avatar">
+                            ${(user.displayName || user.name || 'م').charAt(0)}
+                            <span class="user-status status-offline"></span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">${user.displayName || user.name}</div>
+                            <div class="user-role">${getRoleName(user.role)}</div>
+                            <div class="user-time"><i class="far fa-clock"></i> ${lastSeen}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // تحميل إحصائيات الجلسات
+        async function loadSessionStats() {
+            try {
+                // إحصائيات وهمية (يمكن استبدالها ببيانات حقيقية)
+                document.getElementById('totalSessions').textContent = '1,234';
+                document.getElementById('avgSessionTime').textContent = '15 دقيقة';
+                document.getElementById('peakTime').textContent = '10-12 ص';
+
+                createSessionsChart();
+
+            } catch (error) {
+                console.error('Error loading session stats:', error);
+            }
+        }
+
+        // إنشاء مخطط الجلسات
+        function createSessionsChart() {
+            const ctx = document.getElementById('sessionsChart').getContext('2d');
+            
+            if (sessionsChart) sessionsChart.destroy();
+
+            sessionsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['12ص', '2ص', '4ص', '6ص', '8ص', '10ص', '12م', '2م', '4م', '6م', '8م', '10م'],
+                    datasets: [{
+                        label: 'المتصلين',
+                        data: [5, 2, 1, 0, 3, 15, 25, 30, 28, 22, 18, 10],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#8f9bb3' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#8f9bb3' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // دوال مساعدة
+        function getRoleName(role) {
+            const roles = {
+                'admin': 'مدير',
+                'engineer': 'مهندس',
+                'assistant': 'مساعد'
+            };
+            return roles[role] || role;
+        }
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('ar-EG', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            if (currentUser) {
+                await db.collection('users').doc(currentUser.uid).update({
+                    isOnline: false,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            await auth.signOut();
+            window.location.href = '/login.html';
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
