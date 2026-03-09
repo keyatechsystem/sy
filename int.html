@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
     <style>
         * {
@@ -28,7 +27,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
         }
 
@@ -37,18 +36,6 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
         }
 
         .header {
@@ -63,52 +50,84 @@
             margin-bottom: 10px;
         }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-
         .content {
             padding: 30px;
         }
 
-        .setup-info {
+        .network-status {
             background: #f8f9fa;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 25px;
-            border-right: 4px solid #667eea;
+            border: 2px solid #dee2e6;
         }
 
-        .setup-info h3 {
-            color: #333;
-            margin-bottom: 15px;
+        .network-status h3 {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 15px;
+            color: #333;
         }
 
-        .setup-info h3 i {
-            color: #667eea;
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .setup-info ul {
-            list-style: none;
-            padding-right: 25px;
+        .status-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
         }
 
-        .setup-info ul li {
-            margin: 10px 0;
-            color: #555;
-            position: relative;
+        .status-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 5px;
         }
 
-        .setup-info ul li:before {
-            content: "✓";
-            color: #28a745;
-            position: absolute;
-            right: -20px;
+        .status-value {
+            font-size: 1.2em;
             font-weight: bold;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .setup-info {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-right: 4px solid #2196f3;
         }
 
         .user-details {
@@ -117,37 +136,18 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .user-details h4 {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
         }
 
         .detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .detail-row:last-child {
             border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: bold;
-            opacity: 0.9;
         }
 
         .detail-value {
@@ -158,68 +158,27 @@
             direction: ltr;
         }
 
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            color: #856404;
-            padding: 15px;
+        .connection-test {
+            background: white;
             border-radius: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .warning-box i {
-            font-size: 1.5em;
-        }
-
-        .progress-container {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .progress-bar {
-            height: 30px;
-            background: #e9ecef;
-            border-radius: 15px;
-            overflow: hidden;
+            padding: 15px;
             margin: 15px 0;
+            border: 1px solid #dee2e6;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            width: 0%;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .step-item {
+        .test-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            background: white;
-            margin: 8px 0;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
         }
 
-        .step-item.completed {
-            background: #d4edda;
-            border-color: #c3e6cb;
+        .test-item:last-child {
+            border-bottom: none;
         }
 
-        .step-item .step-icon {
+        .test-icon {
             width: 30px;
             height: 30px;
             border-radius: 50%;
@@ -229,28 +188,19 @@
             font-weight: bold;
         }
 
-        .step-item.completed .step-icon {
+        .test-success .test-icon {
             background: #28a745;
             color: white;
         }
 
-        .step-item:not(.completed) .step-icon {
-            background: #e9ecef;
-            color: #6c757d;
+        .test-failed .test-icon {
+            background: #dc3545;
+            color: white;
         }
 
-        .step-item .step-text {
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .step-item .step-status {
-            font-size: 0.9em;
-            color: #6c757d;
-        }
-
-        .step-item.completed .step-status {
-            color: #28a745;
+        .test-pending .test-icon {
+            background: #ffc107;
+            color: #333;
         }
 
         .button {
@@ -263,7 +213,8 @@
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px 0;
+            transition: transform 0.2s;
         }
 
         .button:hover {
@@ -277,6 +228,10 @@
             transform: none;
         }
 
+        .button-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
         .log-container {
             background: #1e1e2f;
             color: #00ff00;
@@ -284,7 +239,7 @@
             border-radius: 10px;
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-top: 20px;
             direction: ltr;
@@ -292,8 +247,8 @@
 
         .log-entry {
             margin: 5px 0;
+            padding: 5px;
             border-bottom: 1px solid #333;
-            padding-bottom: 5px;
         }
 
         .log-time {
@@ -309,72 +264,63 @@
             color: #ff4444;
         }
 
+        .log-warning {
+            color: #ffaa00;
+        }
+
         .log-info {
             color: #44aaff;
+        }
+
+        .troubleshooting {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #856404;
+        }
+
+        .troubleshooting h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .troubleshooting ul {
+            margin-right: 25px;
+        }
+
+        .troubleshooting li {
+            margin: 8px 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         .footer {
             text-align: center;
             margin-top: 20px;
             color: white;
-            opacity: 0.8;
         }
 
         .footer a {
             color: white;
             text-decoration: none;
             font-weight: bold;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .structure-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .structure-item {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            text-align: center;
-            font-size: 0.9em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .structure-item .icon {
-            font-size: 1.5em;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .credentials-card {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .copy-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-            font-size: 0.9em;
-        }
-
-        .copy-btn:hover {
-            background: rgba(255,255,255,0.3);
         }
 
         @media (max-width: 600px) {
@@ -385,6 +331,10 @@
             .content {
                 padding: 20px;
             }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -392,128 +342,109 @@
     <div class="container">
         <div class="card">
             <div class="header">
-                <h1>🚀 KeyaTech - تهيئة قاعدة البيانات</h1>
+                <h1>🔧 KeyaTech - تهيئة قاعدة البيانات</h1>
                 <p>نظام إدارة الدعم الفني و CRM المتكامل</p>
             </div>
             
             <div class="content">
-                <div class="setup-info">
+                <!-- حالة الشبكة والاتصال -->
+                <div class="network-status">
                     <h3>
-                        <span>📋</span>
-                        معلومات التهيئة
+                        <span>📡</span>
+                        تشخيص حالة الشبكة والاتصال
                     </h3>
-                    <ul>
-                        <li>سيتم إنشاء جميع مجموعات Firestore الأساسية</li>
-                        <li>سيتم إنشاء حساب المدير الرئيسي</li>
-                        <li>سيتم تجهيز هيكل قاعدة البيانات بالكامل</li>
-                        <li>سيتم إضافة عينات للتصنيفات والأقسام</li>
-                    </ul>
-                </div>
-
-                <div class="user-details">
-                    <h4>👤 حساب المدير الرئيسي</h4>
-                    <div class="detail-item">
-                        <div class="detail-row">
-                            <span class="detail-label">الاسم:</span>
-                            <span class="detail-value">En.Mahmoud Gamil</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">البريد الإلكتروني:</span>
-                            <span class="detail-value" id="adminEmail">mahmoud.gamil@keyatech.com</span>
-                            <button class="copy-btn" onclick="copyToClipboard('mahmoud.gamil@keyatech.com')">📋 نسخ</button>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">كلمة المرور:</span>
-                            <span class="detail-value" id="adminPassword">keyatech@2026@</span>
-                            <button class="copy-btn" onclick="copyToClipboard('keyatech@2026@')">📋 نسخ</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <i>⚠️</i>
-                    <div>
-                        <strong>ملاحظة مهمة:</strong> تم تعديل البريد الإلكتروني لصيغة صحيحة. 
-                        للدخول، استخدم: <strong>mahmoud.gamil@keyatech.com</strong>
-                    </div>
-                </div>
-
-                <div class="progress-container">
-                    <h4>📊 تقدم التهيئة</h4>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill">0%</div>
-                    </div>
                     
-                    <div id="stepsContainer">
-                        <div class="step-item" id="step1">
-                            <div class="step-icon">1</div>
-                            <div class="step-text">الاتصال بـ Firebase</div>
-                            <div class="step-status" id="step1Status">⏳ في الانتظار</div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-label">حالة الإنترنت</div>
+                            <div class="status-value">
+                                <span id="onlineStatus" class="status-badge badge-warning">جاري الفحص...</span>
+                            </div>
                         </div>
-                        <div class="step-item" id="step2">
-                            <div class="step-icon">2</div>
-                            <div class="step-text">إنشاء حساب المدير (mahmoud.gamil@keyatech.com)</div>
-                            <div class="step-status" id="step2Status">⏳ في الانتظار</div>
+                        <div class="status-item">
+                            <div class="status-label">الاتصال بـ Firebase</div>
+                            <div class="status-value">
+                                <span id="firebaseStatus" class="status-badge badge-warning">جاري الفحص...</span>
+                            </div>
                         </div>
-                        <div class="step-item" id="step3">
-                            <div class="step-icon">3</div>
-                            <div class="step-text">إنشاء مجموعات Firestore</div>
-                            <div class="step-status" id="step3Status">⏳ في الانتظار</div>
-                        </div>
-                        <div class="step-item" id="step4">
-                            <div class="step-icon">4</div>
-                            <div class="step-text">إضافة البيانات الأساسية</div>
-                            <div class="step-status" id="step4Status">⏳ في الانتظار</div>
-                        </div>
-                        <div class="step-item" id="step5">
-                            <div class="step-icon">5</div>
-                            <div class="step-text">تجهيز هيكل التذاكر والإعدادات</div>
-                            <div class="step-status" id="step5Status">⏳ في الانتظار</div>
+                        <div class="status-item">
+                            <div class="status-label">حالة Auth</div>
+                            <div class="status-value">
+                                <span id="authStatus" class="status-badge badge-warning">جاري الفحص...</span>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="button" id="setupBtn" onclick="setupDatabase()">
-                        ▶️ بدء تهيئة قاعدة البيانات
+                    <div class="connection-test" id="connectionTests">
+                        <div class="test-item" id="test1">
+                            <div class="test-icon">1</div>
+                            <div>الوصول إلى Google APIs</div>
+                        </div>
+                        <div class="test-item" id="test2">
+                            <div class="test-icon">2</div>
+                            <div>الوصول إلى Firebase Auth</div>
+                        </div>
+                        <div class="test-item" id="test3">
+                            <div class="test-icon">3</div>
+                            <div>الوصول إلى Firestore</div>
+                        </div>
+                    </div>
+
+                    <button class="button button-secondary" onclick="runNetworkDiagnostic()" style="margin-top: 10px;">
+                        🔍 تشغيل تشخيص الشبكة
                     </button>
                 </div>
 
-                <div id="collectionsStructure" style="margin-top: 25px; display: none;">
-                    <h4 style="margin-bottom: 15px;">🏗️ هيكل قاعدة البيانات المنشأ</h4>
-                    <div class="structure-grid" id="structureGrid">
-                        <div class="structure-item"><span class="icon">👥</span> users</div>
-                        <div class="structure-item"><span class="icon">👤</span> clients</div>
-                        <div class="structure-item"><span class="icon">🎫</span> tickets</div>
-                        <div class="structure-item"><span class="icon">📝</span> ticketStatusLog</div>
-                        <div class="structure-item"><span class="icon">💬</span> comments</div>
-                        <div class="structure-item"><span class="icon">🔔</span> notifications</div>
-                        <div class="structure-item"><span class="icon">🕒</span> onlineSessions</div>
-                        <div class="structure-item"><span class="icon">⚙️</span> settings</div>
-                        <div class="structure-item"><span class="icon">📂</span> categories</div>
-                        <div class="structure-item"><span class="icon">🏢</span> departments</div>
+                <!-- بيانات المستخدم -->
+                <div class="user-details">
+                    <h4 style="text-align: center; margin-bottom: 15px;">👤 حساب المدير الرئيسي</h4>
+                    <div class="detail-row">
+                        <span>الاسم:</span>
+                        <span class="detail-value">En.Mahmoud Gamil</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>البريد الإلكتروني:</span>
+                        <span class="detail-value" id="adminEmail">mahmoud.gamil@keyatech.com</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>كلمة المرور:</span>
+                        <span class="detail-value" id="adminPassword">keyatech@2026@</span>
                     </div>
                 </div>
 
+                <!-- زر التهيئة -->
+                <button class="button" id="setupBtn" onclick="setupDatabase()">
+                    🚀 بدء تهيئة قاعدة البيانات
+                </button>
+
+                <!-- سجل الأحداث -->
                 <div class="log-container" id="logContainer">
                     <div class="log-entry">
                         <span class="log-time">[⏰]</span>
-                        <span class="log-info">بانتظار بدء عملية التهيئة...</span>
+                        <span class="log-info">مرحباً بك في KeyaTech Setup</span>
                     </div>
                 </div>
 
-                <div id="successCredentials" style="display: none;" class="credentials-card">
-                    <h4>🎉 تم التهيئة بنجاح!</h4>
-                    <p>يمكنك الآن تسجيل الدخول باستخدام:</p>
-                    <p style="font-size: 1.2em; margin: 10px 0;">
-                        📧 <strong id="finalEmail">mahmoud.gamil@keyatech.com</strong><br>
-                        🔑 <strong id="finalPassword">keyatech@2026@</strong>
-                    </p>
-                    <button class="copy-btn" onclick="copyAllCredentials()">📋 نسخ بيانات الدخول</button>
+                <!-- حلول المشاكل -->
+                <div class="troubleshooting" id="troubleshooting" style="display: none;">
+                    <h4>
+                        <span>🔧</span>
+                        حلول مقترحة لمشكلة الشبكة
+                    </h4>
+                    <ul>
+                        <li>✅ تأكد من أنك متصل بالإنترنت</li>
+                        <li>✅ تحقق من جدار الحماية (Firewall) - قد يحظر الاتصال</li>
+                        <li>✅ جرب استخدام VPN إذا كنت في منطقة محظورة</li>
+                        <li>✅ أعد تحميل الصفحة وجرب مرة أخرى</li>
+                        <li>✅ استخدم متصفح Chrome أو Firefox محدث</li>
+                        <li>✅ جرب الاتصال بشبكة مختلفة (مثل شبكة الجوال)</li>
+                    </ul>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>© 2026 KeyaTech - جميع الحقوق محفوظة | <a href="#" onclick="checkStatus()">فحص حالة الاتصال</a></p>
+            <p>© 2026 KeyaTech - <a href="#" onclick="location.reload()">إعادة تحميل الصفحة</a></p>
         </div>
     </div>
 
@@ -529,34 +460,115 @@
             measurementId: "G-0TWKLHF6BJ"
         };
 
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        
-        // متغيرات لتتبع التقدم
-        let currentStep = 0;
-        const totalSteps = 5;
+        let app;
+        let auth;
+        let db;
+
+        // بيانات المدير
         const adminEmail = "mahmoud.gamil@keyatech.com";
         const adminPassword = "keyatech@2026@";
         const adminName = "محمود جميل";
         const adminDisplayName = "En.Mahmoud Gamil";
-        
-        // دالة للنسخ إلى الحافظة
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                addLog(`📋 تم نسخ: ${text}`, 'success');
-            }).catch(err => {
-                addLog('❌ فشل النسخ', 'error');
-            });
+
+        // تهيئة Firebase
+        function initializeFirebase() {
+            try {
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // إعدادات Firestore للمساعدة في مشاكل الشبكة
+                db.settings({
+                    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+                });
+                
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                return false;
+            }
         }
 
-        function copyAllCredentials() {
-            const text = `البريد: ${adminEmail}\nكلمة المرور: ${adminPassword}`;
-            copyToClipboard(text);
+        // تشخيص الشبكة
+        async function runNetworkDiagnostic() {
+            addLog('🔍 بدء تشخيص الشبكة...', 'info');
+            
+            // تحديث حالة الاختبارات
+            document.querySelectorAll('.test-item').forEach(item => {
+                item.classList.remove('test-success', 'test-failed');
+                item.classList.add('test-pending');
+            });
+
+            // اختبار 1: الاتصال بالإنترنت
+            try {
+                await fetch('https://www.google.com', { mode: 'no-cors' });
+                document.getElementById('test1').classList.remove('test-pending');
+                document.getElementById('test1').classList.add('test-success');
+                document.getElementById('test1').querySelector('.test-icon').textContent = '✅';
+                addLog('✅ الإنترنت: متصل', 'success');
+                updateStatus('onlineStatus', 'متصل', 'badge-success');
+            } catch (error) {
+                document.getElementById('test1').classList.remove('test-pending');
+                document.getElementById('test1').classList.add('test-failed');
+                document.getElementById('test1').querySelector('.test-icon').textContent = '❌';
+                addLog('❌ الإنترنت: غير متصل', 'error');
+                updateStatus('onlineStatus', 'غير متصل', 'badge-danger');
+                showTroubleshooting();
+                return;
+            }
+
+            // اختبار 2: الاتصال بـ Firebase Auth
+            try {
+                auth = firebase.auth();
+                await auth.fetchSignInMethodsForEmail('test@test.com');
+                document.getElementById('test2').classList.remove('test-pending');
+                document.getElementById('test2').classList.add('test-success');
+                document.getElementById('test2').querySelector('.test-icon').textContent = '✅';
+                addLog('✅ Firebase Auth: متاح', 'success');
+                updateStatus('authStatus', 'متاح', 'badge-success');
+            } catch (error) {
+                document.getElementById('test2').classList.remove('test-pending');
+                document.getElementById('test2').classList.add('test-failed');
+                document.getElementById('test2').querySelector('.test-icon').textContent = '❌';
+                addLog(`❌ Firebase Auth: ${error.message}`, 'error');
+                updateStatus('authStatus', 'غير متاح', 'badge-danger');
+                showTroubleshooting();
+            }
+
+            // اختبار 3: الاتصال بـ Firestore
+            try {
+                db = firebase.firestore();
+                await db.collection('test').doc('test').get();
+                document.getElementById('test3').classList.remove('test-pending');
+                document.getElementById('test3').classList.add('test-success');
+                document.getElementById('test3').querySelector('.test-icon').textContent = '✅';
+                addLog('✅ Firestore: متاح', 'success');
+                updateStatus('firebaseStatus', 'متصل', 'badge-success');
+            } catch (error) {
+                document.getElementById('test3').classList.remove('test-pending');
+                document.getElementById('test3').classList.add('test-failed');
+                document.getElementById('test3').querySelector('.test-icon').textContent = '❌';
+                addLog(`❌ Firestore: ${error.message}`, 'error');
+                updateStatus('firebaseStatus', 'غير متصل', 'badge-danger');
+                showTroubleshooting();
+            }
         }
-        
-        // دالة لإضافة سجل
+
+        // تحديث حالة الاتصال
+        function updateStatus(elementId, text, className) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = text;
+                element.className = `status-badge ${className}`;
+            }
+        }
+
+        // إظهار حلول المشاكل
+        function showTroubleshooting() {
+            document.getElementById('troubleshooting').style.display = 'block';
+        }
+
+        // إضافة سجل
         function addLog(message, type = 'info') {
             const logContainer = document.getElementById('logContainer');
             const logEntry = document.createElement('div');
@@ -567,347 +579,127 @@
             let colorClass = 'log-info';
             if (type === 'success') colorClass = 'log-success';
             if (type === 'error') colorClass = 'log-error';
+            if (type === 'warning') colorClass = 'log-warning';
             
             logEntry.innerHTML = `<span class="log-time">[${time}]</span> <span class="${colorClass}">${message}</span>`;
             logContainer.appendChild(logEntry);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
-        
-        // دالة تحديث التقدم
-        function updateProgress(step, status, message) {
-            const stepElement = document.getElementById(`step${step}`);
-            const statusElement = document.getElementById(`step${step}Status`);
-            
-            if (status === 'completed') {
-                stepElement.classList.add('completed');
-                statusElement.innerHTML = '✅ تم بنجاح';
-                currentStep = Math.max(currentStep, step);
-            } else if (status === 'working') {
-                statusElement.innerHTML = '⚙️ جاري العمل...';
-            } else if (status === 'error') {
-                statusElement.innerHTML = '❌ خطأ';
-            }
-            
-            const progressPercent = (currentStep / totalSteps) * 100;
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = `${progressPercent}%`;
-            progressFill.textContent = `${Math.round(progressPercent)}%`;
-            
-            if (message) {
-                addLog(message, status === 'completed' ? 'success' : (status === 'error' ? 'error' : 'info'));
-            }
-        }
-        
-        // دالة إنشاء حساب المدير
+
+        // إنشاء حساب المدير مع خيارات متعددة
         async function createAdminUser() {
+            addLog('جاري إنشاء حساب المدير...', 'info');
+            
             try {
-                updateProgress(2, 'working', 'جاري إنشاء حساب المدير...');
-                
-                // حذف أي مستخدم مسجل حالياً
+                // تسجيل الخروج من أي مستخدم حالياً
                 await auth.signOut();
                 
-                try {
-                    // محاولة إنشاء المستخدم في Authentication
-                    const userCredential = await auth.createUserWithEmailAndPassword(adminEmail, adminPassword);
-                    
-                    // تحديث اسم المستخدم
-                    await userCredential.user.updateProfile({
-                        displayName: adminDisplayName
-                    });
-                    
-                    // إضافة بيانات المستخدم في Firestore
-                    await db.collection('users').doc(userCredential.user.uid).set({
-                        email: adminEmail,
-                        name: adminName,
-                        displayName: adminDisplayName,
-                        role: 'admin',
-                        department: 'الإدارة العليا',
-                        isOnline: false,
-                        lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        createdBy: 'system',
-                        permissions: {
-                            manageUsers: true,
-                            manageTickets: true,
-                            viewReports: true,
-                            manageSettings: true,
-                            viewOnlineUsers: true
-                        },
-                        avatar: null,
-                        phone: '0123456789',
-                        employeeId: 'ADMIN-001'
-                    });
-                    
-                    updateProgress(2, 'completed', '✅ تم إنشاء حساب المدير بنجاح');
-                    return true;
-                    
-                } catch (authError) {
-                    // إذا كان المستخدم موجود مسبقاً
-                    if (authError.code === 'auth/email-already-in-use') {
-                        addLog('⚠️ المستخدم موجود مسبقاً، جاري تحديث البيانات...', 'info');
-                        
-                        // تسجيل الدخول للتحقق من وجود البيانات
-                        try {
-                            await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
-                            updateProgress(2, 'completed', '⚠️ حساب المدير موجود مسبقاً وتم التحقق منه');
-                            return true;
-                        } catch (signInError) {
-                            // كلمة المرور خطأ، نحتاج لإعادة تعيينها
-                            addLog('⚠️ المستخدم موجود ولكن بكلمة مرور مختلفة', 'warning');
-                            throw new Error('المستخدم موجود مسبقاً بكلمة مرور مختلفة. يرجى حذف المستخدم يدوياً من Firebase Console');
-                        }
-                    } else {
-                        throw authError;
-                    }
-                }
+                // محاولة إنشاء المستخدم
+                const userCredential = await auth.createUserWithEmailAndPassword(adminEmail, adminPassword);
                 
-            } catch (error) {
-                console.error('خطأ في إنشاء المدير:', error);
-                updateProgress(2, 'error', `❌ خطأ في إنشاء المدير: ${error.message}`);
-                throw error;
-            }
-        }
-        
-        // دالة إنشاء مجموعات Firestore
-        async function createCollections() {
-            try {
-                updateProgress(3, 'working', 'جاري إنشاء مجموعات Firestore...');
-                
-                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                
-                // إنشاء المستندات الأولية لكل مجموعة
-                const collections = [
-                    'users', 'clients', 'tickets', 'ticketStatusLog', 
-                    'comments', 'notifications', 'onlineSessions', 
-                    'settings', 'categories', 'departments'
-                ];
-                
-                for (const collection of collections) {
-                    await db.collection(collection).doc('_initialized').set({
-                        initialized: true,
-                        timestamp: timestamp,
-                        name: collection
-                    }).catch(err => {
-                        console.log(`Collection ${collection} initialized`);
-                    });
-                }
-                
-                updateProgress(3, 'completed', '✅ تم إنشاء جميع المجموعات بنجاح');
-                
-                // عرض هيكل قاعدة البيانات
-                document.getElementById('collectionsStructure').style.display = 'block';
-                
-                return true;
-            } catch (error) {
-                console.error('خطأ في إنشاء المجموعات:', error);
-                updateProgress(3, 'error', `❌ خطأ في إنشاء المجموعات: ${error.message}`);
-                throw error;
-            }
-        }
-        
-        // دالة إضافة البيانات الأساسية
-        async function addBaseData() {
-            try {
-                updateProgress(4, 'working', 'جاري إضافة البيانات الأساسية...');
-                
-                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                
-                // إضافة التصنيفات الأساسية للتذاكر
-                const categories = [
-                    { name: 'مشكلة تقنية', nameEn: 'Technical Issue', icon: '🔧', color: '#ff6b6b', order: 1 },
-                    { name: 'استفسار', nameEn: 'Inquiry', icon: '❓', color: '#4ecdc4', order: 2 },
-                    { name: 'طلب ميزة جديدة', nameEn: 'Feature Request', icon: '✨', color: '#45b7d1', order: 3 },
-                    { name: 'مشكلة في الفواتير', nameEn: 'Billing Issue', icon: '💰', color: '#96ceb4', order: 4 },
-                    { name: 'شكوى', nameEn: 'Complaint', icon: '⚠️', color: '#ffeaa7', order: 5 },
-                    { name: 'صيانة', nameEn: 'Maintenance', icon: '🔨', color: '#dfe6e9', order: 6 }
-                ];
-                
-                for (const cat of categories) {
-                    await db.collection('categories').add({
-                        ...cat,
-                        createdAt: timestamp,
-                        isActive: true,
-                        createdBy: 'system'
-                    });
-                }
-                
-                // إضافة الأقسام الأساسية
-                const departments = [
-                    { name: 'الدعم الفني', nameEn: 'Technical Support', headCount: 5, color: '#667eea' },
-                    { name: 'خدمة العملاء', nameEn: 'Customer Service', headCount: 3, color: '#764ba2' },
-                    { name: 'المبيعات', nameEn: 'Sales', headCount: 2, color: '#f093fb' },
-                    { name: 'الإدارة', nameEn: 'Management', headCount: 1, color: '#f5576c' }
-                ];
-                
-                for (const dept of departments) {
-                    await db.collection('departments').add({
-                        ...dept,
-                        createdAt: timestamp,
-                        isActive: true,
-                        createdBy: 'system'
-                    });
-                }
-                
-                // إضافة إعدادات النظام
-                await db.collection('settings').doc('system').set({
-                    companyName: 'KeyaTech',
-                    companyNameEn: 'KeyaTech Solutions',
-                    companyEmail: adminEmail,
-                    logo: null,
-                    primaryColor: '#667eea',
-                    secondaryColor: '#764ba2',
-                    timezone: 'Africa/Cairo',
-                    dateFormat: 'DD/MM/YYYY',
-                    timeFormat: '24h',
-                    ticketPrefix: 'TCK',
-                    ticketStartNumber: 1000,
-                    autoAssignment: true,
-                    slaEnabled: true,
-                    feedbackEnabled: true,
-                    updatedAt: timestamp,
-                    updatedBy: 'system'
+                // تحديث اسم المستخدم
+                await userCredential.user.updateProfile({
+                    displayName: adminDisplayName
                 });
                 
-                updateProgress(4, 'completed', '✅ تم إضافة البيانات الأساسية بنجاح');
+                // إضافة البيانات إلى Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    email: adminEmail,
+                    name: adminName,
+                    displayName: adminDisplayName,
+                    role: 'admin',
+                    department: 'الإدارة العليا',
+                    isOnline: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    permissions: {
+                        manageUsers: true,
+                        manageTickets: true,
+                        viewReports: true,
+                        manageSettings: true,
+                        viewOnlineUsers: true
+                    }
+                });
+                
+                addLog('✅ تم إنشاء حساب المدير بنجاح', 'success');
                 return true;
+                
             } catch (error) {
-                console.error('خطأ في إضافة البيانات:', error);
-                updateProgress(4, 'error', `❌ خطأ في إضافة البيانات: ${error.message}`);
-                throw error;
-            }
-        }
-        
-        // دالة تجهيز هيكل التذاكر
-        async function setupTicketsStructure() {
-            try {
-                updateProgress(5, 'working', 'جاري تجهيز هيكل التذاكر...');
-                
-                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                
-                // إنشاء عينة تذكرة تجريبية
-                const sampleTicket = {
-                    ticketNumber: 'TCK-2026-0001',
-                    subject: 'تذكرة تجريبية - مرحباً بك في KeyaTech',
-                    description: 'هذه تذكرة تجريبية للتأكد من عمل النظام بشكل صحيح. يمكنك حذفها لاحقاً.',
-                    status: 'open',
-                    priority: 'medium',
-                    category: 'مشكلة تقنية',
-                    createdBy: 'system',
-                    createdAt: timestamp,
-                    updatedAt: timestamp,
-                    isInternal: false,
-                    attachments: [],
-                    tags: ['تجريبي', 'ترحيب']
-                };
-                
-                await db.collection('tickets').add(sampleTicket);
-                
-                // إنشاء مراحل تتبع تجريبية
-                const stages = [
-                    { name: 'تم استلام التذكرة', status: 'completed', order: 1, color: '#4ecdc4' },
-                    { name: 'قيد المراجعة', status: 'completed', order: 2, color: '#45b7d1' },
-                    { name: 'بإنتظار المهندس', status: 'in-progress', order: 3, color: '#f093fb' },
-                    { name: 'تم الحل', status: 'pending', order: 4, color: '#96ceb4' }
-                ];
-                
-                for (const stage of stages) {
-                    await db.collection('ticketStatusLog').add({
-                        ticketId: 'sample',
-                        stageName: stage.name,
-                        status: stage.status,
-                        order: stage.order,
-                        color: stage.color,
-                        comment: 'مرحلة تجريبية - يمكن تعديلها',
-                        timestamp: timestamp,
-                        createdBy: 'system'
-                    });
+                if (error.code === 'auth/email-already-in-use') {
+                    addLog('⚠️ المستخدم موجود مسبقاً، جاري التحقق...', 'warning');
+                    
+                    try {
+                        // محاولة تسجيل الدخول للتحقق
+                        await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
+                        addLog('✅ تم التحقق من المستخدم بنجاح', 'success');
+                        return true;
+                    } catch (signInError) {
+                        addLog('❌ المستخدم موجود بكلمة مرور مختلفة', 'error');
+                        throw new Error('المستخدم موجود مسبقاً بكلمة مرور مختلفة. يرجى حذفه يدوياً من Firebase Console');
+                    }
+                } else if (error.code === 'auth/network-request-failed') {
+                    addLog('❌ مشكلة في الشبكة - يرجى التحقق من اتصالك بالإنترنت', 'error');
+                    showTroubleshooting();
+                    throw error;
+                } else {
+                    addLog(`❌ خطأ: ${error.message}`, 'error');
+                    throw error;
                 }
-                
-                updateProgress(5, 'completed', '✅ تم تجهيز هيكل التذاكر بنجاح');
-                return true;
-            } catch (error) {
-                console.error('خطأ في تجهيز التذاكر:', error);
-                updateProgress(5, 'error', `❌ خطأ في تجهيز التذاكر: ${error.message}`);
-                throw error;
             }
         }
-        
-        // الدالة الرئيسية للتهيئة
+
+        // تهيئة قاعدة البيانات
         async function setupDatabase() {
             const setupBtn = document.getElementById('setupBtn');
             setupBtn.disabled = true;
             setupBtn.textContent = '⏳ جاري التهيئة...';
             
             try {
-                addLog('بدء عملية تهيئة قاعدة البيانات...', 'info');
-                addLog(`📧 البريد الإلكتروني للمدير: ${adminEmail}`, 'info');
-                
-                // الخطوة 1: الاتصال بـ Firebase
-                updateProgress(1, 'working', 'جاري الاتصال بـ Firebase...');
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // التحقق من الاتصال
-                if (firebase.apps.length) {
-                    updateProgress(1, 'completed', '✅ تم الاتصال بـ Firebase بنجاح');
-                } else {
-                    throw new Error('فشل الاتصال بـ Firebase');
+                // تهيئة Firebase
+                if (!initializeFirebase()) {
+                    throw new Error('فشل في تهيئة Firebase');
                 }
                 
-                // الخطوة 2: إنشاء حساب المدير
+                addLog('🚀 بدء تهيئة قاعدة البيانات...', 'info');
+                
+                // تشغيل تشخيص الشبكة أولاً
+                await runNetworkDiagnostic();
+                
+                // إنشاء حساب المدير
                 await createAdminUser();
                 
-                // الخطوة 3: إنشاء المجموعات
-                await createCollections();
+                // إنشاء المجموعات الأساسية
+                addLog('جاري إنشاء مجموعات Firestore...', 'info');
                 
-                // الخطوة 4: إضافة البيانات الأساسية
-                await addBaseData();
+                const collections = ['users', 'clients', 'tickets', 'ticketStatusLog', 'comments', 'notifications', 'onlineSessions', 'settings', 'categories', 'departments'];
                 
-                // الخطوة 5: تجهيز هيكل التذاكر
-                await setupTicketsStructure();
+                for (const collection of collections) {
+                    await db.collection(collection).doc('_initialized').set({
+                        initialized: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(err => {
+                        console.log(`Collection ${collection} initialized`);
+                    });
+                }
                 
-                addLog('🎉 تهانينا! تم تهيئة قاعدة البيانات بنجاح', 'success');
-                addLog(`📧 يمكنك الآن تسجيل الدخول باستخدام: ${adminEmail}`, 'success');
-                
-                // عرض بيانات النجاح
-                document.getElementById('successCredentials').style.display = 'block';
-                document.getElementById('finalEmail').textContent = adminEmail;
-                document.getElementById('finalPassword').textContent = adminPassword;
+                addLog('✅ تم إنشاء جميع المجموعات بنجاح', 'success');
+                addLog('🎉 تم تهيئة قاعدة البيانات بنجاح!', 'success');
+                addLog(`📧 يمكنك تسجيل الدخول باستخدام: ${adminEmail}`, 'success');
                 
                 setupBtn.textContent = '✅ تمت التهيئة بنجاح';
                 
             } catch (error) {
-                console.error('خطأ في التهيئة:', error);
-                addLog(`❌ فشلت عملية التهيئة: ${error.message}`, 'error');
+                addLog(`❌ فشلت التهيئة: ${error.message}`, 'error');
                 setupBtn.disabled = false;
                 setupBtn.textContent = '🔄 إعادة المحاولة';
             }
         }
-        
-        // دالة فحص الحالة
-        function checkStatus() {
-            addLog('جاري فحص حالة الاتصال...', 'info');
-            
-            if (firebase.apps.length) {
-                addLog('✅ Firebase متصل بنجاح', 'success');
-                addLog(`📧 مشروع: keyatech-db`, 'info');
-                
-                // فحص حالة المصادقة
-                if (auth.currentUser) {
-                    addLog(`👤 مستخدم حالياً: ${auth.currentUser.email}`, 'info');
-                }
-            } else {
-                addLog('❌ Firebase غير متصل', 'error');
-            }
-        }
-        
-        // تسجيل الخروج التلقائي عند تحميل الصفحة
-        auth.signOut().catch(() => {});
-        
-        // إضافة رسالة ترحيب
+
+        // التحقق الأولي عند تحميل الصفحة
         window.onload = function() {
             addLog('🌐 مرحباً بك في KeyaTech Setup', 'info');
-            addLog('📌 تم تعديل البريد الإلكتروني إلى صيغة صحيحة: mahmoud.gamil@keyatech.com', 'info');
-            addLog('📌 اضغط على زر "بدء تهيئة قاعدة البيانات" للبدء', 'info');
+            addLog('📧 البريد: mahmoud.gamil@keyatech.com', 'info');
+            addLog('🔑 كلمة المرور: keyatech@2026@', 'info');
+            addLog('📌 اضغط على "تشغيل تشخيص الشبكة" أولاً', 'warning');
         };
     </script>
 </body>
