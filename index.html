@@ -120,38 +120,51 @@
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
 
+        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // التحقق من حالة تسجيل الدخول
         auth.onAuthStateChanged((user) => {
             setTimeout(() => {
                 if (user) {
-                    // إذا كان هناك مستخدم مسجل، نوجهه حسب دوره
-                    firebase.firestore().collection('users').doc(user.uid).get()
+                    console.log('مستخدم مسجل:', user.email);
+                    
+                    // جلب بيانات المستخدم من Firestore
+                    db.collection('users').doc(user.uid).get()
                         .then((doc) => {
                             if (doc.exists) {
                                 const userData = doc.data();
+                                console.log('بيانات المستخدم:', userData);
+                                
+                                // التوجيه حسب الدور - استخدام مسارات نسبية
                                 if (userData.role === 'admin') {
-                                    window.location.href = '/sy/admin-dashboard.html';
+                                    window.location.href = 'admin/admin-dashboard.html';
                                 } else if (userData.role === 'engineer') {
-                                    window.location.href = '/engineer/engineer-tickets.html';
+                                    window.location.href = 'engineer/engineer-tickets.html';
                                 } else if (userData.role === 'assistant') {
-                                    window.location.href = '/assistant/assistant-clients.html';
+                                    window.location.href = 'assistant/assistant-clients.html';
                                 } else {
-                                    window.location.href = '/client/client-dashboard.html';
+                                    // إذا كان عميل عادي
+                                    window.location.href = 'client/client-dashboard.html';
                                 }
                             } else {
-                                window.location.href = '/login.html';
+                                // المستخدم موجود في Authentication لكن مش في Firestore
+                                console.log('المستخدم غير موجود في Firestore');
+                                window.location.href = 'login.html';
                             }
                         })
-                        .catch(() => {
-                            window.location.href = '/login.html';
+                        .catch((error) => {
+                            console.error('خطأ في جلب بيانات المستخدم:', error);
+                            window.location.href = 'login.html';
                         });
                 } else {
-                    window.location.href = '/login.html';
+                    // لا يوجد مستخدم مسجل - اذهب لصفحة تسجيل الدخول
+                    console.log('لا يوجد مستخدم مسجل');
+                    window.location.href = 'login.html';
                 }
-            }, 2000);
+            }, 2000); // تأخير 2 ثانية لعرض شاشة البداية
         });
     </script>
 </body>
