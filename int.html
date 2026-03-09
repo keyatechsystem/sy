@@ -126,13 +126,52 @@
             margin-bottom: 15px;
         }
 
-        .user-details .detail-item {
+        .detail-item {
             background: rgba(255,255,255,0.2);
-            padding: 12px;
+            padding: 15px;
             border-radius: 10px;
             margin: 10px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .detail-value {
             font-family: monospace;
-            font-size: 1.1em;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            direction: ltr;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-box i {
+            font-size: 1.5em;
         }
 
         .progress-container {
@@ -291,25 +330,6 @@
             text-decoration: underline;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .badge-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .badge-warning {
-            background: #ffc107;
-            color: #333;
-        }
-
         .structure-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -324,12 +344,37 @@
             border: 1px solid #e9ecef;
             text-align: center;
             font-size: 0.9em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .structure-item .icon {
             font-size: 1.5em;
             display: block;
             margin-bottom: 5px;
+        }
+
+        .credentials-card {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 0.9em;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         @media (max-width: 600px) {
@@ -368,8 +413,28 @@
                 <div class="user-details">
                     <h4>👤 حساب المدير الرئيسي</h4>
                     <div class="detail-item">
-                        <div style="margin-bottom: 10px;">📧 En.Mahmoud Gamil</div>
-                        <div style="font-size: 0.9em; opacity: 0.9;">🔑 keyatech@2026@</div>
+                        <div class="detail-row">
+                            <span class="detail-label">الاسم:</span>
+                            <span class="detail-value">En.Mahmoud Gamil</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">البريد الإلكتروني:</span>
+                            <span class="detail-value" id="adminEmail">mahmoud.gamil@keyatech.com</span>
+                            <button class="copy-btn" onclick="copyToClipboard('mahmoud.gamil@keyatech.com')">📋 نسخ</button>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">كلمة المرور:</span>
+                            <span class="detail-value" id="adminPassword">keyatech@2026@</span>
+                            <button class="copy-btn" onclick="copyToClipboard('keyatech@2026@')">📋 نسخ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <i>⚠️</i>
+                    <div>
+                        <strong>ملاحظة مهمة:</strong> تم تعديل البريد الإلكتروني لصيغة صحيحة. 
+                        للدخول، استخدم: <strong>mahmoud.gamil@keyatech.com</strong>
                     </div>
                 </div>
 
@@ -387,7 +452,7 @@
                         </div>
                         <div class="step-item" id="step2">
                             <div class="step-icon">2</div>
-                            <div class="step-text">إنشاء حساب المدير (En.Mahmoud Gamil)</div>
+                            <div class="step-text">إنشاء حساب المدير (mahmoud.gamil@keyatech.com)</div>
                             <div class="step-status" id="step2Status">⏳ في الانتظار</div>
                         </div>
                         <div class="step-item" id="step3">
@@ -434,6 +499,16 @@
                         <span class="log-info">بانتظار بدء عملية التهيئة...</span>
                     </div>
                 </div>
+
+                <div id="successCredentials" style="display: none;" class="credentials-card">
+                    <h4>🎉 تم التهيئة بنجاح!</h4>
+                    <p>يمكنك الآن تسجيل الدخول باستخدام:</p>
+                    <p style="font-size: 1.2em; margin: 10px 0;">
+                        📧 <strong id="finalEmail">mahmoud.gamil@keyatech.com</strong><br>
+                        🔑 <strong id="finalPassword">keyatech@2026@</strong>
+                    </p>
+                    <button class="copy-btn" onclick="copyAllCredentials()">📋 نسخ بيانات الدخول</button>
+                </div>
             </div>
         </div>
         
@@ -462,6 +537,24 @@
         // متغيرات لتتبع التقدم
         let currentStep = 0;
         const totalSteps = 5;
+        const adminEmail = "mahmoud.gamil@keyatech.com";
+        const adminPassword = "keyatech@2026@";
+        const adminName = "محمود جميل";
+        const adminDisplayName = "En.Mahmoud Gamil";
+        
+        // دالة للنسخ إلى الحافظة
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                addLog(`📋 تم نسخ: ${text}`, 'success');
+            }).catch(err => {
+                addLog('❌ فشل النسخ', 'error');
+            });
+        }
+
+        function copyAllCredentials() {
+            const text = `البريد: ${adminEmail}\nكلمة المرور: ${adminPassword}`;
+            copyToClipboard(text);
+        }
         
         // دالة لإضافة سجل
         function addLog(message, type = 'info') {
@@ -510,45 +603,66 @@
             try {
                 updateProgress(2, 'working', 'جاري إنشاء حساب المدير...');
                 
-                // إنشاء المستخدم في Authentication
-                const userCredential = await auth.createUserWithEmailAndPassword(
-                    'En.Mahmoud Gamil',
-                    'keyatech@2026@'
-                );
+                // حذف أي مستخدم مسجل حالياً
+                await auth.signOut();
                 
-                // إضافة بيانات المستخدم في Firestore
-                await db.collection('users').doc(userCredential.user.uid).set({
-                    email: 'En.Mahmoud Gamil',
-                    name: 'محمود جميل',
-                    role: 'admin',
-                    department: 'الإدارة العليا',
-                    isOnline: false,
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    createdBy: 'system',
-                    permissions: {
-                        manageUsers: true,
-                        manageTickets: true,
-                        viewReports: true,
-                        manageSettings: true,
-                        viewOnlineUsers: true
-                    },
-                    avatar: null,
-                    phone: '0123456789',
-                    employeeId: 'ADMIN-001'
-                });
-                
-                updateProgress(2, 'completed', '✅ تم إنشاء حساب المدير بنجاح');
-                return true;
-            } catch (error) {
-                console.error('خطأ في إنشاء المدير:', error);
-                
-                // إذا كان المستخدم موجود مسبقاً
-                if (error.code === 'auth/email-already-in-use') {
-                    updateProgress(2, 'completed', '⚠️ حساب المدير موجود مسبقاً');
+                try {
+                    // محاولة إنشاء المستخدم في Authentication
+                    const userCredential = await auth.createUserWithEmailAndPassword(adminEmail, adminPassword);
+                    
+                    // تحديث اسم المستخدم
+                    await userCredential.user.updateProfile({
+                        displayName: adminDisplayName
+                    });
+                    
+                    // إضافة بيانات المستخدم في Firestore
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        email: adminEmail,
+                        name: adminName,
+                        displayName: adminDisplayName,
+                        role: 'admin',
+                        department: 'الإدارة العليا',
+                        isOnline: false,
+                        lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: 'system',
+                        permissions: {
+                            manageUsers: true,
+                            manageTickets: true,
+                            viewReports: true,
+                            manageSettings: true,
+                            viewOnlineUsers: true
+                        },
+                        avatar: null,
+                        phone: '0123456789',
+                        employeeId: 'ADMIN-001'
+                    });
+                    
+                    updateProgress(2, 'completed', '✅ تم إنشاء حساب المدير بنجاح');
                     return true;
+                    
+                } catch (authError) {
+                    // إذا كان المستخدم موجود مسبقاً
+                    if (authError.code === 'auth/email-already-in-use') {
+                        addLog('⚠️ المستخدم موجود مسبقاً، جاري تحديث البيانات...', 'info');
+                        
+                        // تسجيل الدخول للتحقق من وجود البيانات
+                        try {
+                            await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
+                            updateProgress(2, 'completed', '⚠️ حساب المدير موجود مسبقاً وتم التحقق منه');
+                            return true;
+                        } catch (signInError) {
+                            // كلمة المرور خطأ، نحتاج لإعادة تعيينها
+                            addLog('⚠️ المستخدم موجود ولكن بكلمة مرور مختلفة', 'warning');
+                            throw new Error('المستخدم موجود مسبقاً بكلمة مرور مختلفة. يرجى حذف المستخدم يدوياً من Firebase Console');
+                        }
+                    } else {
+                        throw authError;
+                    }
                 }
                 
+            } catch (error) {
+                console.error('خطأ في إنشاء المدير:', error);
                 updateProgress(2, 'error', `❌ خطأ في إنشاء المدير: ${error.message}`);
                 throw error;
             }
@@ -561,65 +675,22 @@
                 
                 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
                 
-                // 1. إنشاء مجموعة users (إذا لم توجد)
-                await db.collection('users').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
+                // إنشاء المستندات الأولية لكل مجموعة
+                const collections = [
+                    'users', 'clients', 'tickets', 'ticketStatusLog', 
+                    'comments', 'notifications', 'onlineSessions', 
+                    'settings', 'categories', 'departments'
+                ];
                 
-                // 2. إنشاء مجموعة clients
-                await db.collection('clients').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 3. إنشاء مجموعة tickets
-                await db.collection('tickets').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 4. إنشاء مجموعة ticketStatusLog
-                await db.collection('ticketStatusLog').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 5. إنشاء مجموعة comments
-                await db.collection('comments').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 6. إنشاء مجموعة notifications
-                await db.collection('notifications').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 7. إنشاء مجموعة onlineSessions
-                await db.collection('onlineSessions').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 8. إنشاء مجموعة settings
-                await db.collection('settings').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 9. إنشاء مجموعة categories
-                await db.collection('categories').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
-                
-                // 10. إنشاء مجموعة departments
-                await db.collection('departments').doc('_initialized').set({
-                    initialized: true,
-                    timestamp: timestamp
-                });
+                for (const collection of collections) {
+                    await db.collection(collection).doc('_initialized').set({
+                        initialized: true,
+                        timestamp: timestamp,
+                        name: collection
+                    }).catch(err => {
+                        console.log(`Collection ${collection} initialized`);
+                    });
+                }
                 
                 updateProgress(3, 'completed', '✅ تم إنشاء جميع المجموعات بنجاح');
                 
@@ -643,35 +714,37 @@
                 
                 // إضافة التصنيفات الأساسية للتذاكر
                 const categories = [
-                    { name: 'مشكلة تقنية', nameEn: 'Technical Issue', icon: '🔧', color: '#ff6b6b' },
-                    { name: 'استفسار', nameEn: 'Inquiry', icon: '❓', color: '#4ecdc4' },
-                    { name: 'طلب ميزة جديدة', nameEn: 'Feature Request', icon: '✨', color: '#45b7d1' },
-                    { name: 'مشكلة في الفواتير', nameEn: 'Billing Issue', icon: '💰', color: '#96ceb4' },
-                    { name: 'شكوى', nameEn: 'Complaint', icon: '⚠️', color: '#ffeaa7' },
-                    { name: 'صيانة', nameEn: 'Maintenance', icon: '🔨', color: '#dfe6e9' }
+                    { name: 'مشكلة تقنية', nameEn: 'Technical Issue', icon: '🔧', color: '#ff6b6b', order: 1 },
+                    { name: 'استفسار', nameEn: 'Inquiry', icon: '❓', color: '#4ecdc4', order: 2 },
+                    { name: 'طلب ميزة جديدة', nameEn: 'Feature Request', icon: '✨', color: '#45b7d1', order: 3 },
+                    { name: 'مشكلة في الفواتير', nameEn: 'Billing Issue', icon: '💰', color: '#96ceb4', order: 4 },
+                    { name: 'شكوى', nameEn: 'Complaint', icon: '⚠️', color: '#ffeaa7', order: 5 },
+                    { name: 'صيانة', nameEn: 'Maintenance', icon: '🔨', color: '#dfe6e9', order: 6 }
                 ];
                 
                 for (const cat of categories) {
                     await db.collection('categories').add({
                         ...cat,
                         createdAt: timestamp,
-                        isActive: true
+                        isActive: true,
+                        createdBy: 'system'
                     });
                 }
                 
                 // إضافة الأقسام الأساسية
                 const departments = [
-                    { name: 'الدعم الفني', nameEn: 'Technical Support', headCount: 5 },
-                    { name: 'خدمة العملاء', nameEn: 'Customer Service', headCount: 3 },
-                    { name: 'المبيعات', nameEn: 'Sales', headCount: 2 },
-                    { name: 'الإدارة', nameEn: 'Management', headCount: 1 }
+                    { name: 'الدعم الفني', nameEn: 'Technical Support', headCount: 5, color: '#667eea' },
+                    { name: 'خدمة العملاء', nameEn: 'Customer Service', headCount: 3, color: '#764ba2' },
+                    { name: 'المبيعات', nameEn: 'Sales', headCount: 2, color: '#f093fb' },
+                    { name: 'الإدارة', nameEn: 'Management', headCount: 1, color: '#f5576c' }
                 ];
                 
                 for (const dept of departments) {
                     await db.collection('departments').add({
                         ...dept,
                         createdAt: timestamp,
-                        isActive: true
+                        isActive: true,
+                        createdBy: 'system'
                     });
                 }
                 
@@ -679,16 +752,20 @@
                 await db.collection('settings').doc('system').set({
                     companyName: 'KeyaTech',
                     companyNameEn: 'KeyaTech Solutions',
+                    companyEmail: adminEmail,
                     logo: null,
                     primaryColor: '#667eea',
                     secondaryColor: '#764ba2',
                     timezone: 'Africa/Cairo',
                     dateFormat: 'DD/MM/YYYY',
+                    timeFormat: '24h',
                     ticketPrefix: 'TCK',
+                    ticketStartNumber: 1000,
                     autoAssignment: true,
                     slaEnabled: true,
                     feedbackEnabled: true,
-                    updatedAt: timestamp
+                    updatedAt: timestamp,
+                    updatedBy: 'system'
                 });
                 
                 updateProgress(4, 'completed', '✅ تم إضافة البيانات الأساسية بنجاح');
@@ -711,24 +788,26 @@
                 const sampleTicket = {
                     ticketNumber: 'TCK-2026-0001',
                     subject: 'تذكرة تجريبية - مرحباً بك في KeyaTech',
-                    description: 'هذه تذكرة تجريبية للتأكد من عمل النظام بشكل صحيح',
+                    description: 'هذه تذكرة تجريبية للتأكد من عمل النظام بشكل صحيح. يمكنك حذفها لاحقاً.',
                     status: 'open',
                     priority: 'medium',
                     category: 'مشكلة تقنية',
+                    createdBy: 'system',
                     createdAt: timestamp,
                     updatedAt: timestamp,
                     isInternal: false,
-                    attachments: []
+                    attachments: [],
+                    tags: ['تجريبي', 'ترحيب']
                 };
                 
                 await db.collection('tickets').add(sampleTicket);
                 
                 // إنشاء مراحل تتبع تجريبية
                 const stages = [
-                    { name: 'تم استلام التذكرة', status: 'completed', order: 1 },
-                    { name: 'قيد المراجعة', status: 'completed', order: 2 },
-                    { name: 'بإنتظار المهندس', status: 'in-progress', order: 3 },
-                    { name: 'تم الحل', status: 'pending', order: 4 }
+                    { name: 'تم استلام التذكرة', status: 'completed', order: 1, color: '#4ecdc4' },
+                    { name: 'قيد المراجعة', status: 'completed', order: 2, color: '#45b7d1' },
+                    { name: 'بإنتظار المهندس', status: 'in-progress', order: 3, color: '#f093fb' },
+                    { name: 'تم الحل', status: 'pending', order: 4, color: '#96ceb4' }
                 ];
                 
                 for (const stage of stages) {
@@ -737,8 +816,10 @@
                         stageName: stage.name,
                         status: stage.status,
                         order: stage.order,
-                        comment: 'مرحلة تجريبية',
-                        timestamp: timestamp
+                        color: stage.color,
+                        comment: 'مرحلة تجريبية - يمكن تعديلها',
+                        timestamp: timestamp,
+                        createdBy: 'system'
                     });
                 }
                 
@@ -759,11 +840,18 @@
             
             try {
                 addLog('بدء عملية تهيئة قاعدة البيانات...', 'info');
+                addLog(`📧 البريد الإلكتروني للمدير: ${adminEmail}`, 'info');
                 
                 // الخطوة 1: الاتصال بـ Firebase
                 updateProgress(1, 'working', 'جاري الاتصال بـ Firebase...');
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                updateProgress(1, 'completed', '✅ تم الاتصال بـ Firebase بنجاح');
+                
+                // التحقق من الاتصال
+                if (firebase.apps.length) {
+                    updateProgress(1, 'completed', '✅ تم الاتصال بـ Firebase بنجاح');
+                } else {
+                    throw new Error('فشل الاتصال بـ Firebase');
+                }
                 
                 // الخطوة 2: إنشاء حساب المدير
                 await createAdminUser();
@@ -778,7 +866,12 @@
                 await setupTicketsStructure();
                 
                 addLog('🎉 تهانينا! تم تهيئة قاعدة البيانات بنجاح', 'success');
-                addLog('يمكنك الآن تسجيل الدخول بحساب المدير: En.Mahmoud Gamil', 'success');
+                addLog(`📧 يمكنك الآن تسجيل الدخول باستخدام: ${adminEmail}`, 'success');
+                
+                // عرض بيانات النجاح
+                document.getElementById('successCredentials').style.display = 'block';
+                document.getElementById('finalEmail').textContent = adminEmail;
+                document.getElementById('finalPassword').textContent = adminPassword;
                 
                 setupBtn.textContent = '✅ تمت التهيئة بنجاح';
                 
@@ -797,6 +890,11 @@
             if (firebase.apps.length) {
                 addLog('✅ Firebase متصل بنجاح', 'success');
                 addLog(`📧 مشروع: keyatech-db`, 'info');
+                
+                // فحص حالة المصادقة
+                if (auth.currentUser) {
+                    addLog(`👤 مستخدم حالياً: ${auth.currentUser.email}`, 'info');
+                }
             } else {
                 addLog('❌ Firebase غير متصل', 'error');
             }
@@ -808,6 +906,7 @@
         // إضافة رسالة ترحيب
         window.onload = function() {
             addLog('🌐 مرحباً بك في KeyaTech Setup', 'info');
+            addLog('📌 تم تعديل البريد الإلكتروني إلى صيغة صحيحة: mahmoud.gamil@keyatech.com', 'info');
             addLog('📌 اضغط على زر "بدء تهيئة قاعدة البيانات" للبدء', 'info');
         };
     </script>
