@@ -138,13 +138,14 @@
             gap: 10px;
         }
 
-        .login-btn:hover {
+        .login-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
-        .login-btn i {
-            font-size: 20px;
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .login-error {
@@ -164,14 +165,30 @@
             color: #666;
         }
 
-        .login-footer a {
-            color: #667eea;
-            text-decoration: none;
+        .demo-credentials {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .demo-credentials p {
+            margin-bottom: 8px;
+            color: #333;
             font-weight: 600;
         }
 
-        .login-footer a:hover {
-            text-decoration: underline;
+        .demo-credentials ul {
+            list-style: none;
+            color: #666;
+        }
+
+        .demo-credentials li {
+            margin-bottom: 5px;
+            padding: 5px;
+            background: white;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -197,13 +214,22 @@
                     <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required>
                 </div>
                 
-                <button type="submit" class="login-btn">
+                <button type="submit" class="login-btn" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i>
                     تسجيل الدخول
                 </button>
                 
                 <div class="login-error" id="loginError"></div>
             </form>
+            
+            <div class="demo-credentials">
+                <p>🔐 بيانات الدخول التجريبية:</p>
+                <ul>
+                    <li><i class="fas fa-user-tie"></i> المدير: محمود جميل / keyatech@2026@</li>
+                    <li><i class="fas fa-user-cog"></i> مهندس: أحمد علي / keyatech@2026@</li>
+                    <li><i class="fas fa-user"></i> مساعد: سارة محمد / keyatech@2026@</li>
+                </ul>
+            </div>
             
             <div class="login-footer">
                 <p>ليس لديك حساب؟ <a href="#">تواصل مع الإدارة</a></p>
@@ -222,9 +248,18 @@
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
 
+        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // التحقق من وجود مستخدم مسجل بالفعل
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // إذا كان هناك مستخدم مسجل، اذهب للصفحة الرئيسية
+                window.location.href = 'index.html';
+            }
+        });
 
         // تسجيل الدخول
         async function handleLogin(event) {
@@ -234,12 +269,17 @@
             const password = document.getElementById('loginPassword').value;
             
             // إظهار التحميل
-            const loginBtn = event.target.querySelector('button');
+            const loginBtn = document.getElementById('loginBtn');
             const originalText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
             loginBtn.disabled = true;
             
+            // إخفاء أي أخطاء سابقة
+            document.getElementById('loginError').style.display = 'none';
+            
             try {
+                console.log('جاري البحث عن المستخدم:', name);
+                
                 // البحث عن المستخدم بالاسم
                 const usersSnapshot = await db.collection('users')
                     .where('displayName', '==', name)
@@ -251,44 +291,71 @@
                     throw new Error('اسم المستخدم غير صحيح أو الحساب غير نشط');
                 }
                 
-                const userData = usersSnapshot.docs[0].data();
+                const userDoc = usersSnapshot.docs[0];
+                const userData = userDoc.data();
+                const userId = userDoc.id;
+                
+                console.log('تم العثور على المستخدم:', userData.email);
                 
                 // تسجيل الدخول بالبريد الإلكتروني
-                await auth.signInWithEmailAndPassword(userData.email, password);
+                const userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
+                
+                console.log('تم تسجيل الدخول بنجاح');
                 
                 // تحديث حالة المستخدم
-                await db.collection('users').doc(usersSnapshot.docs[0].id).update({
+                await db.collection('users').doc(userId).update({
                     isOnline: true,
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
+                // تسجيل الجلسة
+                await db.collection('onlineSessions').add({
+                    userId: userId,
+                    userName: userData.displayName || userData.name,
+                    loginTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    userAgent: navigator.userAgent
+                });
+
+                // التوجيه حسب الدور - استخدام مسار نسبي
+                console.log('توجيه المستخدم حسب الدور:', userData.role);
                 
-                // التوجيه حسب الدور
-                if (userData.role === 'admin') {
-                    window.location.href = '/admin/admin-dashboard.html';
-                } else if (userData.role === 'engineer') {
-                    window.location.href = '/engineer/engineer-tickets.html';
-                } else if (userData.role === 'assistant') {
-                    window.location.href = '/assistant/assistant-clients.html';
-                } else {
-                    window.location.href = '/client/client-dashboard.html';
-                }
+                // تأخير بسيط قبل التوجيه
+                setTimeout(() => {
+                    if (userData.role === 'admin') {
+                        window.location.href = 'admin/admin-dashboard.html';
+                    } else if (userData.role === 'engineer') {
+                        window.location.href = 'engineer/engineer-tickets.html';
+                    } else if (userData.role === 'assistant') {
+                        window.location.href = 'assistant/assistant-clients.html';
+                    } else {
+                        window.location.href = 'client/client-dashboard.html';
+                    }
+                }, 500);
                 
             } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                
                 // إخفاء التحميل وإظهار الخطأ
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
                 
+                let errorMessage = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                
+                if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'كلمة المرور غير صحيحة';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'المستخدم غير موجود';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'تم حظر الحساب مؤقتاً لكثرة المحاولات الفاشلة';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                document.getElementById('loginError').textContent = errorMessage;
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').textContent = error.message;
             }
         }
-
-        // التحقق من وجود مستخدم مسجل بالفعل
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                window.location.href = '/';
-            }
-        });
     </script>
 </body>
 </html>
