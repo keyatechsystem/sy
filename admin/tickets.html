@@ -17,7 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* نفس التصميم الأساسي من الملفات السابقة */
+        /* نفس التصميم الأساسي من الملف السابق */
         * {
             margin: 0;
             padding: 0;
@@ -40,17 +40,6 @@
             background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
         }
 
-        .grid-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(102, 126, 234, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 15s linear infinite;
-        }
-
         .app-container {
             display: flex;
             min-height: 100vh;
@@ -66,7 +55,6 @@
             height: 100vh;
             right: 0;
             top: 0;
-            overflow-y: auto;
         }
 
         .logo {
@@ -74,8 +62,6 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .logo-icon {
@@ -86,8 +72,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo span {
@@ -114,7 +105,6 @@
             color: #8f9bb3;
             text-decoration: none;
             border-radius: 12px;
-            transition: all 0.3s ease;
         }
 
         .nav-link:hover,
@@ -126,6 +116,15 @@
         .nav-link i {
             width: 24px;
             color: #667eea;
+        }
+
+        .badge {
+            background: #f5576c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: auto;
         }
 
         .main-content {
@@ -143,7 +142,6 @@
             background: rgba(10, 15, 30, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .header-title h1 {
@@ -151,6 +149,23 @@
             background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .company-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* قسم التذاكر */
@@ -299,6 +314,28 @@
             color: #4caf50;
         }
 
+        .payment-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .payment-badge.paid {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .payment-badge.unpaid {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .payment-badge.partial {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -310,11 +347,6 @@
             color: #667eea;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.2);
         }
 
         .current-user {
@@ -373,13 +405,11 @@
             border-radius: 8px;
             color: #fff;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .page-btn:hover,
         .page-btn.active {
             background: #667eea;
-            border-color: #667eea;
         }
 
         @media (max-width: 768px) {
@@ -394,16 +424,14 @@
     </style>
 </head>
 <body>
-    <div class="tech-background">
-        <div class="grid-overlay"></div>
-    </div>
+    <div class="tech-background"></div>
 
     <div class="app-container">
         <!-- القائمة الجانبية -->
         <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">K</div>
-                <span>KeyaTech</span>
+            <div class="logo" id="sidebarLogo">
+                <div class="logo-icon" id="logoIcon">K</div>
+                <span id="sidebarCompanyName">KeyaTech</span>
             </div>
             
             <ul class="nav-menu">
@@ -423,6 +451,7 @@
                     <a href="tickets.html" class="nav-link active">
                         <i class="fas fa-tickets"></i>
                         التذاكر
+                        <span class="badge" id="ticketsBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -435,12 +464,19 @@
                     <a href="online-users.html" class="nav-link">
                         <i class="fas fa-users"></i>
                         المتصلين
+                        <span class="badge" id="onlineBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="settings.html" class="nav-link">
                         <i class="fas fa-cog"></i>
                         الإعدادات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="google-sheets.html" class="nav-link">
+                        <i class="fas fa-file-excel"></i>
+                        Google Sheets
                     </a>
                 </li>
             </ul>
@@ -463,13 +499,15 @@
                 <div class="header-title">
                     <h1>إدارة التذاكر</h1>
                 </div>
-                <span id="currentDateTime"></span>
+                <div class="company-logo" id="headerLogo">
+                    <i class="fas fa-building"></i>
+                </div>
             </header>
 
             <div class="tickets-section">
                 <div class="section-header">
                     <h2>جميع التذاكر</h2>
-                    <a href="/client/client-new-ticket.html" class="btn btn-primary">
+                    <a href="../client/client-new-ticket.html" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
                         تذكرة جديدة
                     </a>
@@ -493,8 +531,11 @@
                         <option value="low">منخفضة</option>
                     </select>
                     
-                    <select class="filter-select" id="engineerFilter" onchange="filterTickets()">
-                        <option value="all">كل المهندسين</option>
+                    <select class="filter-select" id="paymentFilter" onchange="filterTickets()">
+                        <option value="all">كل المدفوعات</option>
+                        <option value="paid">مدفوع</option>
+                        <option value="unpaid">غير مدفوع</option>
+                        <option value="partial">مدفوع جزئياً</option>
                     </select>
                 </div>
 
@@ -507,22 +548,21 @@
                                 <th>الموضوع</th>
                                 <th>الحالة</th>
                                 <th>الأولوية</th>
-                                <th>المهندس</th>
-                                <th>تاريخ الإنشاء</th>
+                                <th>حالة الدفع</th>
+                                <th>المبلغ</th>
+                                <th>التاريخ</th>
                                 <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="ticketsTableBody">
                             <tr>
-                                <td colspan="8" style="text-align: center;">جاري تحميل البيانات...</td>
+                                <td colspan="9" style="text-align: center;">جاري تحميل البيانات...</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="pagination" id="pagination">
-                    <!-- سيتم إضافة أزرار التصفح -->
-                </div>
+                <div class="pagination" id="pagination"></div>
             </div>
         </main>
     </div>
@@ -544,19 +584,36 @@
 
         let currentUser = null;
         let allTickets = [];
-        let engineers = [];
         let currentPage = 1;
         const ticketsPerPage = 10;
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('sidebarCompanyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        document.getElementById('logoIcon').innerHTML = `<img src="${settings.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                        document.getElementById('headerLogo').innerHTML = `<img src="${settings.logoUrl}" alt="شعار">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
 
         // التحقق من تسجيل الدخول
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
+                loadCompanySettings();
                 loadUserData(user.uid);
-                loadEngineers();
                 loadTickets();
             } else {
-                window.location.href = '/login.html';
+                window.location.href = '../login.html';
             }
         });
 
@@ -567,31 +624,6 @@
                 const userData = doc.data();
                 document.getElementById('userName').textContent = userData.displayName || userData.name;
                 document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
-            }
-        }
-
-        // تحميل قائمة المهندسين
-        async function loadEngineers() {
-            try {
-                const snapshot = await db.collection('users')
-                    .where('role', '==', 'engineer')
-                    .get();
-
-                const select = document.getElementById('engineerFilter');
-                engineers = [];
-
-                snapshot.forEach(doc => {
-                    const engineer = doc.data();
-                    engineers.push({ id: doc.id, name: engineer.displayName || engineer.name });
-                    
-                    const option = document.createElement('option');
-                    option.value = doc.id;
-                    option.textContent = engineer.displayName || engineer.name;
-                    select.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error loading engineers:', error);
             }
         }
 
@@ -607,6 +639,7 @@
                     allTickets.push({ id: doc.id, ...doc.data() });
                 });
 
+                document.getElementById('ticketsBadge').textContent = allTickets.length;
                 filterTickets();
 
             } catch (error) {
@@ -619,35 +652,18 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
             const priorityFilter = document.getElementById('priorityFilter').value;
-            const engineerFilter = document.getElementById('engineerFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
 
             let filtered = allTickets.filter(ticket => {
-                // فلترة حسب الحالة
-                if (statusFilter !== 'all' && ticket.status !== statusFilter) {
-                    return false;
-                }
-
-                // فلترة حسب الأولوية
-                if (priorityFilter !== 'all' && ticket.priority !== priorityFilter) {
-                    return false;
-                }
-
-                // فلترة حسب المهندس
-                if (engineerFilter !== 'all' && ticket.assignedTo !== engineerFilter) {
-                    return false;
-                }
-
-                // فلترة حسب البحث
+                if (statusFilter !== 'all' && ticket.status !== statusFilter) return false;
+                if (priorityFilter !== 'all' && ticket.priority !== priorityFilter) return false;
+                if (paymentFilter !== 'all' && (ticket.paymentStatus || 'unpaid') !== paymentFilter) return false;
+                
                 if (searchTerm) {
                     const ticketNumber = (ticket.ticketNumber || '').toLowerCase();
                     const clientName = (ticket.clientName || '').toLowerCase();
-                    const subject = (ticket.problemTitle || '').toLowerCase();
-                    
-                    return ticketNumber.includes(searchTerm) || 
-                           clientName.includes(searchTerm) || 
-                           subject.includes(searchTerm);
+                    return ticketNumber.includes(searchTerm) || clientName.includes(searchTerm);
                 }
-
                 return true;
             });
 
@@ -659,11 +675,10 @@
             const tbody = document.getElementById('ticketsTableBody');
             
             if (tickets.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">لا توجد تذاكر</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">لا توجد تذاكر</td></tr>';
                 return;
             }
 
-            // حساب الصفحة الحالية
             const start = (currentPage - 1) * ticketsPerPage;
             const end = start + ticketsPerPage;
             const paginatedTickets = tickets.slice(start, end);
@@ -673,7 +688,8 @@
                 const date = ticket.createdAt ? 
                     ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
                 
-                const engineerName = getEngineerName(ticket.assignedTo);
+                const paymentStatus = ticket.paymentStatus || 'unpaid';
+                const amount = ticket.amount || 0;
 
                 html += `
                     <tr>
@@ -682,18 +698,16 @@
                         <td>${ticket.problemTitle || '---'}</td>
                         <td><span class="status-badge ${ticket.status || 'open'}">${getStatusText(ticket.status)}</span></td>
                         <td><span class="priority-badge ${ticket.priority || 'medium'}">${getPriorityText(ticket.priority)}</span></td>
-                        <td>${engineerName}</td>
+                        <td><span class="payment-badge ${paymentStatus}">${getPaymentText(paymentStatus)}</span></td>
+                        <td>${amount} ج.م</td>
                         <td>${date}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn" onclick="viewTicket('${ticket.id}')" title="عرض">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="action-btn" onclick="editTicket('${ticket.id}')" title="تعديل">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn" onclick="assignTicket('${ticket.id}')" title="تعيين">
-                                    <i class="fas fa-user-plus"></i>
+                                <button class="action-btn" onclick="editPayment('${ticket.id}')" title="تحديث الدفع">
+                                    <i class="fas fa-money-bill"></i>
                                 </button>
                             </div>
                         </td>
@@ -724,7 +738,7 @@
             pagination.innerHTML = html;
         }
 
-        // الذهاب إلى صفحة معينة
+        // الذهاب إلى صفحة
         function goToPage(page) {
             currentPage = page;
             filterTickets();
@@ -732,94 +746,52 @@
 
         // عرض تفاصيل التذكرة
         function viewTicket(ticketId) {
-            window.location.href = `ticket-details.html?id=${ticketId}`;
+            window.location.href = `../shared/receipt-view.html?id=${ticketId}`;
         }
 
-        // تعديل التذكرة
-        function editTicket(ticketId) {
-            window.location.href = `edit-ticket.html?id=${ticketId}`;
-        }
-
-        // تعيين مهندس للتذكرة
-        function assignTicket(ticketId) {
-            // فتح نافذة اختيار المهندس
-            const engineerNames = engineers.map(e => e.name).join('\n');
-            const selected = prompt('اختر المهندس من القائمة:\n' + engineerNames);
-            
-            if (selected) {
-                const engineer = engineers.find(e => e.name === selected);
-                if (engineer) {
-                    updateTicketAssignment(ticketId, engineer.id, engineer.name);
-                }
+        // تعديل حالة الدفع
+        function editPayment(ticketId) {
+            const newStatus = prompt('أدخل حالة الدفع (paid, unpaid, partial):');
+            if (newStatus && ['paid', 'unpaid', 'partial'].includes(newStatus)) {
+                updatePaymentStatus(ticketId, newStatus);
             }
         }
 
-        // تحديث تعيين التذكرة
-        async function updateTicketAssignment(ticketId, engineerId, engineerName) {
+        // تحديث حالة الدفع
+        async function updatePaymentStatus(ticketId, status) {
             try {
                 await db.collection('tickets').doc(ticketId).update({
-                    assignedTo: engineerId,
-                    assignedToName: engineerName,
-                    assignedBy: currentUser.uid,
-                    assignedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    paymentStatus: status,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                alert('تم تعيين المهندس بنجاح');
                 loadTickets();
-
+                alert('✅ تم تحديث حالة الدفع');
             } catch (error) {
-                alert('خطأ في تعيين المهندس: ' + error.message);
+                alert('خطأ: ' + error.message);
             }
         }
 
         // دوال مساعدة
         function getStatusText(status) {
-            const statuses = {
-                'open': 'مفتوحة',
-                'in-progress': 'قيد المعالجة',
-                'closed': 'مغلقة'
-            };
-            return statuses[status] || status;
+            const map = { 'open': 'مفتوحة', 'in-progress': 'قيد المعالجة', 'closed': 'مغلقة' };
+            return map[status] || status;
         }
 
         function getPriorityText(priority) {
-            const priorities = {
-                'low': 'منخفضة',
-                'medium': 'متوسطة',
-                'high': 'عالية',
-                'urgent': 'عاجلة'
-            };
-            return priorities[priority] || priority;
+            const map = { 'low': 'منخفضة', 'medium': 'متوسطة', 'high': 'عالية' };
+            return map[priority] || priority;
         }
 
-        function getEngineerName(engineerId) {
-            if (!engineerId) return 'غير معين';
-            const engineer = engineers.find(e => e.id === engineerId);
-            return engineer ? engineer.name : 'غير معين';
-        }
-
-        // تحديث التاريخ والوقت
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('currentDateTime').textContent = 
-                now.toLocaleDateString('ar-EG', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+        function getPaymentText(status) {
+            const map = { 'paid': 'مدفوع', 'unpaid': 'غير مدفوع', 'partial': 'مدفوع جزئياً' };
+            return map[status] || status;
         }
 
         // تسجيل الخروج
         async function logout() {
             await auth.signOut();
-            window.location.href = '/login.html';
+            window.location.href = '../login.html';
         }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
     </script>
 </body>
 </html>
