@@ -11,16 +11,12 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* نفس التصميم الأساسي مع إضافات */
         * {
             margin: 0;
             padding: 0;
@@ -58,7 +54,6 @@
             height: 100vh;
             right: 0;
             top: 0;
-            overflow-y: auto;
         }
 
         .logo {
@@ -66,8 +61,6 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .logo-icon {
@@ -78,8 +71,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo span {
@@ -152,6 +150,23 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .company-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         /* قسم المتصلين */
         .online-section {
             display: grid;
@@ -217,7 +232,6 @@
 
         .user-item:hover {
             background: rgba(102, 126, 234, 0.1);
-            transform: translateX(-5px);
         }
 
         .user-avatar {
@@ -278,15 +292,6 @@
             text-align: left;
             font-size: 11px;
             color: #8f9bb3;
-        }
-
-        .session-info div {
-            margin-bottom: 3px;
-        }
-
-        .chart-container {
-            height: 200px;
-            margin: 20px 0;
         }
 
         .stats-row {
@@ -362,12 +367,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        @media (max-width: 768px) {
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
@@ -376,9 +375,9 @@
     <div class="app-container">
         <!-- القائمة الجانبية -->
         <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">K</div>
-                <span>KeyaTech</span>
+            <div class="logo" id="sidebarLogo">
+                <div class="logo-icon" id="logoIcon">K</div>
+                <span id="sidebarCompanyName">KeyaTech</span>
             </div>
             
             <ul class="nav-menu">
@@ -398,6 +397,7 @@
                     <a href="tickets.html" class="nav-link">
                         <i class="fas fa-tickets"></i>
                         التذاكر
+                        <span class="badge" id="ticketsBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -417,6 +417,12 @@
                     <a href="settings.html" class="nav-link">
                         <i class="fas fa-cog"></i>
                         الإعدادات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="google-sheets.html" class="nav-link">
+                        <i class="fas fa-file-excel"></i>
+                        Google Sheets
                     </a>
                 </li>
             </ul>
@@ -439,7 +445,9 @@
                 <div class="header-title">
                     <h1>المتصلين والنشاط</h1>
                 </div>
-                <span id="currentDateTime"></span>
+                <div class="company-logo" id="headerLogo">
+                    <i class="fas fa-building"></i>
+                </div>
             </header>
 
             <div class="online-section">
@@ -454,7 +462,9 @@
                     </div>
                     
                     <div class="user-list" id="onlineUsers">
-                        <!-- يتم إضافة المستخدمين ديناميكياً -->
+                        <div style="text-align: center; padding: 30px; color: #8f9bb3;">
+                            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        </div>
                     </div>
                 </div>
 
@@ -469,7 +479,9 @@
                     </div>
                     
                     <div class="user-list" id="recentUsers">
-                        <!-- يتم إضافة المستخدمين ديناميكياً -->
+                        <div style="text-align: center; padding: 30px; color: #8f9bb3;">
+                            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -481,7 +493,7 @@
                 <div class="stats-row">
                     <div class="stat-item">
                         <div class="stat-number" id="totalSessions">0</div>
-                        <div class="stat-label">إجمالي الجلسات</div>
+                        <div class="stat-label">إجمالي الجلسات اليوم</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="avgSessionTime">0</div>
@@ -489,12 +501,8 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="peakTime">-</div>
-                        <div class="stat-label">أوقات الذروة</div>
+                        <div class="stat-label">وقت الذروة</div>
                     </div>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="sessionsChart"></canvas>
                 </div>
             </div>
         </main>
@@ -516,19 +524,39 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let sessionsChart = null;
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('sidebarCompanyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        document.getElementById('logoIcon').innerHTML = `<img src="${settings.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                        document.getElementById('headerLogo').innerHTML = `<img src="${settings.logoUrl}" alt="شعار">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
 
         // التحقق من تسجيل الدخول
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
+                loadCompanySettings();
                 loadUserData(user.uid);
                 loadOnlineUsers();
                 loadSessionStats();
+                
                 // تحديث كل 30 ثانية
                 setInterval(loadOnlineUsers, 30000);
+                setInterval(loadSessionStats, 60000);
             } else {
-                window.location.href = '/login.html';
+                window.location.href = '../login.html';
             }
         });
 
@@ -539,6 +567,19 @@
                 const userData = doc.data();
                 document.getElementById('userName').textContent = userData.displayName || userData.name;
                 document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+                
+                // تحديث إحصائيات التذاكر
+                updateTicketStats();
+            }
+        }
+
+        // تحديث إحصائيات التذاكر
+        async function updateTicketStats() {
+            try {
+                const ticketsSnapshot = await db.collection('tickets').get();
+                document.getElementById('ticketsBadge').textContent = ticketsSnapshot.size;
+            } catch (error) {
+                console.error('Error updating ticket stats:', error);
             }
         }
 
@@ -673,56 +714,50 @@
         // تحميل إحصائيات الجلسات
         async function loadSessionStats() {
             try {
-                // إحصائيات وهمية (يمكن استبدالها ببيانات حقيقية)
-                document.getElementById('totalSessions').textContent = '1,234';
-                document.getElementById('avgSessionTime').textContent = '15 دقيقة';
-                document.getElementById('peakTime').textContent = '10-12 ص';
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const snapshot = await db.collection('onlineSessions')
+                    .where('loginTime', '>=', today)
+                    .get();
 
-                createSessionsChart();
+                const sessions = [];
+                snapshot.forEach(doc => {
+                    sessions.push(doc.data());
+                });
+
+                document.getElementById('totalSessions').textContent = sessions.length;
+
+                // حساب متوسط وقت الجلسة
+                let totalDuration = 0;
+                let sessionsWithDuration = 0;
+                
+                sessions.forEach(session => {
+                    if (session.duration) {
+                        totalDuration += session.duration;
+                        sessionsWithDuration++;
+                    }
+                });
+
+                const avgDuration = sessionsWithDuration > 0 ? 
+                    Math.round(totalDuration / sessionsWithDuration) : 0;
+                document.getElementById('avgSessionTime').textContent = avgDuration + ' دقيقة';
+
+                // تحديد وقت الذروة (أكثر ساعة في اليوم)
+                const hourCount = Array(24).fill(0);
+                sessions.forEach(session => {
+                    if (session.loginTime) {
+                        const hour = session.loginTime.toDate().getHours();
+                        hourCount[hour]++;
+                    }
+                });
+
+                const peakHour = hourCount.indexOf(Math.max(...hourCount));
+                document.getElementById('peakTime').textContent = peakHour + ':00';
 
             } catch (error) {
                 console.error('Error loading session stats:', error);
             }
-        }
-
-        // إنشاء مخطط الجلسات
-        function createSessionsChart() {
-            const ctx = document.getElementById('sessionsChart').getContext('2d');
-            
-            if (sessionsChart) sessionsChart.destroy();
-
-            sessionsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['12ص', '2ص', '4ص', '6ص', '8ص', '10ص', '12م', '2م', '4م', '6م', '8م', '10م'],
-                    datasets: [{
-                        label: 'المتصلين',
-                        data: [5, 2, 1, 0, 3, 15, 25, 30, 28, 22, 18, 10],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            ticks: { color: '#8f9bb3' }
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { color: '#8f9bb3' }
-                        }
-                    }
-                }
-            });
         }
 
         // دوال مساعدة
@@ -730,23 +765,10 @@
             const roles = {
                 'admin': 'مدير',
                 'engineer': 'مهندس',
-                'assistant': 'مساعد'
+                'assistant': 'مساعد',
+                'client': 'عميل'
             };
             return roles[role] || role;
-        }
-
-        // تحديث التاريخ والوقت
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('currentDateTime').textContent = 
-                now.toLocaleDateString('ar-EG', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
         }
 
         // تسجيل الخروج
@@ -758,11 +780,8 @@
                 });
             }
             await auth.signOut();
-            window.location.href = '/login.html';
+            window.location.href = '../login.html';
         }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
     </script>
 </body>
 </html>
