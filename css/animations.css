@@ -1,89 +1,1447 @@
-/* ===== حركات أساسية ===== */
+/* ===== CYBERPUNK 2099 - نظام الحركات المتكامل ===== */
+/* حقوق التصميم محفوظة لـ KeyaTech - الإصدار 1.0 */
+
+/* ===== الحركات الأساسية ===== */
+
+/* دوران */
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
+@keyframes spin-reverse {
+    0% {
+        transform: rotate(360deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes spin-slow {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-fast {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(720deg);
+    }
+}
+
+/* نبض */
 @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.8; }
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
+@keyframes pulse-soft {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse-hard {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* طفو */
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-15px) rotate(-1deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(1deg);
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
 }
 
+@keyframes float-slow {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    33% {
+        transform: translateY(-10px) scale(1.02);
+    }
+    66% {
+        transform: translateY(-5px) scale(0.98);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes float-horizontal {
+    0% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    50% {
+        transform: translateX(-15px);
+    }
+    75% {
+        transform: translateX(-10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* تشويش (Glitch) */
 @keyframes glitch {
-    0%, 100% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
+    0% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
+    10% {
+        transform: translate(-2px, 2px);
+        filter: hue-rotate(90deg);
+    }
+    20% {
+        transform: translate(-2px, -2px);
+        filter: hue-rotate(180deg);
+    }
+    30% {
+        transform: translate(2px, 2px);
+        filter: hue-rotate(270deg);
+    }
+    40% {
+        transform: translate(2px, -2px);
+        filter: hue-rotate(360deg);
+    }
+    50% {
+        transform: translate(-2px, 2px);
+        filter: hue-rotate(90deg);
+    }
+    60% {
+        transform: translate(2px, -2px);
+        filter: hue-rotate(180deg);
+    }
+    70% {
+        transform: translate(-2px, -2px);
+        filter: hue-rotate(270deg);
+    }
+    80% {
+        transform: translate(2px, 2px);
+        filter: hue-rotate(360deg);
+    }
+    90% {
+        transform: translate(-2px, 2px);
+        filter: hue-rotate(90deg);
+    }
+    100% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
 }
 
-/* ===== حركات ظهور ===== */
+@keyframes glitch-simple {
+    0% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    20% {
+        transform: translate(-3px, 3px);
+        opacity: 0.9;
+    }
+    40% {
+        transform: translate(3px, -3px);
+        opacity: 0.8;
+    }
+    60% {
+        transform: translate(-3px, -3px);
+        opacity: 0.9;
+    }
+    80% {
+        transform: translate(3px, 3px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes glitch-text {
+    0% {
+        clip-path: inset(0 0 0 0);
+    }
+    5% {
+        clip-path: inset(10% 0 30% 0);
+    }
+    10% {
+        clip-path: inset(30% 0 10% 0);
+    }
+    15% {
+        clip-path: inset(50% 0 20% 0);
+    }
+    20% {
+        clip-path: inset(0 0 0 0);
+    }
+    25% {
+        clip-path: inset(15% 0 40% 0);
+    }
+    30% {
+        clip-path: inset(40% 0 15% 0);
+    }
+    35% {
+        clip-path: inset(60% 0 25% 0);
+    }
+    40% {
+        clip-path: inset(0 0 0 0);
+    }
+    45% {
+        clip-path: inset(20% 0 45% 0);
+    }
+    50% {
+        clip-path: inset(45% 0 20% 0);
+    }
+    55% {
+        clip-path: inset(70% 0 30% 0);
+    }
+    60% {
+        clip-path: inset(0 0 0 0);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* ===== حركات الظهور ===== */
+
+/* ظهور مع تلاشي */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ظهور مع حركة للأعلى */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+@keyframes fadeInUp-big {
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp-soft {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ظهور مع حركة للأسفل */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown-big {
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ظهور مع حركة لليسار */
 @keyframes fadeInLeft {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
+@keyframes fadeInLeft-big {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ظهور مع حركة لليمين */
 @keyframes fadeInRight {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-@keyframes scaleIn {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+@keyframes fadeInRight-big {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-/* ===== حركات خلفية ===== */
+/* ظهور مع تكبير */
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.05);
+    }
+    70% {
+        opacity: 0.8;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes zoomIn-soft {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes zoomOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+}
+
+/* ظهور مع دوران */
+@keyframes rotateIn {
+    from {
+        opacity: 0;
+        transform: rotate(-180deg) scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+}
+
+@keyframes rotateIn-left {
+    from {
+        opacity: 0;
+        transform: rotate(-180deg) translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0) translateX(0);
+    }
+}
+
+@keyframes rotateIn-right {
+    from {
+        opacity: 0;
+        transform: rotate(180deg) translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0) translateX(0);
+    }
+}
+
+/* ظهور مع انزلاق */
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* ===== حركات الخلفية ===== */
+
+/* حركة الشبكة */
 @keyframes gridMove {
-    0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-    100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+    0% {
+        transform: perspective(800px) rotateX(60deg) translateY(0) translateX(0);
+    }
+    25% {
+        transform: perspective(800px) rotateX(60deg) translateY(25px) translateX(10px);
+    }
+    50% {
+        transform: perspective(800px) rotateX(60deg) translateY(50px) translateX(20px);
+    }
+    75% {
+        transform: perspective(800px) rotateX(60deg) translateY(25px) translateX(10px);
+    }
+    100% {
+        transform: perspective(800px) rotateX(60deg) translateY(0) translateX(0);
+    }
 }
 
-@keyframes lightLine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+@keyframes gridPulse {
+    0% {
+        opacity: 0.3;
+        transform: perspective(800px) rotateX(60deg) scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: perspective(800px) rotateX(60deg) scale(1.1);
+    }
+    100% {
+        opacity: 0.3;
+        transform: perspective(800px) rotateX(60deg) scale(1);
+    }
 }
 
-/* ===== حركات نيون ===== */
+/* حركة الخطوط الضوئية */
+@keyframes lightMove {
+    0% {
+        transform: translateX(-100%) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-50%) rotate(5deg);
+    }
+    50% {
+        transform: translateX(0) rotate(0deg);
+    }
+    75% {
+        transform: translateX(50%) rotate(-5deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(0deg);
+    }
+}
+
+@keyframes lightPulse {
+    0% {
+        opacity: 0.3;
+        transform: scaleX(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scaleX(1.2);
+    }
+    100% {
+        opacity: 0.3;
+        transform: scaleX(1);
+    }
+}
+
+/* حركة الجزيئات */
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-50vh) translateX(20px) scale(1.5);
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(-20px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes particleFloat-alt {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    25% {
+        opacity: 0.6;
+        transform: translateY(-25vh) translateX(-15px) rotate(90deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-50vh) translateX(15px) rotate(180deg);
+    }
+    75% {
+        opacity: 0.6;
+        transform: translateY(-75vh) translateX(-15px) rotate(270deg);
+    }
+    100% {
+        transform: translateY(-100vh) translateX(15px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ===== حركات النيون ===== */
+
+/* نبض النيون */
 @keyframes neonPulse {
-    0%, 100% { text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
-    50% { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary), 0 0 60px var(--primary); }
+    0% {
+        text-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100),
+            0 0 20px var(--primary-100);
+    }
+    25% {
+        text-shadow: 
+            0 0 10px var(--secondary-100),
+            0 0 20px var(--secondary-100),
+            0 0 30px var(--secondary-100);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px var(--accent-100),
+            0 0 25px var(--accent-100),
+            0 0 35px var(--accent-100);
+    }
+    75% {
+        text-shadow: 
+            0 0 10px var(--secondary-100),
+            0 0 20px var(--secondary-100),
+            0 0 30px var(--secondary-100);
+    }
+    100% {
+        text-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100),
+            0 0 20px var(--primary-100);
+    }
 }
 
+@keyframes neonFlicker {
+    0% {
+        opacity: 1;
+        text-shadow: 
+            0 0 10px var(--primary-100),
+            0 0 20px var(--primary-100);
+    }
+    10% {
+        opacity: 0.8;
+        text-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100);
+    }
+    20% {
+        opacity: 1;
+        text-shadow: 
+            0 0 15px var(--primary-100),
+            0 0 25px var(--primary-100);
+    }
+    30% {
+        opacity: 0.9;
+        text-shadow: 
+            0 0 8px var(--primary-100),
+            0 0 15px var(--primary-100);
+    }
+    40% {
+        opacity: 1;
+        text-shadow: 
+            0 0 20px var(--primary-100),
+            0 0 30px var(--primary-100);
+    }
+    50% {
+        opacity: 0.7;
+        text-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100);
+    }
+    60% {
+        opacity: 1;
+        text-shadow: 
+            0 0 15px var(--primary-100),
+            0 0 25px var(--primary-100);
+    }
+    70% {
+        opacity: 0.9;
+        text-shadow: 
+            0 0 10px var(--primary-100),
+            0 0 20px var(--primary-100);
+    }
+    80% {
+        opacity: 1;
+        text-shadow: 
+            0 0 20px var(--primary-100),
+            0 0 30px var(--primary-100);
+    }
+    90% {
+        opacity: 0.8;
+        text-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100);
+    }
+    100% {
+        opacity: 1;
+        text-shadow: 
+            0 0 10px var(--primary-100),
+            0 0 20px var(--primary-100);
+    }
+}
+
+/* نبض الحدود */
 @keyframes borderPulse {
-    0%, 100% { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
-    50% { border-color: var(--secondary); box-shadow: 0 0 20px var(--secondary); }
+    0% {
+        border-color: var(--primary-100);
+        box-shadow: 0 0 10px var(--primary-100);
+    }
+    25% {
+        border-color: var(--secondary-100);
+        box-shadow: 0 0 20px var(--secondary-100);
+    }
+    50% {
+        border-color: var(--accent-100);
+        box-shadow: 0 0 30px var(--accent-100);
+    }
+    75% {
+        border-color: var(--secondary-100);
+        box-shadow: 0 0 20px var(--secondary-100);
+    }
+    100% {
+        border-color: var(--primary-100);
+        box-shadow: 0 0 10px var(--primary-100);
+    }
 }
 
-/* ===== تطبيق الحركات ===== */
-.animate-spin { animation: spin 2s linear infinite; }
-.animate-pulse { animation: pulse 2s ease-in-out infinite; }
-.animate-float { animation: float 3s ease-in-out infinite; }
-.animate-glitch { animation: glitch 0.3s infinite; }
-.animate-fade-in { animation: fadeIn 1s ease; }
-.animate-fade-in-up { animation: fadeInUp 1s ease; }
-.animate-fade-in-left { animation: fadeInLeft 1s ease; }
-.animate-fade-in-right { animation: fadeInRight 1s ease; }
-.animate-scale-in { animation: scaleIn 0.5s ease; }
+@keyframes borderGlow {
+    0% {
+        box-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100),
+            inset 0 0 5px var(--primary-100);
+    }
+    50% {
+        box-shadow: 
+            0 0 20px var(--primary-100),
+            0 0 30px var(--primary-100),
+            inset 0 0 10px var(--primary-100);
+    }
+    100% {
+        box-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100),
+            inset 0 0 5px var(--primary-100);
+    }
+}
 
-/* ===== تأخيرات ===== */
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
+/* ===== حركات الاهتزاز ===== */
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+    10% {
+        transform: translateX(-5px);
+    }
+    20% {
+        transform: translateX(5px);
+    }
+    30% {
+        transform: translateX(-5px);
+    }
+    40% {
+        transform: translateX(5px);
+    }
+    50% {
+        transform: translateX(-5px);
+    }
+    60% {
+        transform: translateX(5px);
+    }
+    70% {
+        transform: translateX(-5px);
+    }
+    80% {
+        transform: translateX(5px);
+    }
+    90% {
+        transform: translateX(-5px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes shake-hard {
+    0% {
+        transform: translateX(0) rotate(0deg);
+    }
+    10% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+    20% {
+        transform: translateX(10px) rotate(5deg);
+    }
+    30% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+    40% {
+        transform: translateX(10px) rotate(5deg);
+    }
+    50% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+    60% {
+        transform: translateX(10px) rotate(5deg);
+    }
+    70% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+    80% {
+        transform: translateX(10px) rotate(5deg);
+    }
+    90% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+}
+
+@keyframes shake-vertical {
+    0% {
+        transform: translateY(0);
+    }
+    10% {
+        transform: translateY(-5px);
+    }
+    20% {
+        transform: translateY(5px);
+    }
+    30% {
+        transform: translateY(-5px);
+    }
+    40% {
+        transform: translateY(5px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    60% {
+        transform: translateY(5px);
+    }
+    70% {
+        transform: translateY(-5px);
+    }
+    80% {
+        transform: translateY(5px);
+    }
+    90% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* ===== حركات التموج ===== */
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes ripple-circle {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+@keyframes ripple-wave {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        border-radius: 0%;
+    }
+    25% {
+        border-radius: 25%;
+    }
+    50% {
+        transform: scale(2);
+        opacity: 0.5;
+        border-radius: 50%;
+    }
+    75% {
+        border-radius: 75%;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+        border-radius: 100%;
+    }
+}
+
+/* ===== حركات شريط التقدم ===== */
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes progressPulse {
+    0% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scaleX(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes progressGlow {
+    0% {
+        box-shadow: 0 0 5px var(--primary-100);
+    }
+    50% {
+        box-shadow: 0 0 15px var(--primary-100);
+    }
+    100% {
+        box-shadow: 0 0 5px var(--primary-100);
+    }
+}
+
+/* ===== حركات النصوص ===== */
+
+@keyframes textGlitch {
+    0% {
+        clip-path: inset(0 0 0 0);
+        transform: skew(0deg);
+    }
+    5% {
+        clip-path: inset(10% 0 30% 0);
+        transform: skew(2deg);
+    }
+    10% {
+        clip-path: inset(30% 0 10% 0);
+        transform: skew(-2deg);
+    }
+    15% {
+        clip-path: inset(50% 0 20% 0);
+        transform: skew(2deg);
+    }
+    20% {
+        clip-path: inset(0 0 0 0);
+        transform: skew(0deg);
+    }
+    25% {
+        clip-path: inset(15% 0 40% 0);
+        transform: skew(-2deg);
+    }
+    30% {
+        clip-path: inset(40% 0 15% 0);
+        transform: skew(2deg);
+    }
+    35% {
+        clip-path: inset(60% 0 25% 0);
+        transform: skew(-2deg);
+    }
+    40% {
+        clip-path: inset(0 0 0 0);
+        transform: skew(0deg);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+        transform: skew(0deg);
+    }
+}
+
+@keyframes textReveal {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+    50% {
+        width: 50%;
+        opacity: 0.5;
+    }
+    100% {
+        width: 100%;
+        opacity: 1;
+    }
+}
+
+@keyframes textBlur {
+    0% {
+        filter: blur(0px);
+        opacity: 1;
+    }
+    25% {
+        filter: blur(2px);
+        opacity: 0.8;
+    }
+    50% {
+        filter: blur(5px);
+        opacity: 0.6;
+    }
+    75% {
+        filter: blur(2px);
+        opacity: 0.8;
+    }
+    100% {
+        filter: blur(0px);
+        opacity: 1;
+    }
+}
+
+/* ===== حركات البطاقات ===== */
+
+@keyframes cardFlip {
+    0% {
+        transform: perspective(800px) rotateY(0deg);
+    }
+    50% {
+        transform: perspective(800px) rotateY(180deg);
+    }
+    100% {
+        transform: perspective(800px) rotateY(360deg);
+    }
+}
+
+@keyframes cardTilt {
+    0% {
+        transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        transform: perspective(800px) rotateX(5deg) rotateY(5deg);
+    }
+    50% {
+        transform: perspective(800px) rotateX(10deg) rotateY(10deg);
+    }
+    75% {
+        transform: perspective(800px) rotateX(5deg) rotateY(5deg);
+    }
+    100% {
+        transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+    }
+}
+
+@keyframes cardGlow {
+    0% {
+        box-shadow: 
+            0 0 10px var(--primary-100),
+            inset 0 0 5px var(--primary-100);
+    }
+    33% {
+        box-shadow: 
+            0 0 20px var(--secondary-100),
+            inset 0 0 10px var(--secondary-100);
+    }
+    66% {
+        box-shadow: 
+            0 0 30px var(--accent-100),
+            inset 0 0 15px var(--accent-100);
+    }
+    100% {
+        box-shadow: 
+            0 0 10px var(--primary-100),
+            inset 0 0 5px var(--primary-100);
+    }
+}
+
+/* ===== حركات الأزرار ===== */
+
+@keyframes buttonPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px var(--primary-100);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px var(--primary-100);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px var(--primary-100);
+    }
+}
+
+@keyframes buttonGlow {
+    0% {
+        box-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100);
+    }
+    25% {
+        box-shadow: 
+            0 0 10px var(--secondary-100),
+            0 0 20px var(--secondary-100);
+    }
+    50% {
+        box-shadow: 
+            0 0 15px var(--accent-100),
+            0 0 30px var(--accent-100);
+    }
+    75% {
+        box-shadow: 
+            0 0 10px var(--secondary-100),
+            0 0 20px var(--secondary-100);
+    }
+    100% {
+        box-shadow: 
+            0 0 5px var(--primary-100),
+            0 0 10px var(--primary-100);
+    }
+}
+
+/* ===== حركات الصور ===== */
+
+@keyframes imageZoom {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes imageRotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(5deg) scale(1.05);
+    }
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes imageGlitch {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+    10% {
+        filter: hue-rotate(90deg) brightness(1.1);
+    }
+    20% {
+        filter: hue-rotate(180deg) brightness(0.9);
+    }
+    30% {
+        filter: hue-rotate(270deg) brightness(1.1);
+    }
+    40% {
+        filter: hue-rotate(360deg) brightness(1);
+    }
+    50% {
+        filter: hue-rotate(90deg) brightness(1.1);
+    }
+    60% {
+        filter: hue-rotate(180deg) brightness(0.9);
+    }
+    70% {
+        filter: hue-rotate(270deg) brightness(1.1);
+    }
+    80% {
+        filter: hue-rotate(360deg) brightness(1);
+    }
+    100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+}
+
+/* ===== حركات القوائم ===== */
+
+@keyframes menuSlide {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes menuFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes menuDrop {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===== حركات التحميل ===== */
+
+@keyframes loaderPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+}
+
+@keyframes loaderBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes loaderRotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.2);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* ===== تطبيق الحركات على العناصر ===== */
+
+/* حركات أساسية */
+.animate-spin { animation: spin 2s linear infinite; }
+.animate-spin-reverse { animation: spin-reverse 2s linear infinite; }
+.animate-spin-slow { animation: spin-slow 3s linear infinite; }
+.animate-spin-fast { animation: spin-fast 1s linear infinite; }
+
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+.animate-pulse-hard { animation: pulse-hard 1.5s ease-in-out infinite; }
+
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+.animate-float-horizontal { animation: float-horizontal 5s ease-in-out infinite; }
+
+.animate-glitch { animation: glitch 0.5s infinite; }
+.animate-glitch-simple { animation: glitch-simple 1s infinite; }
+.animate-glitch-text { animation: glitch-text 2s infinite; }
+
+/* حركات ظهور */
+.animate-fade-in { animation: fadeIn 1s ease; }
+.animate-fade-out { animation: fadeOut 1s ease; }
+
+.animate-fade-in-up { animation: fadeInUp 1s ease; }
+.animate-fade-in-up-big { animation: fadeInUp-big 1s ease; }
+.animate-fade-in-up-soft { animation: fadeInUp-soft 1s ease; }
+
+.animate-fade-in-down { animation: fadeInDown 1s ease; }
+.animate-fade-in-down-big { animation: fadeInDown-big 1s ease; }
+
+.animate-fade-in-left { animation: fadeInLeft 1s ease; }
+.animate-fade-in-left-big { animation: fadeInLeft-big 1s ease; }
+
+.animate-fade-in-right { animation: fadeInRight 1s ease; }
+.animate-fade-in-right-big { animation: fadeInRight-big 1s ease; }
+
+.animate-zoom-in { animation: zoomIn 1s ease; }
+.animate-zoom-in-soft { animation: zoomIn-soft 1s ease; }
+.animate-zoom-out { animation: zoomOut 1s ease; }
+
+.animate-rotate-in { animation: rotateIn 1s ease; }
+.animate-rotate-in-left { animation: rotateIn-left 1s ease; }
+.animate-rotate-in-right { animation: rotateIn-right 1s ease; }
+
+.animate-slide-in-up { animation: slideInUp 0.5s ease; }
+.animate-slide-in-down { animation: slideInDown 0.5s ease; }
+.animate-slide-in-left { animation: slideInLeft 0.5s ease; }
+.animate-slide-in-right { animation: slideInRight 0.5s ease; }
+
+/* حركات خلفية */
+.animate-grid-move { animation: gridMove 30s linear infinite; }
+.animate-grid-pulse { animation: gridPulse 5s ease-in-out infinite; }
+.animate-light-move { animation: lightMove 10s linear infinite; }
+.animate-light-pulse { animation: lightPulse 3s ease-in-out infinite; }
+.animate-particle-float { animation: particleFloat 15s linear infinite; }
+.animate-particle-float-alt { animation: particleFloat-alt 20s linear infinite; }
+
+/* حركات نيون */
+.animate-neon-pulse { animation: neonPulse 3s ease-in-out infinite; }
+.animate-neon-flicker { animation: neonFlicker 2s step-end infinite; }
+.animate-border-pulse { animation: borderPulse 3s ease-in-out infinite; }
+.animate-border-glow { animation: borderGlow 2s ease-in-out infinite; }
+
+/* حركات اهتزاز */
+.animate-shake { animation: shake 0.5s ease; }
+.animate-shake-hard { animation: shake-hard 0.5s ease; }
+.animate-shake-vertical { animation: shake-vertical 0.5s ease; }
+
+/* حركات تموج */
+.animate-ripple { animation: ripple 2s ease-out infinite; }
+.animate-ripple-circle { animation: ripple-circle 2s ease-out infinite; }
+.animate-ripple-wave { animation: ripple-wave 3s ease-out infinite; }
+
+/* حركات شريط التقدم */
+.animate-shimmer { animation: shimmer 2s linear infinite; }
+.animate-progress-pulse { animation: progressPulse 2s ease-in-out infinite; }
+.animate-progress-glow { animation: progressGlow 2s ease-in-out infinite; }
+
+/* حركات نصوص */
+.animate-text-glitch { animation: textGlitch 3s infinite; }
+.animate-text-reveal { animation: textReveal 2s ease; }
+.animate-text-blur { animation: textBlur 3s ease-in-out infinite; }
+
+/* حركات بطاقات */
+.animate-card-flip { animation: cardFlip 4s ease-in-out infinite; }
+.animate-card-tilt { animation: cardTilt 3s ease-in-out infinite; }
+.animate-card-glow { animation: cardGlow 4s ease-in-out infinite; }
+
+/* حركات أزرار */
+.animate-button-pulse { animation: buttonPulse 2s ease-in-out infinite; }
+.animate-button-glow { animation: buttonGlow 3s ease-in-out infinite; }
+
+/* حركات صور */
+.animate-image-zoom { animation: imageZoom 5s ease-in-out infinite; }
+.animate-image-rotate { animation: imageRotate 6s ease-in-out infinite; }
+.animate-image-glitch { animation: imageGlitch 4s infinite; }
+
+/* حركات قوائم */
+.animate-menu-slide { animation: menuSlide 0.5s ease; }
+.animate-menu-fade { animation: menuFade 0.5s ease; }
+.animate-menu-drop { animation: menuDrop 0.5s ease; }
+
+/* حركات تحميل */
+.animate-loader-pulse { animation: loaderPulse 1.5s ease-in-out infinite; }
+.animate-loader-bounce { animation: loaderBounce 1.5s ease-in-out infinite; }
+.animate-loader-rotate { animation: loaderRotate 2s linear infinite; }
+
+/* ===== تأخيرات الحركات ===== */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-900 { animation-delay: 0.9s; }
+.delay-1000 { animation-delay: 1s; }
+
+/* ===== تسريعات الحركات ===== */
+.duration-100 { animation-duration: 0.1s; }
+.duration-200 { animation-duration: 0.2s; }
+.duration-300 { animation-duration: 0.3s; }
+.duration-400 { animation-duration: 0.4s; }
+.duration-500 { animation-duration: 0.5s; }
+.duration-600 { animation-duration: 0.6s; }
+.duration-700 { animation-duration: 0.7s; }
+.duration-800 { animation-duration: 0.8s; }
+.duration-900 { animation-duration: 0.9s; }
+.duration-1000 { animation-duration: 1s; }
+.duration-2000 { animation-duration: 2s; }
+.duration-3000 { animation-duration: 3s; }
+.duration-4000 { animation-duration: 4s; }
+.duration-5000 { animation-duration: 5s; }
+
+/* ===== عدد مرات التكرار ===== */
+.infinite { animation-iteration-count: infinite; }
+.once { animation-iteration-count: 1; }
+.twice { animation-iteration-count: 2; }
+.thrice { animation-iteration-count: 3; }
+
+/* ===== اتجاه الحركة ===== */
+.alternate { animation-direction: alternate; }
+.reverse { animation-direction: reverse; }
+.alternate-reverse { animation-direction: alternate-reverse; }
+
+/* ===== حالة التوقف ===== */
+.paused { animation-play-state: paused; }
+.running { animation-play-state: running; }
+
+/* ===== توقيت الحركة ===== */
+.ease { animation-timing-function: ease; }
+.ease-in { animation-timing-function: ease-in; }
+.ease-out { animation-timing-function: ease-out; }
+.ease-in-out { animation-timing-function: ease-in-out; }
+.linear { animation-timing-function: linear; }
+.steps-10 { animation-timing-function: steps(10); }
+.cubic-bezier-custom { animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+
+/* ===== تفضيلات الحركة ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
