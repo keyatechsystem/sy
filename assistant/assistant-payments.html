@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المدفوعات - المساعد | KeyaTech</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0f1e;
+            color: #fff;
+        }
+
+        .tech-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #8f9bb3;
+            text-decoration: none;
+            border-radius: 12px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+        }
+
+        .nav-link i {
+            width: 24px;
+            color: #667eea;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .company-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* قسم المدفوعات */
+        .payments-section {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #8f9bb3;
+            font-size: 14px;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            min-width: 250px;
+        }
+
+        .filter-select {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            min-width: 150px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .payments-table {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: right;
+            padding: 15px;
+            color: #8f9bb3;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .payment-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .payment-paid {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .payment-unpaid {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .payment-partial {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .action-btn:hover {
+            color: #fff;
+        }
+
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #f5576c;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .page-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-background"></div>
+
+    <div class="app-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="logo" id="sidebarLogo">
+                <div class="logo-icon" id="logoIcon">K</div>
+                <span id="sidebarCompanyName">KeyaTech</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="assistant-clients.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        العملاء
+                        <span class="badge" id="clientsBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="assistant-payments.html" class="nav-link active">
+                        <i class="fas fa-money-bill"></i>
+                        المدفوعات
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="current-user">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري التحميل...</div>
+                    <div class="user-role">مساعد</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>إدارة المدفوعات</h1>
+                </div>
+                <div class="company-logo" id="headerLogo">
+                    <i class="fas fa-building"></i>
+                </div>
+            </header>
+
+            <div class="payments-section">
+                <!-- إحصائيات سريعة -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRevenue">0</div>
+                        <div class="stat-label">إجمالي الإيرادات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="paidCount">0</div>
+                        <div class="stat-label">تذاكر مدفوعة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="unpaidCount">0</div>
+                        <div class="stat-label">تذاكر غير مدفوعة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pendingAmount">0</div>
+                        <div class="stat-label">مستحقات</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>سجل المدفوعات</h2>
+                    <div>
+                        <button class="btn btn-success" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i>
+                            تصدير Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <input type="text" class="search-box" id="searchInput" 
+                           placeholder="🔍 بحث برقم التذكرة أو اسم العميل..." onkeyup="filterPayments()">
+                    
+                    <select class="filter-select" id="statusFilter" onchange="filterPayments()">
+                        <option value="all">كل الحالات</option>
+                        <option value="paid">مدفوع</option>
+                        <option value="unpaid">غير مدفوع</option>
+                        <option value="partial">مدفوع جزئياً</option>
+                    </select>
+                </div>
+
+                <div class="payments-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رقم التذكرة</th>
+                                <th>العميل</th>
+                                <th>الموضوع</th>
+                                <th>المبلغ</th>
+                                <th>حالة الدفع</th>
+                                <th>تاريخ الدفع</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center;">جاري تحميل البيانات...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let allTickets = [];
+        let filteredTickets = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('sidebarCompanyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        document.getElementById('logoIcon').innerHTML = `<img src="${settings.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                        document.getElementById('headerLogo').innerHTML = `<img src="${settings.logoUrl}" alt="شعار">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadCompanySettings();
+                loadUserData(user.uid);
+                loadAllTickets();
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(userId) {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const userData = doc.data();
+                document.getElementById('userName').textContent = userData.displayName || userData.name;
+                document.getElementById('userAvatar').textContent = (userData.name || 'م').charAt(0);
+            }
+        }
+
+        // تحميل كل التذاكر
+        async function loadAllTickets() {
+            try {
+                const snapshot = await db.collection('tickets')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                allTickets = [];
+                snapshot.forEach(doc => {
+                    allTickets.push({ id: doc.id, ...doc.data() });
+                });
+
+                filteredTickets = [...allTickets];
+                updateStats();
+                displayPayments();
+
+                // تحديث عدد العملاء
+                const clientsSnapshot = await db.collection('users').where('role', '==', 'client').get();
+                document.getElementById('clientsBadge').textContent = clientsSnapshot.size;
+
+            } catch (error) {
+                console.error('Error loading tickets:', error);
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            let totalRevenue = 0;
+            let paidCount = 0;
+            let unpaidCount = 0;
+            let pendingAmount = 0;
+
+            allTickets.forEach(ticket => {
+                const amount = ticket.amount || 0;
+                const status = ticket.paymentStatus || 'unpaid';
+
+                if (status === 'paid') {
+                    totalRevenue += amount;
+                    paidCount++;
+                } else if (status === 'unpaid') {
+                    pendingAmount += amount;
+                    unpaidCount++;
+                } else if (status === 'partial') {
+                    totalRevenue += amount * 0.5; // نفترض نصف المبلغ
+                    pendingAmount += amount * 0.5;
+                    paidCount++;
+                }
+            });
+
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString() + ' ج.م';
+            document.getElementById('paidCount').textContent = paidCount;
+            document.getElementById('unpaidCount').textContent = unpaidCount;
+            document.getElementById('pendingAmount').textContent = pendingAmount.toLocaleString() + ' ج.م';
+        }
+
+        // عرض المدفوعات
+        function displayPayments() {
+            const tbody = document.getElementById('paymentsTableBody');
+            
+            if (filteredTickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد مدفوعات</td></tr>';
+                return;
+            }
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedTickets = filteredTickets.slice(start, end);
+
+            let html = '';
+            paginatedTickets.forEach(ticket => {
+                const amount = ticket.amount || 0;
+                const paymentStatus = ticket.paymentStatus || 'unpaid';
+                const paymentDate = ticket.paymentDate ? 
+                    ticket.paymentDate.toDate().toLocaleDateString('ar-EG') : '-';
+
+                const statusClass = paymentStatus === 'paid' ? 'payment-paid' : 
+                                   (paymentStatus === 'partial' ? 'payment-partial' : 'payment-unpaid');
+                const statusText = paymentStatus === 'paid' ? 'مدفوع' : 
+                                  (paymentStatus === 'partial' ? 'مدفوع جزئياً' : 'غير مدفوع');
+
+                html += `
+                    <tr>
+                        <td>${ticket.ticketNumber || '---'}</td>
+                        <td>${ticket.clientName || '---'}</td>
+                        <td>${ticket.problemTitle || '---'}</td>
+                        <td>${amount.toLocaleString()} ج.م</td>
+                        <td><span class="payment-badge ${statusClass}">${statusText}</span></td>
+                        <td>${paymentDate}</td>
+                        <td>
+                            <button class="action-btn" onclick="updatePayment('${ticket.id}')" title="تحديث الدفع">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="viewTicket('${ticket.id}')" title="عرض التفاصيل">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            updatePagination();
+        }
+
+        // تحديث أزرار التصفح
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                               onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            pagination.innerHTML = html;
+        }
+
+        // الذهاب إلى صفحة
+        function goToPage(page) {
+            currentPage = page;
+            displayPayments();
+        }
+
+        // فلترة المدفوعات
+        function filterPayments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredTickets = allTickets.filter(ticket => {
+                if (statusFilter !== 'all' && (ticket.paymentStatus || 'unpaid') !== statusFilter) {
+                    return false;
+                }
+
+                if (searchTerm) {
+                    const ticketNumber = (ticket.ticketNumber || '').toLowerCase();
+                    const clientName = (ticket.clientName || '').toLowerCase();
+                    return ticketNumber.includes(searchTerm) || clientName.includes(searchTerm);
+                }
+
+                return true;
+            });
+
+            currentPage = 1;
+            displayPayments();
+        }
+
+        // تحديث حالة الدفع
+        async function updatePayment(ticketId) {
+            const newStatus = prompt('أدخل حالة الدفع (paid, unpaid, partial):');
+            if (!newStatus) return;
+
+            if (!['paid', 'unpaid', 'partial'].includes(newStatus)) {
+                alert('حالة غير صالحة');
+                return;
+            }
+
+            try {
+                await db.collection('tickets').doc(ticketId).update({
+                    paymentStatus: newStatus,
+                    paymentDate: newStatus === 'paid' ? firebase.firestore.FieldValue.serverTimestamp() : null,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('✅ تم تحديث حالة الدفع');
+                loadAllTickets();
+
+            } catch (error) {
+                console.error('Error updating payment:', error);
+                alert('❌ خطأ في تحديث حالة الدفع');
+            }
+        }
+
+        // عرض تفاصيل التذكرة
+        function viewTicket(ticketId) {
+            window.location.href = `../shared/receipt-view.html?id=${ticketId}`;
+        }
+
+        // تصدير إلى Excel
+        function exportToExcel() {
+            const data = filteredTickets.map(ticket => ({
+                'رقم التذكرة': ticket.ticketNumber || '',
+                'العميل': ticket.clientName || '',
+                'الموضوع': ticket.problemTitle || '',
+                'المبلغ': ticket.amount || 0,
+                'حالة الدفع': ticket.paymentStatus === 'paid' ? 'مدفوع' : 
+                               (ticket.paymentStatus === 'partial' ? 'مدفوع جزئياً' : 'غير مدفوع'),
+                'تاريخ الدفع': ticket.paymentDate ? ticket.paymentDate.toDate().toLocaleDateString('ar-EG') : ''
+            }));
+
+            const csv = convertToCSV(data);
+            downloadFile(csv, `payments-${Date.now()}.csv`);
+        }
+
+        // تحويل إلى CSV
+        function convertToCSV(data) {
+            const headers = Object.keys(data[0]).join(',');
+            const rows = data.map(obj => Object.values(obj).map(val => `"${val}"`).join(','));
+            return headers + '\n' + rows.join('\n');
+        }
+
+        // تحميل ملف
+        function downloadFile(content, fileName) {
+            const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            await auth.signOut();
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>
