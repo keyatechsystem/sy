@@ -1,4 +1,4 @@
-// دوال مساعدة عامة
+// ===== دوال مساعدة عامة =====
 
 // تنسيق التاريخ
 function formatDate(timestamp, format = 'short') {
@@ -6,139 +6,155 @@ function formatDate(timestamp, format = 'short') {
     
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     
-    if (format === 'short') {
-        return date.toLocaleDateString('ar-EG');
-    } else if (format === 'long') {
-        return date.toLocaleDateString('ar-EG', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    } else if (format === 'datetime') {
-        return date.toLocaleDateString('ar-EG', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } else if (format === 'time') {
-        return date.toLocaleTimeString('ar-EG', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-    
-    return date.toLocaleDateString('ar-EG');
+    const formats = {
+        'short': { year: 'numeric', month: 'numeric', day: 'numeric' },
+        'long': { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+        'datetime': { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' },
+        'time': { hour: '2-digit', minute: '2-digit' }
+    };
+
+    return date.toLocaleDateString('ar-EG', formats[format] || formats.short);
 }
 
-// الحصول على الأحرف الأولى من الاسم
+// الحصول على الأحرف الأولى
 function getInitials(name) {
     if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
-// نسخ النص إلى الحافظة
+// نسخ النص
 async function copyToClipboard(text) {
     try {
         await navigator.clipboard.writeText(text);
-        showToast('تم النسخ بنجاح', 'success');
+        showNotification('✅ تم النسخ بنجاح', 'success');
         return true;
     } catch (err) {
         console.error('Copy failed:', err);
-        showToast('فشل النسخ', 'error');
+        showNotification('❌ فشل النسخ', 'error');
         return false;
     }
 }
 
-// عرض إشعار مؤقت
-function showToast(message, type = 'info', duration = 3000) {
-    // إنشاء عنصر الإشعار إذا لم يكن موجوداً
-    let toast = document.getElementById('toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        document.body.appendChild(toast);
-        
-        // إضافة التنسيقات
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.padding = '12px 25px';
-        toast.style.borderRadius = '10px';
-        toast.style.color = 'white';
-        toast.style.fontFamily = 'Cairo, sans-serif';
-        toast.style.zIndex = '9999';
-        toast.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-        toast.style.transition = 'all 0.3s ease';
-        toast.style.opacity = '0';
+// حساب الوقت المنقضي
+function timeAgo(timestamp) {
+    if (!timestamp) return '-';
+    
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const seconds = Math.floor((new Date() - date) / 1000);
+
+    const intervals = {
+        سنة: 31536000,
+        شهر: 2592000,
+        أسبوع: 604800,
+        يوم: 86400,
+        ساعة: 3600,
+        دقيقة: 60,
+        ثانية: 1
+    };
+
+    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+        const interval = Math.floor(seconds / secondsInUnit);
+        if (interval >= 1) {
+            return `منذ ${interval} ${unit}${interval > 1 ? 'اً' : ''}`;
+        }
     }
 
-    // تخصيص اللون حسب النوع
-    const colors = {
-        success: '#4caf50',
-        error: '#f44336',
-        warning: '#ff9800',
-        info: '#2196f3'
-    };
-    toast.style.backgroundColor = colors[type] || colors.info;
-
-    // تعيين النص وإظهار الإشعار
-    toast.textContent = message;
-    toast.style.opacity = '1';
-    toast.style.bottom = '30px';
-
-    // إخفاء الإشعار بعد المدة المحددة
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.bottom = '20px';
-    }, duration);
+    return 'الآن';
 }
 
-// تحميل ملف
-function downloadFile(content, fileName, type = 'text/plain') {
-    const blob = new Blob([content], { type });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-
-// تحويل JSON إلى CSV
-function jsonToCSV(jsonData) {
-    if (!jsonData || jsonData.length === 0) return '';
+// حساب مدة التذكرة
+function calculateDuration(startTime, endTime = new Date()) {
+    if (!startTime) return '0 دقيقة';
     
-    const headers = Object.keys(jsonData[0]);
+    const start = startTime.toDate ? startTime.toDate() : new Date(startTime);
+    const end = endTime.toDate ? endTime.toDate() : new Date(endTime);
+    
+    const diffMs = end - start;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) return `${diffDays} يوم ${diffHours % 24} ساعة`;
+    if (diffHours > 0) return `${diffHours} ساعة ${diffMins % 60} دقيقة`;
+    return `${diffMins} دقيقة`;
+}
+
+// تحليل سبب التأخير
+function analyzeDelay(ticket) {
+    if (!ticket.createdAt || !ticket.updatedAt) return 'غير معروف';
+
+    const created = ticket.createdAt.toDate();
+    const updated = ticket.updatedAt.toDate();
+    const now = new Date();
+    
+    const totalHours = (now - created) / (1000 * 60 * 60);
+    const workingHours = (updated - created) / (1000 * 60 * 60);
+
+    if (totalHours < 24) return 'في الوقت المحدد';
+    if (totalHours < 48) return 'تأخير بسيط';
+    if (totalHours < 72) return 'تأخير متوسط';
+    return 'تأخير كبير';
+}
+
+// تصدير إلى CSV
+function exportToCSV(data, filename = 'export') {
+    if (!data || !data.length) return;
+
+    const headers = Object.keys(data[0]);
     const csvRows = [];
-    
-    // إضافة headers
+
     csvRows.push(headers.join(','));
-    
-    // إضافة البيانات
-    for (const row of jsonData) {
+
+    for (const row of data) {
         const values = headers.map(header => {
             const value = row[header] || '';
-            return JSON.stringify(value);
+            return `"${String(value).replace(/"/g, '""')}"`;
         });
         csvRows.push(values.join(','));
     }
-    
-    return csvRows.join('\n');
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}_${Date.now()}.csv`;
+    a.click();
 }
 
-// التحقق من صحة البريد الإلكتروني
+// تصدير إلى PDF
+async function exportToPDF(elementId, filename = 'export') {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    try {
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff'
+        });
+
+        const link = document.createElement('a');
+        link.download = `${filename}_${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        showNotification('✅ تم التصدير بنجاح', 'success');
+
+    } catch (error) {
+        console.error('Export error:', error);
+        showNotification('❌ فشل التصدير', 'error');
+    }
+}
+
+// التحقق من صحة البريد
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
 }
 
-// التحقق من صحة رقم الهاتف (مصري)
+// التحقق من صحة الهاتف
 function isValidPhone(phone) {
-    const re = /^(01[0-9]{9})$/;
+    const re = /^(01)[0-9]{9}$/;
     return re.test(phone);
 }
 
@@ -147,36 +163,16 @@ function generateId(prefix = '') {
     return prefix + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 }
 
-// تقطيع النص الطويل
-function truncateText(text, maxLength = 50) {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength) + '...';
-}
-
-// إضافة تأثيرات حركية
-function animateElement(element, animation, callback) {
-    element.classList.add(animation);
-    
-    const handleAnimationEnd = () => {
-        element.classList.remove(animation);
-        element.removeEventListener('animationend', handleAnimationEnd);
-        if (callback) callback();
-    };
-    
-    element.addEventListener('animationend', handleAnimationEnd);
-}
-
 // تنسيق الأرقام
 function formatNumber(number) {
     return new Intl.NumberFormat('ar-EG').format(number);
 }
 
 // تنسيق العملة
-function formatCurrency(amount, currency = 'EGP') {
+function formatCurrency(amount) {
     return new Intl.NumberFormat('ar-EG', {
         style: 'currency',
-        currency: currency
+        currency: 'EGP'
     }).format(amount);
 }
 
@@ -190,7 +186,7 @@ function getUrlParams() {
     return result;
 }
 
-// تأخير تنفيذ دالة (debounce)
+// تأخير تنفيذ دالة
 function debounce(func, delay) {
     let timeoutId;
     return function (...args) {
@@ -199,7 +195,7 @@ function debounce(func, delay) {
     };
 }
 
-// تحديث التاريخ والوقت بشكل مستمر
+// تحديث التاريخ والوقت
 function startClock(elementId) {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -226,14 +222,14 @@ window.utils = {
     formatDate,
     getInitials,
     copyToClipboard,
-    showToast,
-    downloadFile,
-    jsonToCSV,
+    timeAgo,
+    calculateDuration,
+    analyzeDelay,
+    exportToCSV,
+    exportToPDF,
     isValidEmail,
     isValidPhone,
     generateId,
-    truncateText,
-    animateElement,
     formatNumber,
     formatCurrency,
     getUrlParams,
