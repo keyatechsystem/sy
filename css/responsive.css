@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyaTech - responsive</title>
+    <style>
+        /* ===== التجاوب مع الشاشات الكبيرة ===== */
+        @media (max-width: 1400px) {
+            .container {
+                max-width: 1140px;
+            }
+            
+            .neon-title {
+                font-size: 32px;
+            }
+        }
+
+        /* ===== التجاوب مع شاشات اللابتوب ===== */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 960px;
+            }
+            
+            .neon-title {
+                font-size: 28px;
+            }
+            
+            .glass-card {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== التجاوب مع التابلت ===== */
+        @media (max-width: 992px) {
+            .container {
+                max-width: 720px;
+            }
+            
+            .sidebar {
+                transform: translateX(280px);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .neon-title {
+                font-size: 24px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== التجاوب مع الجوال الكبير ===== */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 540px;
+            }
+            
+            .neon-title {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .glass-card {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .cyber-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* ===== التجاوب مع الجوال الصغير ===== */
+        @media (max-width: 576px) {
+            .container {
+                width: 100%;
+                padding: 0 15px;
+            }
+            
+            .neon-title {
+                font-size: 18px;
+            }
+            
+            .neon-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .neon-input {
+                padding: 12px 15px;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        /* ===== التجاوب مع الشاشات الصغيرة جداً ===== */
+        @media (max-width: 375px) {
+            .neon-title {
+                font-size: 16px;
+            }
+            
+            .neon-btn {
+                width: 100%;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* ===== التجاوب مع الوضع الأفقي للجوال ===== */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .login-card {
+                padding: 20px;
+            }
+            
+            .logo-image {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* ===== التجاوب مع الشاشات عالية الدقة ===== */
+        @media (min-width: 1920px) {
+            .container {
+                max-width: 1600px;
+            }
+            
+            .neon-title {
+                font-size: 48px;
+            }
+            
+            .glass-card {
+                padding: 35px;
+            }
+        }
+
+        /* ===== تفضيلات الحركة ===== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== وضع الطباعة ===== */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-only {
+                display: block !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .glass-card {
+                background: white;
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+        }
+
+        /* ===== وضع الظلام التلقائي ===== */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --dark: #0a0a0f;
+                --darker: #050507;
+            }
+        }
+
+        /* ===== وضع الإضاءة التلقائي ===== */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --dark: #f0f0f5;
+                --darker: #e0e0e5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>صفحة تجريبية للـ responsive - صغر حجم الشاشة وشوف التغيير</h1>
+    </div>
+</body>
+</html>
