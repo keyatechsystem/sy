@@ -4,23 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>وصل استلام - KeyaTech</title>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/tech-design.css">
+    
+    <!-- Firebase SDK (الإصدار الثابت) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- QR Code Generator -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    
+    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* تصميم خاص للوصل */
-        .receipt-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .receipt-wrapper {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* تصميم الوصل الفاخر */
         .receipt-card {
             background: white;
             border-radius: 30px;
@@ -29,14 +53,10 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
-            animation: receiptGlow 3s ease-in-out infinite;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102,126,234,0.3);
         }
-        
-        @keyframes receiptGlow {
-            0%, 100% { box-shadow: 0 30px 60px rgba(102,126,234,0.3); }
-            50% { box-shadow: 0 30px 80px rgba(102,126,234,0.6); }
-        }
-        
+
         .receipt-card::before {
             content: '';
             position: absolute;
@@ -48,7 +68,25 @@
             background-size: 300% 100%;
             animation: gradientMove 5s linear infinite;
         }
-        
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.05;
+            font-size: 80px;
+            font-weight: bold;
+            color: #667eea;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .receipt-header {
             display: flex;
             justify-content: space-between;
@@ -57,14 +95,15 @@
             padding-bottom: 20px;
             border-bottom: 2px dashed #667eea;
             position: relative;
+            z-index: 1;
         }
-        
+
         .receipt-logo {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .logo-icon {
             width: 70px;
             height: 70px;
@@ -76,25 +115,31 @@
             color: white;
             font-size: 35px;
             font-weight: bold;
-            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            overflow: hidden;
         }
-        
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .logo-text h1 {
             color: #667eea;
             font-size: 28px;
             margin-bottom: 5px;
         }
-        
+
         .logo-text p {
             color: #666;
             font-size: 14px;
         }
-        
+
         .receipt-qr {
             text-align: center;
-            animation: pulse 2s ease-in-out infinite;
         }
-        
+
         .receipt-qr canvas {
             width: 120px;
             height: 120px;
@@ -103,21 +148,22 @@
             border-radius: 15px;
             background: white;
         }
-        
+
         .receipt-title {
             text-align: center;
             margin-bottom: 30px;
             position: relative;
+            z-index: 1;
         }
-        
+
         .receipt-title h2 {
             color: #667eea;
             font-size: 32px;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(102,126,234,0.2);
         }
-        
-        .receipt-title .ticket-number {
+
+        .ticket-number {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             display: inline-block;
@@ -127,32 +173,21 @@
             font-weight: 700;
             letter-spacing: 1px;
             box-shadow: 0 10px 20px rgba(102,126,234,0.3);
-            animation: pulse 2s ease-in-out infinite;
         }
-        
+
         .receipt-info {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 30px;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 25px;
             border-radius: 20px;
             margin-bottom: 20px;
             position: relative;
-            overflow: hidden;
+            z-index: 1;
+            border: 1px solid #e9ecef;
         }
-        
-        .receipt-info::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(102,126,234,0.1), transparent);
-            animation: rotate 10s linear infinite;
-        }
-        
+
         .info-row {
             display: flex;
             align-items: center;
@@ -160,84 +195,80 @@
             padding: 10px;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        
-        .info-row:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102,126,234,0.2);
-        }
-        
+
         .info-label {
             font-weight: 700;
             color: #667eea;
             min-width: 100px;
         }
-        
+
         .info-value {
             color: #333;
             font-weight: 500;
         }
-        
+
         .description-box {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: #f8f9fa;
             padding: 20px;
             border-radius: 15px;
             margin: 20px 0;
             border-right: 4px solid #667eea;
+            position: relative;
+            z-index: 1;
         }
-        
+
+        .description-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .description-box p {
+            color: #555;
+            line-height: 1.8;
+        }
+
         .receipt-footer {
             text-align: center;
             padding-top: 25px;
             border-top: 2px dashed #667eea;
             margin-top: 20px;
+            position: relative;
+            z-index: 1;
         }
-        
+
         .receipt-footer p {
             color: #666;
             margin-bottom: 10px;
         }
-        
+
         .signature-line {
             display: flex;
             justify-content: space-around;
             margin-top: 30px;
             padding: 20px;
         }
-        
+
         .signature {
             text-align: center;
         }
-        
+
         .signature .line {
             width: 200px;
             height: 1px;
             background: #333;
             margin: 10px 0;
         }
-        
-        .watermark {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            opacity: 0.1;
-            font-size: 60px;
-            font-weight: bold;
-            color: #667eea;
-            transform: rotate(-15deg);
-            pointer-events: none;
-        }
-        
+
         .actions {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 20px;
         }
-        
-        .btn-print, .btn-download {
+
+        .btn {
             padding: 12px 30px;
             border: none;
             border-radius: 50px;
@@ -250,37 +281,78 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .btn-print {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        
+
         .btn-download {
             background: linear-gradient(135deg, #4caf50, #45a049);
             color: white;
         }
-        
-        .btn-print:hover, .btn-download:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+
+        .btn-back {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
         }
-        
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: white;
+        }
+
+        .loading i {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: white;
+            background: rgba(244,67,54,0.2);
+            border-radius: 20px;
+        }
+
+        .error i {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
         @media print {
-            .actions, .no-print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .actions, .btn, .loading, .error {
                 display: none !important;
             }
             
             .receipt-card {
                 box-shadow: none;
                 padding: 20px;
+                border: 1px solid #ddd;
             }
             
             .receipt-card::before {
                 display: none;
             }
         }
-        
+
         @media (max-width: 768px) {
             .receipt-info {
                 grid-template-columns: 1fr;
@@ -289,72 +361,92 @@
             .receipt-header {
                 flex-direction: column;
                 gap: 20px;
+                text-align: center;
             }
             
             .signature-line {
                 flex-direction: column;
                 gap: 20px;
             }
+            
+            .actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="tech-bg"></div>
-    
-    <div class="receipt-container">
-        <div class="receipt-card" id="receiptContent">
-            <div class="watermark">KeyaTech</div>
-            
-            <div class="receipt-header">
-                <div class="receipt-logo">
-                    <div class="logo-icon" id="logoIcon">K</div>
-                    <div class="logo-text">
-                        <h1 id="companyName">KeyaTech</h1>
-                        <p>نظام إدارة الدعم الفني المتكامل</p>
-                    </div>
-                </div>
-                <div class="receipt-qr" id="qrContainer"></div>
-            </div>
-            
-            <div class="receipt-title">
-                <h2>وصل استلام شكوى</h2>
-                <div class="ticket-number" id="ticketNumber">TCK-2024-0001</div>
-            </div>
-            
-            <div class="receipt-info" id="receiptInfo"></div>
-            
-            <div class="description-box" id="descriptionBox"></div>
-            
-            <div class="receipt-footer">
-                <p>تم استلام شكوتكم بنجاح، وسيتم التواصل معكم في أقرب وقت ممكن</p>
-                <p>شكراً لثقتكم في <span id="companyNameFooter">KeyaTech</span></p>
-                
-                <div class="signature-line">
-                    <div class="signature">
-                        <div class="line"></div>
-                        <p>توقيع المستلم</p>
-                    </div>
-                    <div class="signature">
-                        <div class="line"></div>
-                        <p>ختم الشركة</p>
-                    </div>
-                </div>
-            </div>
+    <div class="receipt-wrapper">
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h3>جاري تحميل البيانات...</h3>
         </div>
         
-        <div class="actions no-print">
-            <button class="btn-print" onclick="window.print()">
-                <i class="fas fa-print"></i>
-                طباعة
-            </button>
-            <button class="btn-download" onclick="downloadReceipt()">
-                <i class="fas fa-download"></i>
-                تحميل
-            </button>
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>حدث خطأ في تحميل البيانات</h3>
+        </div>
+        
+        <div id="receiptContainer" style="display: none;">
+            <div class="receipt-card" id="receiptContent">
+                <div class="watermark">KeyaTech</div>
+                
+                <div class="receipt-header">
+                    <div class="receipt-logo">
+                        <div class="logo-icon" id="logoIcon">K</div>
+                        <div class="logo-text">
+                            <h1 id="companyName">KeyaTech</h1>
+                            <p>نظام إدارة الدعم الفني المتكامل</p>
+                        </div>
+                    </div>
+                    <div class="receipt-qr" id="qrContainer"></div>
+                </div>
+                
+                <div class="receipt-title">
+                    <h2>وصل استلام شكوى</h2>
+                    <div class="ticket-number" id="ticketNumber">---</div>
+                </div>
+                
+                <div class="receipt-info" id="receiptInfo"></div>
+                
+                <div class="description-box" id="descriptionBox"></div>
+                
+                <div class="receipt-footer">
+                    <p>تم استلام شكوتكم بنجاح، وسيتم التواصل معكم في أقرب وقت ممكن</p>
+                    <p>شكراً لثقتكم في <span id="companyNameFooter">KeyaTech</span></p>
+                    
+                    <div class="signature-line">
+                        <div class="signature">
+                            <div class="line"></div>
+                            <p>توقيع المستلم</p>
+                        </div>
+                        <div class="signature">
+                            <div class="line"></div>
+                            <p>ختم الشركة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions no-print">
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    طباعة
+                </button>
+                <button class="btn btn-download" onclick="downloadReceipt()">
+                    <i class="fas fa-download"></i>
+                    تحميل
+                </button>
+                <button class="btn btn-back" onclick="goBack()">
+                    <i class="fas fa-arrow-right"></i>
+                    رجوع
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
             authDomain: "keyatech-db.firebaseapp.com",
@@ -364,111 +456,172 @@
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
 
+        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // الحصول على ID التذكرة من URL
         const urlParams = new URLSearchParams(window.location.search);
         const ticketId = urlParams.get('id');
 
-        async function loadTicket() {
+        // عناصر الصفحة
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const containerEl = document.getElementById('receiptContainer');
+
+        // تحميل البيانات
+        async function loadTicketData() {
             if (!ticketId) {
-                alert('رقم التذكرة غير موجود');
+                showError('رقم التذكرة غير موجود');
                 return;
             }
 
             try {
+                // تحميل بيانات التذكرة
                 const ticketDoc = await db.collection('tickets').doc(ticketId).get();
+                
                 if (!ticketDoc.exists) {
-                    alert('التذكرة غير موجودة');
+                    showError('التذكرة غير موجودة');
                     return;
                 }
 
                 const ticket = ticketDoc.data();
-                
+
                 // تحميل إعدادات الشركة
                 const settingsDoc = await db.collection('settings').doc('company').get();
                 const company = settingsDoc.exists ? settingsDoc.data() : { name: 'KeyaTech' };
 
-                // تحديث أسماء الشركة
-                document.getElementById('companyName').textContent = company.name || 'KeyaTech';
-                document.getElementById('companyNameFooter').textContent = company.name || 'KeyaTech';
-                
-                // تحديث اللوجو
-                if (company.logoUrl) {
-                    document.getElementById('logoIcon').innerHTML = `<img src="${company.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
-                }
-
-                // تعبئة المعلومات
-                document.getElementById('ticketNumber').textContent = ticket.ticketNumber || '---';
-                
-                const date = ticket.createdAt ? ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
-                const time = ticket.createdAt ? ticket.createdAt.toDate().toLocaleTimeString('ar-EG') : '-';
-                
-                document.getElementById('receiptInfo').innerHTML = `
-                    <div class="info-row">
-                        <span class="info-label">اسم العميل:</span>
-                        <span class="info-value">${ticket.clientName || '---'}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">رقم الهاتف:</span>
-                        <span class="info-value">${ticket.clientPhone || '---'}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">البريد الإلكتروني:</span>
-                        <span class="info-value">${ticket.clientEmail || '---'}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">نوع المشكلة:</span>
-                        <span class="info-value">${ticket.problemType || '---'}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">تاريخ الاستلام:</span>
-                        <span class="info-value">${date}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">وقت الاستلام:</span>
-                        <span class="info-value">${time}</span>
-                    </div>
-                `;
-
-                document.getElementById('descriptionBox').innerHTML = `
-                    <h4 style="color: #667eea; margin-bottom: 10px;">${ticket.problemTitle || '---'}</h4>
-                    <p>${ticket.problemDescription || '---'}</p>
-                `;
-
-                // إنشاء QR code
-                QRCode.toCanvas(document.createElement('canvas'), ticket.ticketNumber, { width: 120 }, (err, canvas) => {
-                    if (err) console.error(err);
-                    document.getElementById('qrContainer').innerHTML = '';
-                    document.getElementById('qrContainer').appendChild(canvas);
-                });
+                // عرض البيانات
+                displayReceipt(ticket, company);
 
             } catch (error) {
                 console.error('Error loading ticket:', error);
-                alert('حدث خطأ في تحميل البيانات');
+                showError('حدث خطأ في تحميل البيانات: ' + error.message);
             }
         }
 
+        // عرض الوصل
+        function displayReceipt(ticket, company) {
+            // إخفاء التحميل وإظهار المحتوى
+            loadingEl.style.display = 'none';
+            containerEl.style.display = 'block';
+
+            // تحديث أسماء الشركة
+            document.getElementById('companyName').textContent = company.name || 'KeyaTech';
+            document.getElementById('companyNameFooter').textContent = company.name || 'KeyaTech';
+            
+            // تحديث اللوجو
+            if (company.logoUrl) {
+                document.getElementById('logoIcon').innerHTML = `<img src="${company.logoUrl}" alt="شعار">`;
+            }
+
+            // رقم التذكرة
+            document.getElementById('ticketNumber').textContent = ticket.ticketNumber || '---';
+            
+            // تنسيق التاريخ
+            let date = '-', time = '-';
+            if (ticket.createdAt) {
+                const createdDate = ticket.createdAt.toDate();
+                date = createdDate.toLocaleDateString('ar-EG');
+                time = createdDate.toLocaleTimeString('ar-EG');
+            }
+
+            // معلومات الوصل
+            document.getElementById('receiptInfo').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">اسم العميل:</span>
+                    <span class="info-value">${ticket.clientName || '---'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">رقم الهاتف:</span>
+                    <span class="info-value">${ticket.clientPhone || '---'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">البريد الإلكتروني:</span>
+                    <span class="info-value">${ticket.clientEmail || '---'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">نوع المشكلة:</span>
+                    <span class="info-value">${ticket.problemType || '---'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">تاريخ الاستلام:</span>
+                    <span class="info-value">${date}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">وقت الاستلام:</span>
+                    <span class="info-value">${time}</span>
+                </div>
+            `;
+
+            // وصف المشكلة
+            document.getElementById('descriptionBox').innerHTML = `
+                <h4>${ticket.problemTitle || '---'}</h4>
+                <p>${ticket.problemDescription || '---'}</p>
+            `;
+
+            // إنشاء QR Code
+            QRCode.toCanvas(document.createElement('canvas'), ticket.ticketNumber || '---', { 
+                width: 120,
+                margin: 1
+            }, (err, canvas) => {
+                if (err) {
+                    console.error('QR Code error:', err);
+                    return;
+                }
+                document.getElementById('qrContainer').innerHTML = '';
+                document.getElementById('qrContainer').appendChild(canvas);
+            });
+        }
+
+        // إظهار الخطأ
+        function showError(message) {
+            loadingEl.style.display = 'none';
+            errorEl.style.display = 'block';
+            errorEl.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>${message}</h3>
+                <button class="btn btn-back" onclick="goBack()" style="margin-top: 20px;">
+                    <i class="fas fa-arrow-right"></i>
+                    رجوع
+                </button>
+            `;
+        }
+
+        // تحميل الوصل كصورة
         async function downloadReceipt() {
             const receipt = document.getElementById('receiptContent');
             
             try {
                 const canvas = await html2canvas(receipt, {
                     scale: 2,
-                    backgroundColor: '#ffffff'
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: false,
+                    useCORS: true
                 });
                 
                 const link = document.createElement('a');
-                link.download = `receipt-${ticketId}.png`;
+                link.download = `receipt-${ticketId || 'ticket'}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+
+                // رسالة نجاح
+                alert('✅ تم تحميل الوصل بنجاح');
+
             } catch (error) {
                 console.error('Error downloading receipt:', error);
-                alert('حدث خطأ في تحميل الوصل');
+                alert('❌ حدث خطأ في تحميل الوصل');
             }
         }
 
-        window.onload = loadTicket;
+        // العودة للصفحة السابقة
+        function goBack() {
+            window.history.back();
+        }
+
+        // تشغيل عند تحميل الصفحة
+        window.onload = loadTicketData;
     </script>
 </body>
 </html>
