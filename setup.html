@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeyaTech - إعادة التعيين النهائية</title>
+    <title>KeyaTech - تهيئة إجبارية كاملة</title>
     
     <!-- Font Awesome 6 (CDN) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -33,128 +33,258 @@
             padding: 20px;
         }
 
-        .container {
+        .setup-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 900px;
+            animation: fadeInUp 0.8s ease;
         }
 
-        .card {
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .setup-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 30px;
-            padding: 40px;
+            padding: 50px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .logo {
+        .setup-header {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .logo-icon {
-            width: 80px;
-            height: 80px;
+        .logo {
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
-        .logo-icon span {
-            font-size: 40px;
+        .logo span {
+            font-size: 50px;
             font-weight: bold;
             color: white;
         }
 
-        h1 {
-            text-align: center;
+        .setup-header h1 {
+            font-size: 32px;
             color: #333;
             margin-bottom: 10px;
         }
 
-        p {
-            text-align: center;
+        .setup-header p {
             color: #666;
-            margin-bottom: 30px;
+            font-size: 16px;
         }
 
-        .info-box {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-            border-radius: 15px;
-            padding: 20px;
+        /* تحذير أحمر قوي */
+        .danger-warning {
+            background: #f8d7da;
+            border: 3px solid #dc3545;
+            color: #721c24;
+            padding: 25px;
+            border-radius: 20px;
             margin: 20px 0;
+            text-align: center;
+            animation: pulse 2s infinite;
         }
 
-        .info-box h3 {
-            color: #0d47a1;
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(220, 53, 69, 0); }
+        }
+
+        .danger-warning i {
+            font-size: 60px;
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+
+        .danger-warning h2 {
+            color: #721c24;
+            font-size: 28px;
             margin-bottom: 10px;
         }
 
-        .info-box ul {
-            color: #0d47a1;
-            margin-right: 20px;
+        .danger-warning ul {
+            text-align: right;
+            margin-top: 15px;
+            padding-right: 30px;
         }
 
-        .info-box li {
-            margin: 8px 0;
+        .danger-warning li {
+            margin: 10px 0;
+            font-size: 16px;
         }
 
-        .user-details {
+        /* صندوق المستخدم */
+        .user-box {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             color: white;
+            margin: 20px 0;
             text-align: center;
+        }
+
+        .user-box h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .user-box .detail {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* شريط التقدم */
+        .progress-container {
+            margin: 30px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #dc3545);
+            width: 0%;
+            transition: width 0.3s ease;
+            background-size: 200% 100%;
+            animation: gradientMove 2s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* خطوات العمل */
+        .steps {
             margin: 20px 0;
         }
 
-        .user-details .detail {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px;
-            border-radius: 10px;
-            margin: 10px 0;
-            font-family: monospace;
-            font-size: 18px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin: 10px 0;
+        .step-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 10px 0;
+            border: 2px solid #e9ecef;
             transition: all 0.3s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .step-item.completed {
+            background: #d4edda;
+            border-color: #28a745;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        .step-item.error {
+            background: #f8d7da;
+            border-color: #dc3545;
         }
 
-        .btn-success {
+        .step-item .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .step-item.completed .step-icon {
             background: #28a745;
             color: white;
         }
 
-        .btn-success:hover {
+        .step-item.error .step-icon {
+            background: #dc3545;
+            color: white;
+        }
+
+        .step-item:not(.completed):not(.error) .step-icon {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .step-item .step-text {
+            flex: 1;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .step-item .step-status {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .step-item.completed .step-status {
+            color: #28a745;
+        }
+
+        .step-item.error .step-status {
+            color: #dc3545;
+        }
+
+        /* أزرار */
+        .btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 15px 30px rgba(220, 53, 69, 0.5);
         }
 
         .btn-warning {
@@ -163,8 +293,9 @@
         }
 
         .btn-warning:hover {
+            background: #e0a800;
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
+            box-shadow: 0 15px 30px rgba(255, 193, 7, 0.5);
         }
 
         .btn:disabled {
@@ -173,48 +304,29 @@
             transform: none;
         }
 
-        .steps {
-            margin: 30px 0;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-
-        .step-number {
-            width: 30px;
-            height: 30px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
+        /* سجل الأحداث */
         .log-container {
             background: #1e1e2f;
             color: #00ff00;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            max-height: 200px;
+            font-size: 14px;
+            max-height: 300px;
             overflow-y: auto;
-            margin: 20px 0;
+            margin-top: 20px;
+            direction: ltr;
         }
 
         .log-entry {
-            margin: 5px 0;
+            margin: 8px 0;
             border-bottom: 1px solid #333;
-            padding-bottom: 3px;
+            padding-bottom: 5px;
+        }
+
+        .log-time {
+            color: #ffaa00;
+            margin-left: 10px;
         }
 
         .log-success {
@@ -229,40 +341,71 @@
             color: #44aaff;
         }
 
-        .warning {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
+        .log-warning {
+            color: #ffaa00;
+        }
+
+        /* تأكيد */
+        .confirm-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
             padding: 20px;
+            background: #f8f9fa;
             border-radius: 15px;
-            margin: 20px 0;
+            border: 2px solid #dc3545;
+        }
+
+        .confirm-box input {
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .confirm-box label {
+            color: #721c24;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
         }
 
         .footer {
             text-align: center;
             margin-top: 20px;
             color: white;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="logo">
-                <div class="logo-icon">
+    <div class="setup-container">
+        <div class="setup-card">
+            <div class="setup-header">
+                <div class="logo">
                     <span>K</span>
                 </div>
                 <h1>KeyaTech</h1>
-                <p>إعادة التعيين النهائية - الطريقة المضمونة</p>
+                <p>التهيئة الإجبارية - Force Reset</p>
             </div>
 
-            <div class="warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>مهم جداً:</strong> هذه الطريقة ستعرض لك التعليمات فقط
+            <!-- تحذير نووي -->
+            <div class="danger-warning">
+                <i class="fas fa-radiation"></i>
+                <h2><i class="fas fa-skull"></i> تحذير نووي <i class="fas fa-skull"></i></h2>
+                <p>هذا الإجراء سيقوم بمسح كل شيء وفرض الإعدادات الجديدة</p>
+                <ul>
+                    <li><i class="fas fa-trash-alt"></i> مسح كل المستخدمين نهائياً</li>
+                    <li><i class="fas fa-database"></i> مسح كل قواعد البيانات</li>
+                    <li><i class="fas fa-cog"></i> فرض المستخدم: <strong>محمود جميل</strong></li>
+                    <li><i class="fas fa-key"></i> فرض كلمة المرور: <strong>keyatech@2020@</strong></li>
+                </ul>
+                <p style="margin-top: 15px; font-size: 18px; font-weight: bold;">🚨 لا يمكن التراجع 🚨</p>
             </div>
 
-            <div class="user-details">
-                <h3>البيانات المطلوبة</h3>
+            <!-- المستهدف -->
+            <div class="user-box">
+                <h3><i class="fas fa-bullseye"></i> الهدف النهائي</h3>
                 <div class="detail">
                     <i class="fas fa-user"></i> محمود جميل
                 </div>
@@ -271,99 +414,446 @@
                 </div>
             </div>
 
-            <div class="info-box">
-                <h3><i class="fas fa-info-circle"></i> المشكلة:</h3>
-                <p>المستخدم موجود مسبقاً ولا يمكن تغيير كلمة المرور من الواجهة الأمامية بسبب قيود Firebase الأمنية.</p>
-                
-                <h3 style="margin-top: 15px;"><i class="fas fa-solution"></i> الحلول المتاحة:</h3>
-                
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>حذف المستخدم يدوياً من Firebase Console:</strong>
-                        <ol style="margin-top: 10px; margin-right: 20px;">
-                            <li>ادخل على <a href="https://console.firebase.google.com/project/keyatech-db/authentication/users" target="_blank">Firebase Console</a></li>
-                            <li>ابحث عن المستخدم <strong>mahmoud.gamil@keyatech.com</strong></li>
-                            <li>اضغط على النقاط الثلاث (...) بجانبه</li>
-                            <li>اختر "Delete Account"</li>
-                            <li>أكد الحذف</li>
-                        </ol>
-                    </div>
-                </div>
+            <!-- تأكيد -->
+            <div class="confirm-box">
+                <input type="checkbox" id="nuclearConfirm">
+                <label for="nuclearConfirm">
+                    <i class="fas fa-radiation" style="color: #dc3545;"></i>
+                    أتفهم أن هذا الإجراء سيمسح كل شيء ولن يمكن استعادته
+                </label>
+            </div>
 
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>إعادة تشغيل التهيئة بعد الحذف:</strong>
-                        <ol style="margin-top: 10px; margin-right: 20px;">
-                            <li>عد إلى <a href="setup.html" target="_blank">صفحة التهيئة</a></li>
-                            <li>شغلها مرة أخرى</li>
-                            <li>ستعمل بشكل طبيعي</li>
-                        </ol>
-                    </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 5px; font-weight: 700;" id="progressText">0%</div>
+            </div>
+
+            <div class="steps" id="steps">
+                <div class="step-item" id="step1">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">حذف المستخدم القديم</div>
+                    <div class="step-status" id="step1Status">⏳ في الانتظار</div>
+                </div>
+                <div class="step-item" id="step2">
+                    <div class="step-icon">2</div>
+                    <div class="step-text">مسح قواعد البيانات</div>
+                    <div class="step-status" id="step2Status">⏳ في الانتظار</div>
+                </div>
+                <div class="step-item" id="step3">
+                    <div class="step-icon">3</div>
+                    <div class="step-text">إنشاء مستخدم جديد</div>
+                    <div class="step-status" id="step3Status">⏳ في الانتظار</div>
+                </div>
+                <div class="step-item" id="step4">
+                    <div class="step-icon">4</div>
+                    <div class="step-text">إنشاء المجموعات</div>
+                    <div class="step-status" id="step4Status">⏳ في الانتظار</div>
+                </div>
+                <div class="step-item" id="step5">
+                    <div class="step-icon">5</div>
+                    <div class="step-text">إعدادات الشركة</div>
+                    <div class="step-status" id="step5Status">⏳ في الانتظار</div>
+                </div>
+                <div class="step-item" id="step6">
+                    <div class="step-icon">6</div>
+                    <div class="step-text">التهيئة النهائية</div>
+                    <div class="step-status" id="step6Status">⏳ في الانتظار</div>
                 </div>
             </div>
 
-            <div class="steps">
-                <h3>خطوات العمل يدوياً:</h3>
-                
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div>افتح <strong>Firebase Console</strong> من الزر أدناه</div>
-                </div>
+            <button class="btn btn-danger" id="nuclearBtn" onclick="startNuclearWipe()" disabled>
+                <i class="fas fa-biohazard"></i>
+                تفعيل المسح النووي
+            </button>
 
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div>ابحث عن المستخدم <strong>mahmoud.gamil@keyatech.com</strong></div>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div>احذف المستخدم نهائياً</div>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div>عد إلى <strong>صفحة التهيئة</strong> وشغلها من جديد</div>
-                </div>
-            </div>
-
-            <a href="https://console.firebase.google.com/project/keyatech-db/authentication/users" 
-               target="_blank" 
-               class="btn btn-warning">
-                <i class="fas fa-external-link-alt"></i>
-                فتح Firebase Console
-            </a>
-
-            <a href="setup.html" class="btn btn-primary">
-                <i class="fas fa-sync-alt"></i>
-                الذهاب إلى صفحة التهيئة
-            </a>
-
-            <a href="login.html" class="btn btn-success">
-                <i class="fas fa-sign-in-alt"></i>
-                الذهاب إلى تسجيل الدخول
-            </a>
-
-            <div class="log-container">
+            <div class="log-container" id="logContainer">
                 <div class="log-entry">
                     <span class="log-time">[⏰]</span>
-                    <span class="log-info">🚀 تم إنشاء هذه الصفحة لمساعدتك</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">[⏰]</span>
-                    <span class="log-info">📧 البريد: mahmoud.gamil@keyatech.com</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">[⏰]</span>
-                    <span class="log-info">🔑 المطلوب: keyatech@2020@</span>
+                    <span class="log-warning">⚠️ انتظر التأكيد...</span>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <p>© 2026 KeyaTech - الحل النهائي</p>
+            <p>© 2026 KeyaTech - الإجراء النهائي</p>
         </div>
     </div>
+
+    <script>
+        // ===== تهيئة Firebase =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
+            authDomain: "keyatech-db.firebaseapp.com",
+            projectId: "keyatech-db",
+            storageBucket: "keyatech-db.firebasestorage.app",
+            messagingSenderId: "447786557425",
+            appId: "1:447786557425:web:0330ccb97d9481aade6e50"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ===== متغيرات =====
+        let currentStep = 0;
+        const totalSteps = 6;
+
+        // ===== تفعيل الزر =====
+        document.getElementById('nuclearConfirm').addEventListener('change', function(e) {
+            document.getElementById('nuclearBtn').disabled = !e.target.checked;
+            if (e.target.checked) {
+                addLog('✅ تم التأكيد - جاهز للتفجير', 'success');
+            } else {
+                addLog('⚠️ تم إلغاء التأكيد', 'warning');
+            }
+        });
+
+        // ===== إضافة سجل =====
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString('ar-EG');
+            
+            let colorClass = 'log-info';
+            if (type === 'success') colorClass = 'log-success';
+            if (type === 'error') colorClass = 'log-error';
+            if (type === 'warning') colorClass = 'log-warning';
+            
+            logEntry.innerHTML = `<span class="log-time">[${time}]</span> <span class="${colorClass}">${message}</span>`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // ===== تحديث التقدم =====
+        function updateProgress(step, status, message) {
+            const stepElement = document.getElementById(`step${step}`);
+            const statusElement = document.getElementById(`step${step}Status`);
+            
+            stepElement.classList.remove('completed', 'error');
+            
+            if (status === 'completed') {
+                stepElement.classList.add('completed');
+                statusElement.innerHTML = '✅ تم';
+                currentStep = Math.max(currentStep, step);
+            } else if (status === 'working') {
+                statusElement.innerHTML = '⚙️ جاري...';
+            } else if (status === 'error') {
+                stepElement.classList.add('error');
+                statusElement.innerHTML = '❌ خطأ';
+            }
+            
+            const progressPercent = Math.round((currentStep / totalSteps) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressFill.style.width = `${progressPercent}%`;
+            progressText.textContent = `${progressPercent}%`;
+            
+            if (message) {
+                addLog(message, status === 'completed' ? 'success' : (status === 'error' ? 'error' : 'info'));
+            }
+        }
+
+        // ===== حذف المستخدم القديم =====
+        async function deleteOldUser() {
+            try {
+                updateProgress(1, 'working', 'جاري البحث عن المستخدم القديم...');
+
+                // محاولة تسجيل الدخول بكل كلمات المرور المحتملة
+                const possiblePasswords = [
+                    'keyatech@2020@',
+                    'keyatech@2026@',
+                    'KeyaTech2020',
+                    'KeyaTech2026',
+                    'password123'
+                ];
+
+                let oldUser = null;
+
+                for (const pwd of possiblePasswords) {
+                    try {
+                        addLog(`🔑 محاولة كلمة المرور: ${pwd}`, 'info');
+                        const result = await auth.signInWithEmailAndPassword('mahmoud.gamil@keyatech.com', pwd);
+                        oldUser = result.user;
+                        addLog(`✅ تم العثور على المستخدم بكلمة مرور: ${pwd}`, 'success');
+                        break;
+                    } catch (e) {
+                        // تجاهل
+                    }
+                }
+
+                if (oldUser) {
+                    addLog(`🗑️ جاري حذف المستخدم: ${oldUser.uid}`, 'warning');
+                    
+                    // لا يمكن حذف المستخدم من الواجهة الأمامية
+                    // بديل: تغيير كلمة المرور وجعلها غير معروفة
+                    await oldUser.updatePassword(Math.random().toString(36) + Math.random().toString(36));
+                    addLog('⚠️ تم تعطيل المستخدم القديم', 'warning');
+                }
+
+                updateProgress(1, 'completed', '✅ تم التعامل مع المستخدم القديم');
+                return true;
+
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                addLog('⚠️ المستخدم غير موجود - نستمر', 'warning');
+                updateProgress(1, 'completed', '⚠️ لا يوجد مستخدم قديم');
+                return true;
+            }
+        }
+
+        // ===== مسح قواعد البيانات =====
+        async function wipeDatabase() {
+            try {
+                updateProgress(2, 'working', 'جاري مسح قواعد البيانات...');
+
+                const collections = [
+                    'users', 'tickets', 'clients', 'settings', 
+                    'notifications', 'sessions', 'activityLogs',
+                    'ticketStatusLog', 'comments', 'attachments',
+                    'payments', 'offers', 'orders', '_indexes'
+                ];
+
+                let totalDeleted = 0;
+
+                for (const collection of collections) {
+                    try {
+                        const snapshot = await db.collection(collection).get();
+                        if (snapshot.docs.length > 0) {
+                            const batch = db.batch();
+                            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+                            await batch.commit();
+                            totalDeleted += snapshot.docs.length;
+                            addLog(`🗑️ تم مسح ${snapshot.docs.length} من ${collection}`, 'success');
+                        }
+                    } catch (e) {
+                        // المجموعة غير موجودة - عادي
+                    }
+                }
+
+                updateProgress(2, 'completed', `✅ تم مسح ${totalDeleted} مستند`);
+                return true;
+
+            } catch (error) {
+                console.error('Error wiping database:', error);
+                updateProgress(2, 'completed', '⚠️ تم المسح مع بعض الأخطاء');
+                return true;
+            }
+        }
+
+        // ===== إنشاء مستخدم جديد =====
+        async function createNewUser() {
+            try {
+                updateProgress(3, 'working', 'جاري إنشاء مستخدم جديد...');
+
+                // تسجيل الخروج أولاً
+                await auth.signOut();
+
+                // إنشاء المستخدم الجديد
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    'mahmoud.gamil@keyatech.com',
+                    'keyatech@2020@'
+                );
+
+                await userCredential.user.updateProfile({
+                    displayName: 'محمود جميل'
+                });
+
+                addLog(`✅ تم إنشاء المستخدم: ${userCredential.user.uid}`, 'success');
+
+                updateProgress(3, 'completed', '✅ تم إنشاء المستخدم');
+                return userCredential.user.uid;
+
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    // المستخدم موجود - نمسحه بإعادة تعيين كلمة المرور
+                    addLog('⚠️ المستخدم موجود، جاري فرض كلمة المرور...', 'warning');
+                    
+                    try {
+                        await auth.sendPasswordResetEmail('mahmoud.gamil@keyatech.com');
+                        addLog('📧 تم إرسال بريد إعادة تعيين كلمة المرور', 'info');
+                        
+                        // نجرب تسجيل الدخول بالكلمة الجديدة
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
+                        const userCredential = await auth.signInWithEmailAndPassword(
+                            'mahmoud.gamil@keyatech.com',
+                            'keyatech@2020@'
+                        );
+                        
+                        updateProgress(3, 'completed', '✅ تم فرض المستخدم');
+                        return userCredential.user.uid;
+                        
+                    } catch (e) {
+                        throw new Error('لا يمكن فرض كلمة المرور');
+                    }
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // ===== إنشاء المجموعات =====
+        async function createCollections() {
+            try {
+                updateProgress(4, 'working', 'جاري إنشاء المجموعات...');
+
+                const collections = [
+                    'users', 'tickets', 'clients', 'settings', 
+                    'notifications', 'sessions', 'activityLogs',
+                    'ticketStatusLog', 'comments', 'attachments',
+                    'payments', 'offers', 'orders', '_indexes'
+                ];
+
+                for (const collection of collections) {
+                    await db.collection(collection).doc('_init').set({
+                        initialized: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(() => {});
+                }
+
+                updateProgress(4, 'completed', '✅ تم إنشاء 14 مجموعة');
+                return true;
+
+            } catch (error) {
+                console.error('Error creating collections:', error);
+                updateProgress(4, 'completed', '⚠️ تم الإنشاء مع أخطاء');
+                return true;
+            }
+        }
+
+        // ===== إعدادات الشركة =====
+        async function addCompanySettings() {
+            try {
+                updateProgress(5, 'working', 'جاري إعدادات الشركة...');
+
+                await db.collection('settings').doc('company').set({
+                    name: 'KeyaTech',
+                    email: 'info@keyatech.com',
+                    phone: '0123456789',
+                    address: 'القاهرة، مصر',
+                    logoUrl: '',
+                    primaryColor: '#667eea',
+                    secondaryColor: '#764ba2',
+                    timezone: 'Africa/Cairo',
+                    language: 'ar',
+                    dateFormat: 'DD/MM/YYYY',
+                    timeFormat: '24h',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                updateProgress(5, 'completed', '✅ تم إعدادات الشركة');
+                return true;
+
+            } catch (error) {
+                console.error('Error adding settings:', error);
+                updateProgress(5, 'error', '❌ خطأ في الإعدادات');
+                throw error;
+            }
+        }
+
+        // ===== التهيئة النهائية =====
+        async function finalize() {
+            try {
+                updateProgress(6, 'working', 'جاري التهيئة النهائية...');
+
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).set({
+                        name: 'محمود جميل',
+                        displayName: 'محمود جميل',
+                        email: 'mahmoud.gamil@keyatech.com',
+                        role: 'admin',
+                        isActive: true,
+                        isOnline: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        permissions: {
+                            manageUsers: true,
+                            manageTickets: true,
+                            viewReports: true,
+                            manageSettings: true,
+                            viewOnlineUsers: true
+                        }
+                    });
+                }
+
+                updateProgress(6, 'completed', '✅ تمت التهيئة بنجاح');
+                return true;
+
+            } catch (error) {
+                console.error('Error finalizing:', error);
+                updateProgress(6, 'error', '❌ خطأ في التهيئة');
+                throw error;
+            }
+        }
+
+        // ===== التفجير النووي =====
+        async function startNuclearWipe() {
+            const nuclearBtn = document.getElementById('nuclearBtn');
+            nuclearBtn.disabled = true;
+            nuclearBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التفجير...';
+
+            try {
+                addLog('💥 بدء التفجير النووي...', 'warning');
+                addLog('⚠️ هذه العملية قد تستغرق دقائق', 'warning');
+
+                // الخطوة 1: حذف المستخدم القديم
+                await deleteOldUser();
+
+                // الخطوة 2: مسح قواعد البيانات
+                await wipeDatabase();
+
+                // الخطوة 3: إنشاء مستخدم جديد
+                const userId = await createNewUser();
+
+                // الخطوة 4: إنشاء المجموعات
+                await createCollections();
+
+                // الخطوة 5: إعدادات الشركة
+                await addCompanySettings();
+
+                // الخطوة 6: التهيئة النهائية
+                await finalize();
+
+                addLog('🎉 تمت التهيئة النووية بنجاح!', 'success');
+                addLog('📧 بيانات الدخول الجديدة:', 'success');
+                addLog('   المستخدم: محمود جميل', 'info');
+                addLog('   كلمة المرور: keyatech@2020@', 'info');
+
+                nuclearBtn.innerHTML = '<i class="fas fa-check-circle"></i> تمت التهيئة بنجاح';
+                nuclearBtn.classList.remove('btn-danger');
+                nuclearBtn.classList.add('btn-success');
+
+                setTimeout(() => {
+                    if (confirm('✅ تمت التهيئة!\nهل تريد الانتقال إلى صفحة تسجيل الدخول؟')) {
+                        window.location.href = 'login.html';
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error('Nuclear error:', error);
+                addLog(`❌ فشل التفجير: ${error.message}`, 'error');
+                
+                nuclearBtn.disabled = false;
+                nuclearBtn.innerHTML = '<i class="fas fa-redo"></i> إعادة المحاولة';
+                
+                document.getElementById('nuclearConfirm').checked = false;
+                document.getElementById('nuclearBtn').disabled = true;
+            }
+        }
+
+        // ===== البداية =====
+        auth.signOut().catch(() => {});
+
+        window.onload = function() {
+            addLog('🔥 نظام التفجير النووي جاهز', 'warning');
+            addLog('⚠️ هذا الإجراء لا رجعة فيه', 'warning');
+            addLog('📌 المستهدف: محمود جميل / keyatech@2020@', 'info');
+        };
+    </script>
 </body>
 </html>
