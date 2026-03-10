@@ -4,25 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - KeyaTech</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Cairo', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -32,138 +20,42 @@
             align-items: center;
             padding: 20px;
         }
-
-        .login-container {
-            width: 100%;
-            max-width: 450px;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .login-container { width: 100%; max-width: 450px; animation: fadeInUp 0.6s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 50px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            border-radius: 30px; padding: 50px; box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
-
-        .login-logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
+        .login-logo { text-align: center; margin-bottom: 40px; }
         .logo-container {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100px; height: 100px; margin: 0 auto 20px;
+            border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        #companyLogo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .default-logo {
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-        }
-
-        .login-logo h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .login-logo p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
+        #companyLogo { width: 100%; height: 100%; object-fit: cover; }
+        .default-logo { color: white; font-size: 40px; font-weight: bold; }
+        .login-logo h1 { font-size: 28px; color: #333; margin-bottom: 5px; }
+        .login-logo p { color: #666; font-size: 14px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; font-size: 14px; }
         .form-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            width: 100%; padding: 15px 20px; border: 2px solid #e0e0e0; border-radius: 15px;
+            font-family: 'Cairo', sans-serif; font-size: 16px; transition: all 0.3s ease;
         }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
         .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-family: 'Cairo', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none; border-radius: 15px; color: white; font-family: 'Cairo', sans-serif;
+            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-
-        .login-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
+        .login-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.4); }
+        .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         .login-error {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-            display: none;
+            background: #fee; border: 1px solid #fcc; color: #c33;
+            padding: 12px; border-radius: 10px; margin-top: 20px; text-align: center; display: none;
         }
-
-        .login-footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-        }
+        .login-footer { text-align: center; margin-top: 30px; color: #666; }
     </style>
 </head>
 <body>
@@ -183,28 +75,20 @@
                     <label><i class="fas fa-user"></i> الاسم بالكامل</label>
                     <input type="text" id="loginName" placeholder="أدخل اسمك بالكامل" required>
                 </div>
-                
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> كلمة المرور</label>
                     <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required>
                 </div>
-                
                 <button type="submit" class="login-btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    تسجيل الدخول
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                 </button>
-                
                 <div class="login-error" id="loginError"></div>
             </form>
-            
-            <div class="login-footer">
-                <p>© 2026 جميع الحقوق محفوظة</p>
-            </div>
+            <div class="login-footer"><p>© 2026 جميع الحقوق محفوظة</p></div>
         </div>
     </div>
 
     <script>
-        // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAFHsmuDtkflEURrCtJh7-_O7sbTxel1BI",
             authDomain: "keyatech-db.firebaseapp.com",
@@ -213,124 +97,73 @@
             messagingSenderId: "447786557425",
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // تحميل إعدادات الشركة
         async function loadCompanySettings() {
             try {
                 const doc = await db.collection('settings').doc('company').get();
                 if (doc.exists) {
                     const settings = doc.data();
                     document.getElementById('companyName').textContent = settings.name || 'KeyaTech';
-                    
                     if (settings.logoUrl) {
-                        const logoImg = document.getElementById('companyLogo');
-                        const defaultLogo = document.getElementById('defaultLogo');
-                        logoImg.src = settings.logoUrl;
-                        logoImg.style.display = 'block';
-                        defaultLogo.style.display = 'none';
+                        document.getElementById('companyLogo').src = settings.logoUrl;
+                        document.getElementById('companyLogo').style.display = 'block';
+                        document.getElementById('defaultLogo').style.display = 'none';
                     }
                 }
-            } catch (error) {
-                console.error('Error loading company settings:', error);
-            }
+            } catch (error) { console.error('Error loading company settings:', error); }
         }
 
-        // التحقق من وجود مستخدم مسجل بالفعل
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                window.location.href = 'index.html';
-            } else {
-                loadCompanySettings();
-            }
+            if (user) window.location.href = 'index.html';
+            else loadCompanySettings();
         });
 
-        // تسجيل الدخول
         async function handleLogin(event) {
             event.preventDefault();
-            
             const name = document.getElementById('loginName').value.trim();
             const password = document.getElementById('loginPassword').value;
-            
             const loginBtn = document.getElementById('loginBtn');
             const originalText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
             loginBtn.disabled = true;
-            
             document.getElementById('loginError').style.display = 'none';
-            
+
             try {
-                console.log('جاري البحث عن المستخدم:', name);
-                
-                // البحث عن المستخدم بالاسم
                 const usersSnapshot = await db.collection('users')
                     .where('displayName', '==', name)
                     .where('isActive', '==', true)
-                    .limit(1)
-                    .get();
+                    .limit(1).get();
                 
-                if (usersSnapshot.empty) {
-                    throw new Error('اسم المستخدم غير صحيح أو الحساب غير نشط');
-                }
+                if (usersSnapshot.empty) throw new Error('اسم المستخدم غير صحيح أو الحساب غير نشط');
                 
                 const userDoc = usersSnapshot.docs[0];
                 const userData = userDoc.data();
-                const userId = userDoc.id;
+                await auth.signInWithEmailAndPassword(userData.email, password);
                 
-                console.log('تم العثور على المستخدم:', userData.email);
-                
-                // تسجيل الدخول بالبريد الإلكتروني
-                const userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
-                
-                console.log('تم تسجيل الدخول بنجاح');
-                
-                // تحديث حالة المستخدم
-                await db.collection('users').doc(userId).update({
+                await db.collection('users').doc(userDoc.id).update({
                     isOnline: true,
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // تسجيل الجلسة
-                await db.collection('onlineSessions').add({
-                    userId: userId,
-                    userName: userData.displayName || userData.name,
-                    loginTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    userAgent: navigator.userAgent
-                });
-
                 setTimeout(() => {
-                    if (userData.role === 'admin') {
-                        window.location.href = 'admin/admin-dashboard.html';
-                    } else if (userData.role === 'engineer') {
-                        window.location.href = 'engineer/engineer-tickets.html';
-                    } else if (userData.role === 'assistant') {
-                        window.location.href = 'assistant/assistant-clients.html';
-                    } else {
-                        window.location.href = 'client/client-dashboard.html';
-                    }
+                    if (userData.role === 'admin') window.location.href = 'admin/admin-dashboard.html';
+                    else if (userData.role === 'engineer') window.location.href = 'engineer/engineer-tickets.html';
+                    else if (userData.role === 'assistant') window.location.href = 'assistant/assistant-clients.html';
+                    else window.location.href = 'client/client-dashboard.html';
                 }, 500);
                 
             } catch (error) {
-                console.error('خطأ في تسجيل الدخول:', error);
-                
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
-                
                 let errorMessage = 'اسم المستخدم أو كلمة المرور غير صحيحة';
-                
-                if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'كلمة المرور غير صحيحة';
-                } else if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'المستخدم غير موجود';
-                } else if (error.code === 'auth/too-many-requests') {
-                    errorMessage = 'تم حظر الحساب مؤقتاً لكثرة المحاولات الفاشلة';
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
+                if (error.code === 'auth/wrong-password') errorMessage = 'كلمة المرور غير صحيحة';
+                else if (error.code === 'auth/user-not-found') errorMessage = 'المستخدم غير موجود';
+                else if (error.code === 'auth/too-many-requests') errorMessage = 'تم حظر الحساب مؤقتاً';
+                else if (error.message) errorMessage = error.message;
                 
                 document.getElementById('loginError').textContent = errorMessage;
                 document.getElementById('loginError').style.display = 'block';
