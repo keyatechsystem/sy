@@ -1,69 +1,67 @@
-// نظام المصادقة وإدارة الجلسات
+// ===== نظام المصادقة المتقدم =====
 
-// تسجيل الدخول بالاسم وكلمة المرور
-async function loginWithName(name, password) {
+// تسجيل الدخول
+async function login(email, password) {
     try {
-        // البحث عن المستخدم بالاسم
-        const usersSnapshot = await db.collection('users')
-            .where('displayName', '==', name)
-            .where('isActive', '==', true)
-            .limit(1)
-            .get();
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
 
-        if (usersSnapshot.empty) {
-            throw new Error('اسم المستخدم غير صحيح أو الحساب غير نشط');
-        }
+        // تسجيل النشاط
+        await logActivity('login', { email: user.email });
 
-        const userData = usersSnapshot.docs[0].data();
-        const userId = usersSnapshot.docs[0].id;
-
-        // تسجيل الدخول بالبريد الإلكتروني
-        const userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
-        
         // تحديث حالة المستخدم
-        await db.collection('users').doc(userId).update({
+        await db.collection('users').doc(user.uid).update({
             isOnline: true,
             lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         // تسجيل الجلسة
-        await db.collection('onlineSessions').add({
-            userId: userId,
-            userName: userData.displayName || userData.name,
+        await db.collection('sessions').add({
+            userId: user.uid,
             loginTime: firebase.firestore.FieldValue.serverTimestamp(),
-            ipAddress: await getUserIP()
+            ipAddress: await getUserIP(),
+            userAgent: navigator.userAgent
         });
 
-        return { success: true, user: userCredential.user, role: userData.role };
+        return { success: true, user };
 
     } catch (error) {
         console.error('Login error:', error);
-        return { success: false, error: error.message };
+        
+        // تسجيل محاولة فاشلة
+        await logActivity('login_failed', { email, error: error.message });
+
+        let message = 'خطأ في تسجيل الدخول';
+        if (error.code === 'auth/user-not-found') message = 'المستخدم غير موجود';
+        else if (error.code === 'auth/wrong-password') message = 'كلمة المرور غير صحيحة';
+        else if (error.code === 'auth/too-many-requests') message = 'محاولات كثيرة جداً، حاول لاحقاً';
+
+        return { success: false, message };
     }
 }
 
 // تسجيل الخروج
-async function logoutUser() {
+async function logout() {
     const user = auth.currentUser;
-    if (!user) return { success: false, error: 'لا يوجد مستخدم مسجل' };
+    if (!user) return;
 
     try {
-        // تحديث آخر جلسة
-        const sessionsSnapshot = await db.collection('onlineSessions')
+        // تحديث وقت الخروج في الجلسة
+        const sessions = await db.collection('sessions')
             .where('userId', '==', user.uid)
             .where('logoutTime', '==', null)
             .orderBy('loginTime', 'desc')
             .limit(1)
             .get();
 
-        if (!sessionsSnapshot.empty) {
-            const sessionDoc = sessionsSnapshot.docs[0];
-            const loginTime = sessionDoc.data().loginTime.toDate();
+        if (!sessions.empty) {
+            const session = sessions.docs[0];
+            const loginTime = session.data().loginTime.toDate();
             const logoutTime = new Date();
             const duration = Math.round((logoutTime - loginTime) / 1000 / 60); // دقائق
 
-            await db.collection('onlineSessions').doc(sessionDoc.id).update({
+            await db.collection('sessions').doc(session.id).update({
                 logoutTime: firebase.firestore.FieldValue.serverTimestamp(),
                 duration: duration
             });
@@ -72,20 +70,22 @@ async function logoutUser() {
         // تحديث حالة المستخدم
         await db.collection('users').doc(user.uid).update({
             isOnline: false,
-            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-            lastLogout: firebase.firestore.FieldValue.serverTimestamp()
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        // تسجيل النشاط
+        await logActivity('logout', { email: user.email });
 
         await auth.signOut();
         return { success: true };
 
     } catch (error) {
         console.error('Logout error:', error);
-        return { success: false, error: error.message };
+        return { success: false, message: error.message };
     }
 }
 
-// الحصول على عنوان IP (تقريبي)
+// الحصول على IP
 async function getUserIP() {
     try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -96,8 +96,8 @@ async function getUserIP() {
     }
 }
 
-// التحقق من صلاحية المستخدم
-async function checkUserRole(requiredRole) {
+// التحقق من الصلاحيات
+async function checkPermission(requiredRole) {
     const user = auth.currentUser;
     if (!user) return false;
 
@@ -106,96 +106,25 @@ async function checkUserRole(requiredRole) {
         if (!doc.exists) return false;
 
         const userData = doc.data();
-        
-        if (requiredRole === 'admin' && userData.role !== 'admin') return false;
-        if (requiredRole === 'engineer' && !['admin', 'engineer'].includes(userData.role)) return false;
-        if (requiredRole === 'assistant' && !['admin', 'assistant'].includes(userData.role)) return false;
-        
+        const userRole = userData.role;
+
+        // صلاحيات متقدمة
+        if (requiredRole === 'admin' && userRole !== 'admin') return false;
+        if (requiredRole === 'engineer' && !['admin', 'engineer'].includes(userRole)) return false;
+        if (requiredRole === 'assistant' && !['admin', 'assistant'].includes(userRole)) return false;
+
         return true;
 
     } catch (error) {
-        console.error('Role check error:', error);
+        console.error('Permission check error:', error);
         return false;
     }
 }
 
-// إنشاء مستخدم جديد (للمدير فقط)
-async function createUser(userData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) return { success: false, error: 'غير مصرح' };
-
-    try {
-        // التحقق من أن المستخدم الحالي مدير
-        const adminDoc = await db.collection('users').doc(currentUser.uid).get();
-        if (!adminDoc.exists || adminDoc.data().role !== 'admin') {
-            return { success: false, error: 'غير مصرح بهذه العملية' };
-        }
-
-        // إنشاء المستخدم في Authentication
-        const userCredential = await auth.createUserWithEmailAndPassword(
-            userData.email, 
-            userData.password
-        );
-
-        // تحديث اسم المستخدم
-        await userCredential.user.updateProfile({
-            displayName: userData.name
-        });
-
-        // إضافة البيانات إلى Firestore
-        await db.collection('users').doc(userCredential.user.uid).set({
-            name: userData.name,
-            displayName: userData.name,
-            email: userData.email,
-            role: userData.role,
-            phone: userData.phone || '',
-            isActive: true,
-            isOnline: false,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdBy: currentUser.uid,
-            permissions: getRolePermissions(userData.role)
-        });
-
-        return { success: true, userId: userCredential.user.uid };
-
-    } catch (error) {
-        console.error('Create user error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-// الحصول على صلاحيات الدور
-function getRolePermissions(role) {
-    const permissions = {
-        admin: {
-            manageUsers: true,
-            manageTickets: true,
-            viewReports: true,
-            manageSettings: true,
-            viewOnlineUsers: true
-        },
-        engineer: {
-            manageUsers: false,
-            manageTickets: true,
-            viewReports: false,
-            manageSettings: false,
-            viewOnlineUsers: false
-        },
-        assistant: {
-            manageUsers: false,
-            manageTickets: true,
-            viewReports: false,
-            manageSettings: false,
-            viewOnlineUsers: false
-        }
-    };
-    return permissions[role] || permissions.assistant;
-}
-
 // مراقبة حالة الاتصال
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
     if (user) {
-        // تحديث حالة الاتصال كل دقيقة
+        // تحديث آخر ظهور كل دقيقة
         const interval = setInterval(async () => {
             try {
                 await db.collection('users').doc(user.uid).update({
@@ -214,5 +143,11 @@ auth.onAuthStateChanged((user) => {
                 lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             });
         });
+
+        // التحقق من التنبيهات للمستخدمين المسؤولين
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists && ['admin', 'assistant'].includes(userDoc.data().role)) {
+            checkForAlerts();
+        }
     }
 });
