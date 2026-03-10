@@ -42,17 +42,6 @@
             background: linear-gradient(135deg, #1a1f35 0%, #0a0f1e 100%);
         }
 
-        .grid-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(102, 126, 234, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 15s linear infinite;
-        }
-
         .app-container {
             display: flex;
             min-height: 100vh;
@@ -68,7 +57,6 @@
             height: 100vh;
             right: 0;
             top: 0;
-            overflow-y: auto;
         }
 
         .logo {
@@ -76,8 +64,6 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .logo-icon {
@@ -88,8 +74,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo span {
@@ -116,7 +107,6 @@
             color: #8f9bb3;
             text-decoration: none;
             border-radius: 12px;
-            transition: all 0.3s ease;
         }
 
         .nav-link:hover,
@@ -128,6 +118,15 @@
         .nav-link i {
             width: 24px;
             color: #667eea;
+        }
+
+        .badge {
+            background: #f5576c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: auto;
         }
 
         .main-content {
@@ -145,7 +144,6 @@
             background: rgba(10, 15, 30, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .header-title h1 {
@@ -153,6 +151,23 @@
             background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .company-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* قسم التقارير */
@@ -231,11 +246,6 @@
             color: white;
         }
 
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -249,12 +259,6 @@
             border: 1px solid rgba(102, 126, 234, 0.2);
             border-radius: 20px;
             padding: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
         }
 
         .stat-icon {
@@ -361,6 +365,30 @@
             cursor: pointer;
         }
 
+        .summary-table {
+            background: rgba(10, 15, 30, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .summary-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .summary-table th {
+            color: #a0a0ff;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .charts-row {
                 grid-template-columns: 1fr;
@@ -373,16 +401,14 @@
     </style>
 </head>
 <body>
-    <div class="tech-background">
-        <div class="grid-overlay"></div>
-    </div>
+    <div class="tech-background"></div>
 
     <div class="app-container">
         <!-- القائمة الجانبية -->
         <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">K</div>
-                <span>KeyaTech</span>
+            <div class="logo" id="sidebarLogo">
+                <div class="logo-icon" id="logoIcon">K</div>
+                <span id="sidebarCompanyName">KeyaTech</span>
             </div>
             
             <ul class="nav-menu">
@@ -402,6 +428,7 @@
                     <a href="tickets.html" class="nav-link">
                         <i class="fas fa-tickets"></i>
                         التذاكر
+                        <span class="badge" id="ticketsBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -414,12 +441,19 @@
                     <a href="online-users.html" class="nav-link">
                         <i class="fas fa-users"></i>
                         المتصلين
+                        <span class="badge" id="onlineBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="settings.html" class="nav-link">
                         <i class="fas fa-cog"></i>
                         الإعدادات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="google-sheets.html" class="nav-link">
+                        <i class="fas fa-file-excel"></i>
+                        Google Sheets
                     </a>
                 </li>
             </ul>
@@ -442,7 +476,9 @@
                 <div class="header-title">
                     <h1>التقارير والتحليلات</h1>
                 </div>
-                <span id="currentDateTime"></span>
+                <div class="company-logo" id="headerLogo">
+                    <i class="fas fa-building"></i>
+                </div>
             </header>
 
             <div class="reports-section">
@@ -456,7 +492,7 @@
                     <div class="filters-grid">
                         <div class="filter-group">
                             <label>الفترة</label>
-                            <select id="periodSelect">
+                            <select id="periodSelect" onchange="toggleDateInputs()">
                                 <option value="today">اليوم</option>
                                 <option value="week" selected>هذا الأسبوع</option>
                                 <option value="month">هذا الشهر</option>
@@ -465,12 +501,12 @@
                             </select>
                         </div>
                         
-                        <div class="filter-group">
+                        <div class="filter-group" id="startDateGroup" style="display: none;">
                             <label>من تاريخ</label>
                             <input type="date" id="startDate">
                         </div>
                         
-                        <div class="filter-group">
+                        <div class="filter-group" id="endDateGroup" style="display: none;">
                             <label>إلى تاريخ</label>
                             <input type="date" id="endDate">
                         </div>
@@ -478,10 +514,10 @@
                         <div class="filter-group">
                             <label>نوع التقرير</label>
                             <select id="reportType">
-                                <option value="all" selected>تذاكر الدعم</option>
+                                <option value="tickets" selected>تذاكر الدعم</option>
+                                <option value="revenue">الإيرادات</option>
                                 <option value="engineers">أداء المهندسين</option>
                                 <option value="clients">العملاء</option>
-                                <option value="satisfaction">رضا العملاء</option>
                             </select>
                         </div>
                     </div>
@@ -510,26 +546,26 @@
                     
                     <div class="stat-card">
                         <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-value" id="closedTickets">0</div>
+                        <div class="stat-label">تذاكر مغلقة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill"></i>
+                        </div>
+                        <div class="stat-value" id="totalRevenue">0</div>
+                        <div class="stat-label">إجمالي الإيرادات</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-value" id="avgResponse">0</div>
                         <div class="stat-label">متوسط وقت الاستجابة</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-value" id="completionRate">0%</div>
-                        <div class="stat-label">نسبة الإنجاز</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="stat-value" id="satisfactionRate">0</div>
-                        <div class="stat-label">تقييم العملاء</div>
                     </div>
                 </div>
 
@@ -537,13 +573,24 @@
                 <div class="charts-row">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>تحليل التذاكر اليومية</h3>
+                            <h3>تحليل التذاكر</h3>
                         </div>
                         <div class="chart-container">
-                            <canvas id="dailyChart"></canvas>
+                            <canvas id="ticketsChart"></canvas>
                         </div>
                     </div>
                     
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>الإيرادات الشهرية</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3>توزيع التذاكر حسب المهندسين</h3>
@@ -552,42 +599,36 @@
                             <canvas id="engineersChart"></canvas>
                         </div>
                     </div>
-                </div>
-
-                <div class="charts-row">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>حالات التذاكر</h3>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="statusChart"></canvas>
-                        </div>
-                    </div>
                     
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>أولويات التذاكر</h3>
+                            <h3>حالات الدفع</h3>
                         </div>
                         <div class="chart-container">
-                            <canvas id="priorityChart"></canvas>
+                            <canvas id="paymentChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- أزرار التصدير -->
-                <div class="export-section">
-                    <button class="btn btn-success" onclick="exportToPDF()">
-                        <i class="fas fa-file-pdf"></i>
-                        تصدير PDF
-                    </button>
-                    <button class="btn btn-success" onclick="exportToExcel()">
-                        <i class="fas fa-file-excel"></i>
-                        تصدير Excel
-                    </button>
-                    <button class="btn btn-primary" onclick="printReport()">
-                        <i class="fas fa-print"></i>
-                        طباعة
-                    </button>
+                <!-- جدول ملخص -->
+                <div class="summary-table">
+                    <h3 style="margin-bottom: 20px;">📊 ملخص تفصيلي</h3>
+                    <table id="summaryTable">
+                        <thead>
+                            <tr>
+                                <th>الشهر</th>
+                                <th>التذاكر</th>
+                                <th>المغلقة</th>
+                                <th>الإيرادات</th>
+                                <th>نسبة الإنجاز</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">جاري تحميل البيانات...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
@@ -609,18 +650,37 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let dailyChart, engineersChart, statusChart, priorityChart;
-        let ticketsData = [];
-        let engineersData = [];
+        let ticketsChart, revenueChart, engineersChart, paymentChart;
+        let allTickets = [];
+        let allUsers = [];
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('sidebarCompanyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        document.getElementById('logoIcon').innerHTML = `<img src="${settings.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                        document.getElementById('headerLogo').innerHTML = `<img src="${settings.logoUrl}" alt="شعار">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
 
         // التحقق من تسجيل الدخول
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
+                loadCompanySettings();
                 loadUserData(user.uid);
-                loadReportData();
+                loadAllData();
             } else {
-                window.location.href = '/login.html';
+                window.location.href = '../login.html';
             }
         });
 
@@ -634,83 +694,95 @@
             }
         }
 
-        // تحميل بيانات التقرير
-        async function loadReportData() {
+        // تحميل كل البيانات
+        async function loadAllData() {
             try {
-                // تحميل جميع التذاكر
+                // تحميل التذاكر
                 const ticketsSnapshot = await db.collection('tickets').get();
-                ticketsData = [];
-                
+                allTickets = [];
                 ticketsSnapshot.forEach(doc => {
-                    ticketsData.push({ id: doc.id, ...doc.data() });
+                    allTickets.push({ id: doc.id, ...doc.data() });
                 });
 
-                // تحميل بيانات المهندسين
-                const engineersSnapshot = await db.collection('users')
-                    .where('role', '==', 'engineer')
-                    .get();
-                
-                engineersData = [];
-                engineersSnapshot.forEach(doc => {
-                    engineersData.push({ id: doc.id, ...doc.data() });
+                // تحميل المستخدمين
+                const usersSnapshot = await db.collection('users').get();
+                allUsers = [];
+                usersSnapshot.forEach(doc => {
+                    allUsers.push({ id: doc.id, ...doc.data() });
                 });
 
                 // تحديث الإحصائيات
-                updateStatistics();
+                updateStats();
                 
                 // إنشاء المخططات
                 createCharts();
 
             } catch (error) {
-                console.error('Error loading report data:', error);
+                console.error('Error loading data:', error);
             }
         }
 
         // تحديث الإحصائيات
-        function updateStatistics() {
-            const total = ticketsData.length;
+        function updateStats() {
+            const totalTickets = allTickets.length;
+            const closedTickets = allTickets.filter(t => t.status === 'closed').length;
             
-            let openCount = 0;
-            let closedCount = 0;
-            
-            ticketsData.forEach(ticket => {
-                if (ticket.status === 'closed') closedCount++;
-                else openCount++;
+            // حساب الإيرادات
+            let totalRevenue = 0;
+            allTickets.forEach(ticket => {
+                if (ticket.paymentStatus === 'paid') {
+                    totalRevenue += ticket.amount || 0;
+                }
             });
 
-            document.getElementById('totalTickets').textContent = total;
-            document.getElementById('completionRate').textContent = 
-                total > 0 ? Math.round((closedCount / total) * 100) + '%' : '0%';
-            
-            // حساب متوسط وقت الاستجابة (وهمي)
+            document.getElementById('totalTickets').textContent = totalTickets;
+            document.getElementById('closedTickets').textContent = closedTickets;
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString() + ' ج.م';
             document.getElementById('avgResponse').textContent = '2.5 ساعة';
+
+            document.getElementById('ticketsBadge').textContent = totalTickets;
             
-            // تقييم العملاء (وهمي)
-            document.getElementById('satisfactionRate').textContent = '4.5';
+            const onlineCount = allUsers.filter(u => u.isOnline).length;
+            document.getElementById('onlineBadge').textContent = onlineCount;
         }
 
         // إنشاء المخططات
         function createCharts() {
-            // مخطط التذاكر اليومية
-            const ctx1 = document.getElementById('dailyChart').getContext('2d');
-            if (dailyChart) dailyChart.destroy();
-            
-            dailyChart = new Chart(ctx1, {
+            createTicketsChart();
+            createRevenueChart();
+            createEngineersChart();
+            createPaymentChart();
+            updateSummaryTable();
+        }
+
+        function createTicketsChart() {
+            const ctx = document.getElementById('ticketsChart').getContext('2d');
+            if (ticketsChart) ticketsChart.destroy();
+
+            // تجميع البيانات حسب اليوم
+            const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const today = new Date();
+            const weekData = Array(7).fill(0);
+
+            allTickets.forEach(ticket => {
+                if (ticket.createdAt) {
+                    const date = ticket.createdAt.toDate();
+                    const dayDiff = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+                    if (dayDiff >= 0 && dayDiff < 7) {
+                        weekData[6 - dayDiff]++;
+                    }
+                }
+            });
+
+            ticketsChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+                    labels: days,
                     datasets: [{
-                        label: 'التذاكر المفتوحة',
-                        data: [12, 19, 15, 17, 14, 8, 5],
+                        label: 'التذاكر',
+                        data: weekData,
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: 'التذاكر المغلقة',
-                        data: [8, 15, 12, 14, 11, 6, 4],
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
@@ -733,16 +805,65 @@
                     }
                 }
             });
+        }
 
-            // مخطط المهندسين
-            const ctx2 = document.getElementById('engineersChart').getContext('2d');
-            
-            const engineerNames = engineersData.map(e => e.displayName || e.name);
-            const engineerTickets = engineersData.map(e => 
-                ticketsData.filter(t => t.assignedTo === e.id).length
+        function createRevenueChart() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            if (revenueChart) revenueChart.destroy();
+
+            // تجميع الإيرادات حسب الشهر
+            const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            const revenueData = Array(12).fill(0);
+
+            allTickets.forEach(ticket => {
+                if (ticket.createdAt && ticket.paymentStatus === 'paid' && ticket.amount) {
+                    const month = ticket.createdAt.toDate().getMonth();
+                    revenueData[month] += ticket.amount;
+                }
+            });
+
+            revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'الإيرادات',
+                        data: revenueData,
+                        backgroundColor: '#4caf50',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#8f9bb3' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#8f9bb3' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createEngineersChart() {
+            const ctx = document.getElementById('engineersChart').getContext('2d');
+            if (engineersChart) engineersChart.destroy();
+
+            const engineers = allUsers.filter(u => u.role === 'engineer');
+            const engineerNames = engineers.map(e => e.displayName || e.name);
+            const engineerTickets = engineers.map(e => 
+                allTickets.filter(t => t.assignedTo === e.id).length
             );
 
-            engineersChart = new Chart(ctx2, {
+            engineersChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: engineerNames,
@@ -771,50 +892,23 @@
                     }
                 }
             });
+        }
 
-            // مخطط حالات التذاكر
-            const ctx3 = document.getElementById('statusChart').getContext('2d');
-            
-            const openTickets = ticketsData.filter(t => t.status === 'open').length;
-            const progressTickets = ticketsData.filter(t => t.status === 'in-progress').length;
-            const closedTickets = ticketsData.filter(t => t.status === 'closed').length;
+        function createPaymentChart() {
+            const ctx = document.getElementById('paymentChart').getContext('2d');
+            if (paymentChart) paymentChart.destroy();
 
-            statusChart = new Chart(ctx3, {
+            const paid = allTickets.filter(t => t.paymentStatus === 'paid').length;
+            const unpaid = allTickets.filter(t => t.paymentStatus === 'unpaid' || !t.paymentStatus).length;
+            const partial = allTickets.filter(t => t.paymentStatus === 'partial').length;
+
+            paymentChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['مفتوحة', 'قيد المعالجة', 'مغلقة'],
+                    labels: ['مدفوع', 'غير مدفوع', 'مدفوع جزئياً'],
                     datasets: [{
-                        data: [openTickets, progressTickets, closedTickets],
-                        backgroundColor: ['#ff9800', '#2196f3', '#4caf50'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            labels: { color: '#fff' },
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // مخطط الأولويات
-            const ctx4 = document.getElementById('priorityChart').getContext('2d');
-            
-            const highPriority = ticketsData.filter(t => t.priority === 'high' || t.priority === 'urgent').length;
-            const mediumPriority = ticketsData.filter(t => t.priority === 'medium').length;
-            const lowPriority = ticketsData.filter(t => t.priority === 'low').length;
-
-            priorityChart = new Chart(ctx4, {
-                type: 'pie',
-                data: {
-                    labels: ['عالية', 'متوسطة', 'منخفضة'],
-                    datasets: [{
-                        data: [highPriority, mediumPriority, lowPriority],
-                        backgroundColor: ['#f44336', '#ff9800', '#4caf50'],
+                        data: [paid, unpaid, partial],
+                        backgroundColor: ['#4caf50', '#f44336', '#ff9800'],
                         borderWidth: 0
                     }]
                 },
@@ -831,36 +925,83 @@
             });
         }
 
-        // توليد تقرير جديد
+        function updateSummaryTable() {
+            const tbody = document.getElementById('summaryBody');
+            const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            
+            let html = '';
+            const currentYear = new Date().getFullYear();
+
+            for (let i = 0; i < 6; i++) {
+                const monthData = {
+                    total: 0,
+                    closed: 0,
+                    revenue: 0
+                };
+
+                allTickets.forEach(ticket => {
+                    if (ticket.createdAt) {
+                        const date = ticket.createdAt.toDate();
+                        if (date.getMonth() === i && date.getFullYear() === currentYear) {
+                            monthData.total++;
+                            if (ticket.status === 'closed') monthData.closed++;
+                            if (ticket.paymentStatus === 'paid') monthData.revenue += ticket.amount || 0;
+                        }
+                    }
+                });
+
+                const completionRate = monthData.total > 0 ? 
+                    Math.round((monthData.closed / monthData.total) * 100) : 0;
+
+                html += `
+                    <tr>
+                        <td>${months[i]}</td>
+                        <td>${monthData.total}</td>
+                        <td>${monthData.closed}</td>
+                        <td>${monthData.revenue.toLocaleString()} ج.م</td>
+                        <td>${completionRate}%</td>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleDateInputs() {
+            const period = document.getElementById('periodSelect').value;
+            const startGroup = document.getElementById('startDateGroup');
+            const endGroup = document.getElementById('endDateGroup');
+
+            if (period === 'custom') {
+                startGroup.style.display = 'block';
+                endGroup.style.display = 'block';
+            } else {
+                startGroup.style.display = 'none';
+                endGroup.style.display = 'none';
+            }
+        }
+
         function generateReport() {
             const period = document.getElementById('periodSelect').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
             const reportType = document.getElementById('reportType').value;
-
-            // هنا يمكن إضافة منطق فلترة البيانات حسب الفترة
-            alert(`جاري توليد تقرير ${reportType} للفترة المحددة`);
             
-            // تحديث المخططات
+            alert(`جاري توليد تقرير ${reportType} للفترة المحددة`);
             createCharts();
         }
 
-        // تصدير التقرير
         function exportReport() {
             // تجميع بيانات التقرير
             const reportData = {
                 totalTickets: document.getElementById('totalTickets').textContent,
-                avgResponse: document.getElementById('avgResponse').textContent,
-                completionRate: document.getElementById('completionRate').textContent,
-                satisfactionRate: document.getElementById('satisfactionRate').textContent,
+                totalRevenue: document.getElementById('totalRevenue').textContent,
                 generatedAt: new Date().toLocaleString('ar-EG')
             };
 
             // تحويل إلى CSV
-            const csv = convertToCSV(reportData);
+            const csv = Object.entries(reportData).map(([key, value]) => `${key},${value}`).join('\n');
             
             // تحميل الملف
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -868,52 +1009,11 @@
             a.click();
         }
 
-        // تصدير إلى PDF
-        function exportToPDF() {
-            alert('جاري تحضير ملف PDF...');
-            // يمكن إضافة مكتبة jsPDF هنا
-        }
-
-        // تصدير إلى Excel
-        function exportToExcel() {
-            alert('جاري تحضير ملف Excel...');
-            // يمكن إضافة منطق تصدير Excel
-        }
-
-        // طباعة التقرير
-        function printReport() {
-            window.print();
-        }
-
-        // تحويل إلى CSV
-        function convertToCSV(data) {
-            const headers = Object.keys(data).join(',');
-            const values = Object.values(data).join(',');
-            return headers + '\n' + values;
-        }
-
-        // تحديث التاريخ والوقت
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('currentDateTime').textContent = 
-                now.toLocaleDateString('ar-EG', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-        }
-
         // تسجيل الخروج
         async function logout() {
             await auth.signOut();
-            window.location.href = '/login.html';
+            window.location.href = '../login.html';
         }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
     </script>
 </body>
 </html>
