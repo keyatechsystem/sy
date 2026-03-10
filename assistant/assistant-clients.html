@@ -17,7 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* نفس التصميم الأساسي */
         * {
             margin: 0;
             padding: 0;
@@ -72,8 +71,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo span {
@@ -113,6 +117,15 @@
             color: #667eea;
         }
 
+        .badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: auto;
+        }
+
         .main-content {
             flex: 1;
             margin-right: 280px;
@@ -135,6 +148,23 @@
             background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .company-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* قسم العملاء */
@@ -206,10 +236,21 @@
             min-width: 250px;
         }
 
+        .filter-select {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            min-width: 150px;
+        }
+
         .clients-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
+            margin-top: 20px;
         }
 
         .client-card {
@@ -244,6 +285,10 @@
             justify-content: center;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        .client-info {
+            flex: 1;
         }
 
         .client-name {
@@ -312,6 +357,111 @@
             color: #9e9e9e;
         }
 
+        /* نافذة تفاصيل العميل */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f35;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #fff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #8f9bb3;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            width: 120px;
+            color: #8f9bb3;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #fff;
+        }
+
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tickets-table th {
+            text-align: right;
+            padding: 10px;
+            color: #8f9bb3;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .tickets-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            font-size: 13px;
+        }
+
+        .ticket-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .status-open {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-closed {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9e9e9e;
+        }
+
         .current-user {
             display: flex;
             align-items: center;
@@ -354,81 +504,9 @@
             cursor: pointer;
         }
 
-        /* نافذة إضافة عميل */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: #1a1f35;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-        }
-
-        .modal-header h2 {
-            color: #fff;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #8f9bb3;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #a0a0ff;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
-            border-radius: 10px;
-            color: #fff;
-            font-family: 'Cairo', sans-serif;
-        }
-
         @media (max-width: 768px) {
             .filter-section {
                 flex-direction: column;
-            }
-            
-            .search-box {
-                width: 100%;
             }
             
             .clients-grid {
@@ -443,9 +521,9 @@
     <div class="app-container">
         <!-- القائمة الجانبية -->
         <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">K</div>
-                <span>KeyaTech</span>
+            <div class="logo" id="sidebarLogo">
+                <div class="logo-icon" id="logoIcon">K</div>
+                <span id="sidebarCompanyName">KeyaTech</span>
             </div>
             
             <ul class="nav-menu">
@@ -453,6 +531,13 @@
                     <a href="assistant-clients.html" class="nav-link active">
                         <i class="fas fa-users"></i>
                         العملاء
+                        <span class="badge" id="clientsBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="assistant-payments.html" class="nav-link">
+                        <i class="fas fa-money-bill"></i>
+                        المدفوعات
                     </a>
                 </li>
             </ul>
@@ -475,73 +560,52 @@
                 <div class="header-title">
                     <h1>إدارة العملاء</h1>
                 </div>
-                <span id="currentDateTime"></span>
+                <div class="company-logo" id="headerLogo">
+                    <i class="fas fa-building"></i>
+                </div>
             </header>
 
             <div class="clients-section">
                 <div class="section-header">
                     <h2>قائمة العملاء</h2>
-                    <button class="btn btn-primary" onclick="showAddClientModal()">
-                        <i class="fas fa-user-plus"></i>
-                        إضافة عميل
-                    </button>
+                    <div>
+                        <button class="btn btn-success" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i>
+                            تصدير Excel
+                        </button>
+                    </div>
                 </div>
 
                 <div class="filter-section">
                     <input type="text" class="search-box" id="searchInput" 
-                           placeholder="🔍 بحث باسم العميل أو البريد..." onkeyup="filterClients()">
+                           placeholder="🔍 بحث باسم العميل أو البريد أو الهاتف..." onkeyup="filterClients()">
+                    
+                    <select class="filter-select" id="statusFilter" onchange="filterClients()">
+                        <option value="all">كل العملاء</option>
+                        <option value="active">نشط</option>
+                        <option value="inactive">غير نشط</option>
+                    </select>
                 </div>
 
                 <div class="clients-grid" id="clientsGrid">
-                    <!-- يتم إضافة العملاء ديناميكياً -->
+                    <div style="text-align: center; padding: 50px; grid-column: 1/-1;">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        <p>جاري تحميل العملاء...</p>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- نافذة إضافة عميل -->
-    <div class="modal" id="addClientModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>إضافة عميل جديد</h2>
-                <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
-            </div>
-            
-            <form id="addClientForm" onsubmit="addClient(event)">
-                <div class="form-group">
-                    <label>اسم العميل</label>
-                    <input type="text" id="clientName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="clientPhone" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="clientEmail" required>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i>
-                    إضافة العميل
-                </button>
-            </form>
-        </div>
-    </div>
-
     <!-- نافذة تفاصيل العميل -->
-    <div class="modal" id="clientDetailsModal">
+    <div class="modal" id="clientModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="detailsClientName">تفاصيل العميل</h2>
-                <button class="modal-close" onclick="closeModal('clientDetailsModal')">&times;</button>
+                <h2 id="modalClientName">تفاصيل العميل</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             
-            <div id="clientDetails">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
+            <div id="clientDetails"></div>
         </div>
     </div>
 
@@ -561,16 +625,36 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let clients = [];
+        let allClients = [];
+        let allTickets = [];
+
+        // تحميل إعدادات الشركة
+        async function loadCompanySettings() {
+            try {
+                const doc = await db.collection('settings').doc('company').get();
+                if (doc.exists) {
+                    const settings = doc.data();
+                    document.getElementById('sidebarCompanyName').textContent = settings.name || 'KeyaTech';
+                    
+                    if (settings.logoUrl) {
+                        document.getElementById('logoIcon').innerHTML = `<img src="${settings.logoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                        document.getElementById('headerLogo').innerHTML = `<img src="${settings.logoUrl}" alt="شعار">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company settings:', error);
+            }
+        }
 
         // التحقق من تسجيل الدخول
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
+                loadCompanySettings();
                 loadUserData(user.uid);
-                loadClients();
+                loadAllData();
             } else {
-                window.location.href = '/login.html';
+                window.location.href = '../login.html';
             }
         });
 
@@ -584,73 +668,72 @@
             }
         }
 
-        // تحميل قائمة العملاء
-        async function loadClients() {
+        // تحميل كل البيانات
+        async function loadAllData() {
             try {
-                // الحصول على جميع التذاكر لاستخراج العملاء
-                const ticketsSnapshot = await db.collection('tickets')
+                // تحميل كل المستخدمين من نوع client
+                const usersSnapshot = await db.collection('users')
+                    .where('role', '==', 'client')
                     .orderBy('createdAt', 'desc')
                     .get();
 
-                const clientsMap = new Map();
-
-                ticketsSnapshot.forEach(doc => {
-                    const ticket = doc.data();
-                    const email = ticket.clientEmail;
-                    
-                    if (email && !clientsMap.has(email)) {
-                        clientsMap.set(email, {
-                            name: ticket.clientName,
-                            email: ticket.clientEmail,
-                            phone: ticket.clientPhone,
-                            tickets: [],
-                            lastTicket: ticket.createdAt
-                        });
-                    }
-                    
-                    if (email && clientsMap.has(email)) {
-                        clientsMap.get(email).tickets.push(doc.id);
-                    }
+                allClients = [];
+                usersSnapshot.forEach(doc => {
+                    allClients.push({ id: doc.id, ...doc.data() });
                 });
 
-                clients = Array.from(clientsMap.values());
-                displayClients(clients);
+                // تحميل كل التذاكر
+                const ticketsSnapshot = await db.collection('tickets').get();
+                allTickets = [];
+                ticketsSnapshot.forEach(doc => {
+                    allTickets.push({ id: doc.id, ...doc.data() });
+                });
+
+                document.getElementById('clientsBadge').textContent = allClients.length;
+                displayClients(allClients);
 
             } catch (error) {
-                console.error('Error loading clients:', error);
+                console.error('Error loading data:', error);
             }
         }
 
         // عرض العملاء
-        function displayClients(clientsToShow) {
+        function displayClients(clients) {
             const grid = document.getElementById('clientsGrid');
             
-            if (clientsToShow.length === 0) {
-                grid.innerHTML = '<div style="text-align: center; padding: 50px; color: #8f9bb3;">لا يوجد عملاء</div>';
+            if (clients.length === 0) {
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #8f9bb3; grid-column: 1/-1;">
+                        <i class="fas fa-user-slash fa-3x" style="margin-bottom: 15px;"></i>
+                        <p>لا يوجد عملاء</p>
+                    </div>
+                `;
                 return;
             }
 
             let html = '';
-            clientsToShow.forEach(client => {
-                const lastTicketDate = client.lastTicket ? 
-                    client.lastTicket.toDate().toLocaleDateString('ar-EG') : '-';
+            clients.forEach(client => {
+                // حساب إحصائيات العميل
+                const clientTickets = allTickets.filter(t => t.clientEmail === client.email);
+                const openTickets = clientTickets.filter(t => t.status !== 'closed').length;
+                const closedTickets = clientTickets.filter(t => t.status === 'closed').length;
                 
-                const ticketCount = client.tickets.length;
-                const openTickets = Math.floor(ticketCount * 0.6); // تقريبي
+                const lastTicket = clientTickets.length > 0 ? 
+                    clientTickets[0].createdAt?.toDate().toLocaleDateString('ar-EG') : '-';
 
                 html += `
                     <div class="client-card" onclick="showClientDetails('${client.email}')">
                         <div class="client-header">
-                            <div class="client-avatar">${client.name.charAt(0)}</div>
-                            <div>
-                                <div class="client-name">${client.name}</div>
+                            <div class="client-avatar">${(client.displayName || client.name || '?').charAt(0)}</div>
+                            <div class="client-info">
+                                <div class="client-name">${client.displayName || client.name}</div>
                                 <div class="client-email">${client.email}</div>
                             </div>
                         </div>
                         
                         <div class="client-stats">
                             <div class="stat-item">
-                                <div class="stat-number">${ticketCount}</div>
+                                <div class="stat-number">${clientTickets.length}</div>
                                 <div class="stat-label">إجمالي</div>
                             </div>
                             <div class="stat-item">
@@ -658,7 +741,7 @@
                                 <div class="stat-label">مفتوحة</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">${ticketCount - openTickets}</div>
+                                <div class="stat-number">${closedTickets}</div>
                                 <div class="stat-label">مغلقة</div>
                             </div>
                         </div>
@@ -667,9 +750,12 @@
                             <span class="client-phone">
                                 <i class="fas fa-phone"></i> ${client.phone || '---'}
                             </span>
-                            <span class="status-badge status-active">
-                                <i class="fas fa-circle"></i> آخر تذكرة: ${lastTicketDate}
+                            <span class="status-badge ${client.isActive ? 'status-active' : 'status-inactive'}">
+                                ${client.isActive ? 'نشط' : 'غير نشط'}
                             </span>
+                        </div>
+                        <div style="font-size: 10px; color: #8f9bb3; margin-top: 10px;">
+                            آخر تذكرة: ${lastTicket}
                         </div>
                     </div>
                 `;
@@ -681,146 +767,145 @@
         // فلترة العملاء
         function filterClients() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            const filtered = clients.filter(client => {
-                return client.name.toLowerCase().includes(searchTerm) ||
-                       client.email.toLowerCase().includes(searchTerm) ||
-                       (client.phone && client.phone.includes(searchTerm));
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = allClients.filter(client => {
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'active' && !client.isActive) return false;
+                    if (statusFilter === 'inactive' && client.isActive !== false) return false;
+                }
+
+                if (searchTerm) {
+                    const name = (client.displayName || client.name || '').toLowerCase();
+                    const email = (client.email || '').toLowerCase();
+                    const phone = (client.phone || '').toLowerCase();
+                    return name.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm);
+                }
+
+                return true;
             });
 
             displayClients(filtered);
         }
 
-        // إضافة عميل جديد
-        async function addClient(event) {
-            event.preventDefault();
-
-            const clientData = {
-                name: document.getElementById('clientName').value,
-                phone: document.getElementById('clientPhone').value,
-                email: document.getElementById('clientEmail').value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                createdBy: currentUser.uid
-            };
-
-            try {
-                // إنشاء تذكرة فارغة للعميل (لإضافته إلى قائمة العملاء)
-                await db.collection('tickets').add({
-                    ...clientData,
-                    problemTitle: 'عميل جديد',
-                    problemDescription: 'تم إضافة العميل بواسطة المساعد',
-                    status: 'closed',
-                    ticketNumber: 'CLI-' + Date.now()
-                });
-
-                closeModal('addClientModal');
-                loadClients();
-
-            } catch (error) {
-                alert('خطأ في إضافة العميل: ' + error.message);
-            }
-        }
-
         // عرض تفاصيل العميل
         async function showClientDetails(clientEmail) {
             try {
-                const snapshot = await db.collection('tickets')
-                    .where('clientEmail', '==', clientEmail)
-                    .orderBy('createdAt', 'desc')
-                    .get();
+                const client = allClients.find(c => c.email === clientEmail);
+                if (!client) return;
 
-                const tickets = [];
-                snapshot.forEach(doc => {
-                    tickets.push(doc.data());
-                });
+                const clientTickets = allTickets
+                    .filter(t => t.clientEmail === clientEmail)
+                    .sort((a, b) => {
+                        const dateA = a.createdAt?.toDate() || 0;
+                        const dateB = b.createdAt?.toDate() || 0;
+                        return dateB - dateA;
+                    });
 
-                const client = clients.find(c => c.email === clientEmail);
-                
                 let ticketsHtml = '';
-                tickets.slice(0, 5).forEach(ticket => {
-                    const date = ticket.createdAt ? 
-                        ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
-                    
-                    ticketsHtml += `
-                        <div style="padding: 10px; border-bottom: 1px solid rgba(102,126,234,0.1);">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span style="color: #667eea;">${ticket.ticketNumber}</span>
-                                <span class="status-badge status-${ticket.status}">${ticket.status}</span>
-                            </div>
-                            <div style="font-size: 13px; margin-top: 5px;">${ticket.problemTitle}</div>
-                            <div style="font-size: 11px; color: #8f9bb3;">${date}</div>
-                        </div>
+                if (clientTickets.length > 0) {
+                    ticketsHtml = `
+                        <table class="tickets-table">
+                            <thead>
+                                <tr>
+                                    <th>رقم التذكرة</th>
+                                    <th>الموضوع</th>
+                                    <th>الحالة</th>
+                                    <th>التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                     `;
-                });
 
-                document.getElementById('detailsClientName').textContent = client.name;
+                    clientTickets.slice(0, 10).forEach(ticket => {
+                        const date = ticket.createdAt ? 
+                            ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
+                        
+                        ticketsHtml += `
+                            <tr>
+                                <td>${ticket.ticketNumber || '---'}</td>
+                                <td>${ticket.problemTitle || '---'}</td>
+                                <td><span class="ticket-status ${ticket.status === 'closed' ? 'status-closed' : 'status-open'}">${ticket.status === 'closed' ? 'مغلقة' : 'مفتوحة'}</span></td>
+                                <td>${date}</td>
+                            </tr>
+                        `;
+                    });
+
+                    ticketsHtml += '</tbody></table>';
+                } else {
+                    ticketsHtml = '<p style="color: #8f9bb3; text-align: center;">لا توجد تذاكر</p>';
+                }
+
+                document.getElementById('modalClientName').textContent = client.displayName || client.name;
                 document.getElementById('clientDetails').innerHTML = `
-                    <div class="form-group">
-                        <label>البريد الإلكتروني</label>
-                        <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                            ${client.email}
-                        </div>
+                    <div class="detail-row">
+                        <span class="detail-label">البريد:</span>
+                        <span class="detail-value">${client.email}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الهاتف:</span>
+                        <span class="detail-value">${client.phone || '---'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الحالة:</span>
+                        <span class="detail-value"><span class="status-badge ${client.isActive ? 'status-active' : 'status-inactive'}">${client.isActive ? 'نشط' : 'غير نشط'}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">تاريخ التسجيل:</span>
+                        <span class="detail-value">${client.createdAt ? client.createdAt.toDate().toLocaleDateString('ar-EG') : '-'}</span>
                     </div>
                     
-                    <div class="form-group">
-                        <label>رقم الهاتف</label>
-                        <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                            ${client.phone || '---'}
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>آخر التذاكر (5)</label>
-                        <div style="background: rgba(255,255,255,0.02); border-radius: 10px; max-height: 200px; overflow-y: auto;">
-                            ${ticketsHtml || 'لا توجد تذاكر'}
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-primary" style="width: 100%;" onclick="closeModal('clientDetailsModal')">
-                        إغلاق
-                    </button>
+                    <h3 style="margin: 20px 0 10px; color: #a0a0ff;">آخر التذاكر</h3>
+                    ${ticketsHtml}
                 `;
 
-                document.getElementById('clientDetailsModal').classList.add('show');
+                document.getElementById('clientModal').classList.add('show');
 
             } catch (error) {
-                console.error('Error loading client details:', error);
+                console.error('Error showing client details:', error);
             }
         }
 
-        // إظهار نافذة إضافة عميل
-        function showAddClientModal() {
-            document.getElementById('addClientForm').reset();
-            document.getElementById('addClientModal').classList.add('show');
+        // تصدير إلى Excel
+        function exportToExcel() {
+            const data = allClients.map(client => ({
+                'الاسم': client.displayName || client.name,
+                'البريد الإلكتروني': client.email,
+                'رقم الهاتف': client.phone || '',
+                'الحالة': client.isActive ? 'نشط' : 'غير نشط',
+                'تاريخ التسجيل': client.createdAt ? client.createdAt.toDate().toLocaleDateString('ar-EG') : ''
+            }));
+
+            const csv = convertToCSV(data);
+            downloadFile(csv, `clients-${Date.now()}.csv`);
         }
 
-        // إغلاق النافذة
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
+        // تحويل إلى CSV
+        function convertToCSV(data) {
+            const headers = Object.keys(data[0]).join(',');
+            const rows = data.map(obj => Object.values(obj).map(val => `"${val}"`).join(','));
+            return headers + '\n' + rows.join('\n');
         }
 
-        // تحديث التاريخ والوقت
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('currentDateTime').textContent = 
-                now.toLocaleDateString('ar-EG', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+        // تحميل ملف
+        function downloadFile(content, fileName) {
+            const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+        }
+
+        function closeModal() {
+            document.getElementById('clientModal').classList.remove('show');
         }
 
         // تسجيل الخروج
         async function logout() {
             await auth.signOut();
-            window.location.href = '/login.html';
+            window.location.href = '../login.html';
         }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
     </script>
 </body>
 </html>
