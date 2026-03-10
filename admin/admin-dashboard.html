@@ -197,6 +197,40 @@
             font-size: 14px;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 243, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .profile-link:hover {
+            background: rgba(255, 0, 255, 0.2);
+            border-color: #ff00ff;
+        }
+
+        .profile-link i {
+            color: #00f3ff;
+            font-size: 18px;
+        }
+
+        .profile-link:hover i {
+            color: #ff00ff;
+        }
+
         .company-logo {
             width: 50px;
             height: 50px;
@@ -238,12 +272,31 @@
             border-radius: 25px;
             padding: 25px;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(255, 0, 255, 0.1));
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             border-color: #ff00ff;
             box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        .stat-card:hover::before {
+            transform: translateX(100%);
         }
 
         .stat-icon {
@@ -271,9 +324,162 @@
         .stat-label {
             color: rgba(255, 255, 255, 0.6);
             font-size: 14px;
+            margin-bottom: 10px;
         }
 
-        /* صفوف المخططات */
+        .stat-detail {
+            font-size: 13px;
+            color: #00f3ff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-detail i {
+            font-size: 12px;
+        }
+
+        /* المتصلين */
+        .online-section {
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .online-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .online-header h2 {
+            font-size: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .online-header h2 i {
+            color: #00ff9d;
+            font-size: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .online-count {
+            background: linear-gradient(135deg, #00f3ff, #ff00ff);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .online-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .online-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .online-user:hover {
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .user-avatar-small {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #00f3ff, #ff00ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-role-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .role-admin {
+            background: rgba(255, 0, 255, 0.2);
+            color: #ff00ff;
+            border: 1px solid #ff00ff;
+        }
+
+        .role-engineer {
+            background: rgba(0, 243, 255, 0.2);
+            color: #00f3ff;
+            border: 1px solid #00f3ff;
+        }
+
+        .role-assistant {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffff00;
+            border: 1px solid #ffff00;
+        }
+
+        .role-client {
+            background: rgba(0, 255, 157, 0.2);
+            color: #00ff9d;
+            border: 1px solid #00ff9d;
+        }
+
+        .user-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            background: #00ff9d;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #00ff9d;
+        }
+
+        /* المخططات */
         .charts-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -299,6 +505,29 @@
         .chart-header h3 {
             color: #00f3ff;
             font-size: 18px;
+        }
+
+        .chart-period {
+            display: flex;
+            gap: 5px;
+        }
+
+        .period-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .period-btn:hover,
+        .period-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            color: #00f3ff;
+            border-color: #00f3ff;
         }
 
         .chart-container {
@@ -369,6 +598,7 @@
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .status-badge.open {
@@ -386,6 +616,25 @@
             color: #00ff9d;
         }
 
+        .client-name {
+            color: #fff;
+        }
+
+        .ticket-subject {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .engineer-name {
+            color: #ff00ff;
+            font-size: 13px;
+        }
+
+        .ticket-date {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
         /* المستخدم الحالي */
         .current-user {
             display: flex;
@@ -396,6 +645,13 @@
             border-radius: 15px;
             margin-top: 30px;
             border: 1px solid rgba(0, 243, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .current-user:hover {
+            background: rgba(255, 0, 255, 0.1);
+            border-color: #ff00ff;
         }
 
         .user-avatar {
@@ -468,6 +724,35 @@
             box-shadow: 0 0 15px #fff;
         }
 
+        /* شاشة التحميل */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 243, 255, 0.3);
+            border-top-color: #00f3ff;
+            border-right-color: #ff00ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 1200px) {
             .charts-row {
                 grid-template-columns: 1fr;
@@ -499,6 +784,15 @@
                 text-align: center;
             }
             
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .online-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .tickets-table {
                 display: block;
                 overflow-x: auto;
@@ -515,6 +809,11 @@
     <!-- ماوس مخصص -->
     <div class="custom-cursor" id="customCursor"></div>
     <div class="cursor-dot" id="cursorDot"></div>
+
+    <!-- شاشة تحميل -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
 
     <!-- الحاوية الرئيسية -->
     <div class="app-container">
@@ -533,10 +832,10 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="users.html" class="nav-link">
+                    <a href="team.html" class="nav-link">
                         <i class="fas fa-users-cog"></i>
-                        <span>المستخدمين</span>
-                        <span class="badge" id="usersBadge">0</span>
+                        <span>فريق العمل</span>
+                        <span class="badge" id="teamBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -567,16 +866,16 @@
                 </li>
             </ul>
             
-            <div class="current-user">
+            <a href="../shared/profile.html" class="current-user" style="text-decoration: none;">
                 <div class="user-avatar" id="userAvatar">م</div>
                 <div class="user-details">
                     <div class="user-name" id="userName">جاري التحميل...</div>
                     <div class="user-role" id="userRole">مدير النظام</div>
                 </div>
-                <button class="logout-btn" onclick="logout()">
+                <button class="logout-btn" onclick="event.stopPropagation(); logout()">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
-            </div>
+            </a>
         </aside>
 
         <!-- المحتوى الرئيسي -->
@@ -593,6 +892,11 @@
                 </div>
                 
                 <div class="header-actions">
+                    <a href="../shared/profile.html" class="profile-link">
+                        <i class="fas fa-user"></i>
+                        <span>الملف الشخصي</span>
+                    </a>
+                    
                     <div class="company-logo" id="headerLogo">
                         <i class="fas fa-building"></i>
                     </div>
@@ -603,36 +907,70 @@
 
             <!-- بطاقات الإحصائيات -->
             <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='team.html'">
                     <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-value" id="totalUsers">0</div>
-                    <div class="stat-label">إجمالي المستخدمين</div>
+                    <div class="stat-value" id="teamCount">0</div>
+                    <div class="stat-label">فريق العمل</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-circle" style="color: #00ff9d; font-size: 8px;"></i>
+                        <span id="teamOnline">0 متصل الآن</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='clients.html'">
                     <div class="stat-icon">
                         <i class="fas fa-user-tie"></i>
                     </div>
-                    <div class="stat-value" id="totalClients">0</div>
-                    <div class="stat-label">إجمالي العملاء</div>
+                    <div class="stat-value" id="clientsCount">0</div>
+                    <div class="stat-label">العملاء</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-circle" style="color: #00ff9d; font-size: 8px;"></i>
+                        <span id="clientsOnline">0 متصل الآن</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='tickets.html'">
                     <div class="stat-icon">
                         <i class="fas fa-tickets"></i>
                     </div>
                     <div class="stat-value" id="totalTickets">0</div>
                     <div class="stat-label">إجمالي التذاكر</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-folder-open"></i>
+                        <span id="openTickets">0 مفتوحة</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='reports.html'">
                     <div class="stat-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="stat-value" id="closedTickets">0</div>
-                    <div class="stat-label">تذاكر مغلقة</div>
+                    <div class="stat-value" id="completedToday">0</div>
+                    <div class="stat-label">تم اليوم</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-clock"></i>
+                        <span id="completionRate">0% إنجاز</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المتصلين الآن -->
+            <div class="online-section">
+                <div class="online-header">
+                    <h2>
+                        <i class="fas fa-circle"></i>
+                        المتصلين الآن
+                    </h2>
+                    <span class="online-count" id="totalOnline">0</span>
+                </div>
+                
+                <div class="online-grid" id="onlineUsers">
+                    <div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5); grid-column: 1/-1;">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p>جاري تحميل المتصلين...</p>
+                    </div>
                 </div>
             </div>
 
@@ -640,7 +978,12 @@
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>تحليل التذاكر (آخر 7 أيام)</h3>
+                        <h3>تحليل التذاكر</h3>
+                        <div class="chart-period">
+                            <button class="period-btn active" onclick="changePeriod('week', event)">أسبوع</button>
+                            <button class="period-btn" onclick="changePeriod('month', event)">شهر</button>
+                            <button class="period-btn" onclick="changePeriod('year', event)">سنة</button>
+                        </div>
                     </div>
                     <div class="chart-container">
                         <canvas id="ticketsChart"></canvas>
@@ -674,12 +1017,15 @@
                             <th>العميل</th>
                             <th>الموضوع</th>
                             <th>الحالة</th>
+                            <th>المهندس</th>
                             <th>التاريخ</th>
                         </tr>
                     </thead>
                     <tbody id="ticketsTableBody">
                         <tr>
-                            <td colspan="5" style="text-align: center;">جاري تحميل البيانات...</td>
+                            <td colspan="6" style="text-align: center;">
+                                <i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -698,7 +1044,6 @@
             appId: "1:447786557425:web:0330ccb97d9481aade6e50"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -707,6 +1052,7 @@
         let currentUser = null;
         let ticketsChart = null;
         let distributionChart = null;
+        let currentPeriod = 'week';
 
         // ===== ماوس مخصص =====
         const cursor = document.getElementById('customCursor');
@@ -738,7 +1084,7 @@
         });
 
         // ===== تأثيرات الماوس =====
-        const interactiveElements = document.querySelectorAll('.nav-link, .stat-card, .view-all');
+        const interactiveElements = document.querySelectorAll('.nav-link, .stat-card, .view-all, .online-user, .period-btn, .profile-link, .current-user');
         
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
@@ -777,7 +1123,12 @@
                 loadCompanySettings();
                 loadUserData(user.uid);
                 loadDashboardData();
+                loadOnlineUsers();
                 startClock();
+                
+                // تحديث كل 30 ثانية
+                setInterval(loadOnlineUsers, 30000);
+                setInterval(loadDashboardData, 60000);
             } else {
                 window.location.href = '../login.html';
             }
@@ -802,32 +1153,67 @@
         // ===== تحميل بيانات لوحة التحكم =====
         async function loadDashboardData() {
             try {
-                // إحصائيات المستخدمين
-                const usersSnapshot = await db.collection('users').get();
-                const totalUsers = usersSnapshot.size;
-                document.getElementById('totalUsers').textContent = totalUsers;
-                document.getElementById('usersBadge').textContent = totalUsers;
+                // إحصائيات فريق العمل
+                const teamSnapshot = await db.collection('users').where('role', 'in', ['admin', 'engineer', 'assistant']).get();
+                const teamCount = teamSnapshot.size;
+                
+                let teamOnline = 0;
+                teamSnapshot.forEach(doc => {
+                    if (doc.data().isOnline) teamOnline++;
+                });
+                
+                document.getElementById('teamCount').textContent = teamCount;
+                document.getElementById('teamBadge').textContent = teamCount;
+                document.getElementById('teamOnline').textContent = `${teamOnline} متصل الآن`;
 
                 // إحصائيات العملاء
                 const clientsSnapshot = await db.collection('users').where('role', '==', 'client').get();
-                document.getElementById('totalClients').textContent = clientsSnapshot.size;
-                document.getElementById('clientsBadge').textContent = clientsSnapshot.size;
+                const clientsCount = clientsSnapshot.size;
+                
+                let clientsOnline = 0;
+                clientsSnapshot.forEach(doc => {
+                    if (doc.data().isOnline) clientsOnline++;
+                });
+                
+                document.getElementById('clientsCount').textContent = clientsCount;
+                document.getElementById('clientsBadge').textContent = clientsCount;
+                document.getElementById('clientsOnline').textContent = `${clientsOnline} متصل الآن`;
 
                 // إحصائيات التذاكر
                 const ticketsSnapshot = await db.collection('tickets').get();
                 const totalTickets = ticketsSnapshot.size;
                 
-                let closedTickets = 0;
+                let openCount = 0;
+                let closedToday = 0;
+                let completedToday = 0;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
                 ticketsSnapshot.forEach(doc => {
-                    if (doc.data().status === 'closed') closedTickets++;
+                    const ticket = doc.data();
+                    if (ticket.status === 'open' || ticket.status === 'in-progress') {
+                        openCount++;
+                    }
+                    
+                    if (ticket.closedAt) {
+                        const closedDate = ticket.closedAt.toDate();
+                        if (closedDate >= today) {
+                            closedToday++;
+                        }
+                    }
+
+                    if (ticket.status === 'closed') {
+                        completedToday++;
+                    }
                 });
                 
                 document.getElementById('totalTickets').textContent = totalTickets;
-                document.getElementById('closedTickets').textContent = closedTickets;
                 document.getElementById('ticketsBadge').textContent = totalTickets;
-
-                // إنشاء المخططات
-                createCharts();
+                document.getElementById('openTickets').textContent = `${openCount} مفتوحة`;
+                document.getElementById('completedToday').textContent = closedToday;
+                
+                const completionRate = totalTickets > 0 ? Math.round((completedToday / totalTickets) * 100) : 0;
+                document.getElementById('completionRate').textContent = `${completionRate}% إنجاز`;
 
                 // تحميل آخر التذاكر
                 loadRecentTickets();
@@ -837,22 +1223,164 @@
             }
         }
 
+        // ===== تحميل المتصلين =====
+        async function loadOnlineUsers() {
+            try {
+                const snapshot = await db.collection('users').where('isOnline', '==', true).get();
+                
+                const onlineUsers = [];
+                snapshot.forEach(doc => {
+                    onlineUsers.push({ id: doc.id, ...doc.data() });
+                });
+
+                document.getElementById('totalOnline').textContent = onlineUsers.length;
+
+                const onlineGrid = document.getElementById('onlineUsers');
+                
+                if (onlineUsers.length === 0) {
+                    onlineGrid.innerHTML = '<div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5); grid-column: 1/-1;">لا يوجد متصلين حالياً</div>';
+                    return;
+                }
+
+                // ترتيب المتصلين: الأدمن أولاً، ثم المهندسين، ثم المساعدين، ثم العملاء
+                onlineUsers.sort((a, b) => {
+                    const roles = { 'admin': 1, 'engineer': 2, 'assistant': 3, 'client': 4 };
+                    return (roles[a.role] || 5) - (roles[b.role] || 5);
+                });
+
+                let html = '';
+                onlineUsers.forEach(user => {
+                    const lastSeen = user.lastSeen ? 
+                        timeAgo(user.lastSeen.toDate()) : 'الآن';
+                    
+                    const roleClass = {
+                        'admin': 'role-admin',
+                        'engineer': 'role-engineer',
+                        'assistant': 'role-assistant',
+                        'client': 'role-client'
+                    }[user.role] || '';
+
+                    const roleName = {
+                        'admin': 'مدير',
+                        'engineer': 'مهندس',
+                        'assistant': 'مساعد',
+                        'client': 'عميل'
+                    }[user.role] || '';
+
+                    html += `
+                        <div class="online-user" onclick="window.location.href='../shared/profile.html?id=${user.id}'">
+                            <div class="user-avatar-small">${(user.displayName || user.name || '?').charAt(0)}</div>
+                            <div class="user-info">
+                                <div class="user-name">
+                                    ${user.displayName || user.name}
+                                    <span class="user-role-badge ${roleClass}">${roleName}</span>
+                                </div>
+                                <div class="user-time">
+                                    <span class="online-indicator"></span>
+                                    ${lastSeen}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                onlineGrid.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error loading online users:', error);
+            }
+        }
+
+        // ===== تحميل آخر التذاكر =====
+        async function loadRecentTickets() {
+            try {
+                const snapshot = await db.collection('tickets')
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                const tbody = document.getElementById('ticketsTableBody');
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">لا توجد تذاكر</td></tr>';
+                    return;
+                }
+
+                let openCount = 0;
+                let progressCount = 0;
+                let closedCount = 0;
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const ticket = doc.data();
+                    const date = ticket.createdAt ? 
+                        ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
+                    
+                    if (ticket.status === 'open') openCount++;
+                    else if (ticket.status === 'in-progress') progressCount++;
+                    else if (ticket.status === 'closed') closedCount++;
+
+                    html += `
+                        <tr onclick="window.location.href='../shared/ticket-details.html?id=${doc.id}'">
+                            <td class="ticket-id">${ticket.ticketNumber || '---'}</td>
+                            <td class="client-name">${ticket.clientName || '---'}</td>
+                            <td class="ticket-subject">${ticket.problemTitle || '---'}</td>
+                            <td><span class="status-badge ${ticket.status || 'open'}">${getStatusText(ticket.status)}</span></td>
+                            <td class="engineer-name">${ticket.assignedToName || 'غير معين'}</td>
+                            <td class="ticket-date">${date}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+
+                // تحديث مخطط التوزيع
+                if (distributionChart) {
+                    distributionChart.data.datasets[0].data = [openCount, progressCount, closedCount];
+                    distributionChart.update();
+                }
+
+            } catch (error) {
+                console.error('Error loading recent tickets:', error);
+            }
+        }
+
         // ===== إنشاء المخططات =====
-        function createCharts() {
-            // مخطط التذاكر (آخر 7 أيام)
+        function createCharts(period = 'week') {
+            // مخطط التذاكر
             const ctx1 = document.getElementById('ticketsChart').getContext('2d');
             
             if (ticketsChart) ticketsChart.destroy();
+
+            let labels = [];
+            let data = [];
+
+            if (period === 'week') {
+                labels = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                data = [12, 19, 15, 17, 14, 8, 10];
+            } else if (period === 'month') {
+                labels = ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'];
+                data = [65, 59, 80, 81];
+            } else {
+                labels = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+                data = [65, 59, 80, 81, 56, 55, 40, 45, 38, 50, 48, 60];
+            }
             
             ticketsChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+                    labels: labels,
                     datasets: [{
                         label: 'التذاكر',
-                        data: [0, 0, 0, 0, 0, 0, 0],
+                        data: data,
                         borderColor: '#00f3ff',
                         backgroundColor: 'rgba(0, 243, 255, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
                         tension: 0.4,
                         fill: true
                     }]
@@ -862,7 +1390,14 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            labels: { color: '#fff' }
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1a2a',
+                            titleColor: '#00f3ff',
+                            bodyColor: '#fff',
+                            borderColor: '#ff00ff',
+                            borderWidth: 1
                         }
                     },
                     scales: {
@@ -881,6 +1416,8 @@
             // مخطط التوزيع
             const ctx2 = document.getElementById('distributionChart').getContext('2d');
             
+            if (distributionChart) distributionChart.destroy();
+            
             distributionChart = new Chart(ctx2, {
                 type: 'doughnut',
                 data: {
@@ -888,7 +1425,8 @@
                     datasets: [{
                         data: [0, 0, 0],
                         backgroundColor: ['#00f3ff', '#ffff00', '#00ff9d'],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
@@ -898,63 +1436,26 @@
                         legend: {
                             labels: { color: '#fff' },
                             position: 'bottom'
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1a2a',
+                            titleColor: '#00f3ff',
+                            bodyColor: '#fff'
                         }
-                    }
+                    },
+                    cutout: '60%'
                 }
             });
         }
 
-        // ===== تحميل آخر التذاكر =====
-        async function loadRecentTickets() {
-            try {
-                const snapshot = await db.collection('tickets')
-                    .orderBy('createdAt', 'desc')
-                    .limit(10)
-                    .get();
-
-                const tbody = document.getElementById('ticketsTableBody');
-                
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد تذاكر</td></tr>';
-                    return;
-                }
-
-                let html = '';
-                let openCount = 0;
-                let progressCount = 0;
-                let closedCount = 0;
-
-                snapshot.forEach(doc => {
-                    const ticket = doc.data();
-                    const date = ticket.createdAt ? 
-                        ticket.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
-                    
-                    if (ticket.status === 'open') openCount++;
-                    else if (ticket.status === 'in-progress') progressCount++;
-                    else if (ticket.status === 'closed') closedCount++;
-
-                    html += `
-                        <tr>
-                            <td class="ticket-id">${ticket.ticketNumber || '---'}</td>
-                            <td>${ticket.clientName || '---'}</td>
-                            <td>${ticket.problemTitle || '---'}</td>
-                            <td><span class="status-badge ${ticket.status || 'open'}">${getStatusText(ticket.status)}</span></td>
-                            <td>${date}</td>
-                        </tr>
-                    `;
-                });
-
-                tbody.innerHTML = html;
-
-                // تحديث مخطط التوزيع
-                if (distributionChart) {
-                    distributionChart.data.datasets[0].data = [openCount, progressCount, closedCount];
-                    distributionChart.update();
-                }
-
-            } catch (error) {
-                console.error('Error loading recent tickets:', error);
-            }
+        // ===== تغيير فترة المخطط =====
+        function changePeriod(period, event) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            createCharts(period);
         }
 
         // ===== دوال مساعدة =====
@@ -965,6 +1466,21 @@
                 'closed': 'مغلقة'
             };
             return statuses[status] || status;
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'منذ لحظات';
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `منذ ${minutes} دقيقة`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `منذ ${hours} ساعة`;
+            
+            const days = Math.floor(hours / 24);
+            return `منذ ${days} يوم`;
         }
 
         // ===== تبديل القائمة الجانبية =====
@@ -1006,6 +1522,12 @@
         // ===== جعل الدوال متاحة عالمياً =====
         window.toggleSidebar = toggleSidebar;
         window.logout = logout;
+        window.changePeriod = changePeriod;
+
+        // ===== إنشاء المخططات عند التحميل =====
+        setTimeout(() => {
+            createCharts('week');
+        }, 500);
 
         // ===== تنظيف عند الخروج =====
         window.addEventListener('beforeunload', () => {
